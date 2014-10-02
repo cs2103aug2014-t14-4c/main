@@ -1,48 +1,58 @@
-#pragma once
-#include <string>
+#ifndef TASK_H
+#define TASK_H
+
+// TODO 1) Add Boost
+// 2) State
+// 3) Figure out how to check overlap.
+
+#include <iostream>
 #include <vector>
-#include "boost\date_time.hpp"
+#include <string>
+#include <boost/date_time/gregorian_calendar.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 using namespace std;
-using namespace boost::gregorian;
 using namespace boost::posix_time;
 
-class Task {
-	public:
-		Task(void);
-		bool isOverlapWith(Task myTask);
-		bool isEarlierThan(Task myTask);
-		int getTaskType();
-		
-		int getTaskIndex();
-		ptime getTaskStartDatetime();
-		ptime getTaskEndDatetime();
-		ptime getTaskDeadline();
-		int getTaskDuration();
-		string getTaskName();
-		string getTaskDetails();
-		vector<string> getTaskTags();
-		bool getIsDone();
-
-		void setTaskStartDatetime(ptime datetimeToSet);
-		void setTaskEndDatetime(ptime datetimeToSet);
-		void setTaskDeadline(ptime datetimeToSet);
-		void setTaskDuration(int durationToSet);
-		void setTaskName(string nameToSet);
-		void setTaskDetails(string detailsToSet);
-		void setTaskTags(vector<string> tagsToSet);
-		void setIsDone();
-		void setIsNotDone();
-
+class Task{
 	private:
 		ptime _taskStartDateTime;
 		ptime _taskEndDateTime;
 		ptime _taskDeadline;
-		int _taskDuration;
+		time_duration _taskDuration;
 		string _taskName;
-		string _taskDetails;
+		string _taskDetails; //Not used for now
 		vector<string> _taskTags;
 		int _taskIndex;
-		bool _isDone;
+		int _taskType;
 
+	public:
+		//Constructor
+		Task();
+
+		//Setters
+		void setTaskStartTime(ptime dateTimeToSet);
+		void setTaskEndTime(ptime dateTimeToSet);
+		void setTaskDeadline(ptime dateTimeToSet);
+		void setTaskDuration(time_duration durationToSet);
+		void setTaskName(string nameToSet);
+		void setTaskDetails(string detailsToSet); // Not used for now
+		void setTaskTags(vector<string> tagsToSet);
+		void setTaskIndex(int indexToSet);
+
+		//Getters
+		int getTaskType();
+		int getTaskIndex();
+		ptime getTaskStartTime();
+		ptime getTaskEndTime();
+		ptime getTaskDeadline();
+		time_duration getTaskDuration();
+		string getTaskName();
+		string getTaskDetails();//Not used for now
+		vector<string> getTaskTags();
+
+		//Operations
+		bool isTaskOverlapWith(Task myTask);
+		bool isEarlierThan(Task myTask);
 };
 
+#endif

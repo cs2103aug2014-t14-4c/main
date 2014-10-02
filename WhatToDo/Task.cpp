@@ -1,94 +1,97 @@
 #include "Task.h"
 
+//Constructor
+Task::Task(){}
 
-Task::Task(void) {
+//Setters
+void Task::setTaskStartTime(ptime dateTimeToSet){
+	_taskStartDateTime = dateTimeToSet;
 }
 
-bool Task::isOverlapWith(Task myTask) {
-	return true;
+void Task::setTaskEndTime(ptime dateTimeToSet){
+	_taskEndDateTime = dateTimeToSet;
 }
 
-bool Task::isEarlierThan(Task myTask) {
-	return true;
+void Task::setTaskDeadline(ptime dateTimeToSet){
+	_taskDeadline = dateTimeToSet;
 }
 
-int Task::getTaskType() {
-	return 0;
+void Task::setTaskDuration(time_duration durationToSet){
+	_taskDuration = durationToSet;
 }
 
-		
-int Task::getTaskIndex() {
-	return 0;
+void Task::setTaskName(string nameToSet){
+	_taskName = nameToSet;
 }
 
-
-ptime Task::getTaskStartDatetime() {
-	return ptime();
+void Task::setTaskDetails(string detailsToSet){
+	_taskDetails = detailsToSet;
 }
 
-ptime Task::getTaskEndDatetime() {
-	return ptime();
+void Task::setTaskTags(vector<string> tagsToSet){
+	_taskTags = tagsToSet;
 }
 
-ptime Task::getTaskDeadline() {
-	return ptime();
+void Task::setTaskIndex(int indexToSet){
+	_taskIndex = indexToSet;
 }
 
-
-int Task::getTaskDuration() {
-	return 0;
+//Getters
+int Task::getTaskType(){
+	return _taskType;
 }
 
-string Task::getTaskName() {
-	return "";
+int Task::getTaskIndex(){
+	return _taskIndex;
 }
 
-string Task::getTaskDetails() {
-	return "";
+ptime Task::getTaskStartTime(){
+	return _taskStartDateTime;
 }
 
-vector<string> Task::getTaskTags() {
-	vector<string> a;
-	return a;
+ptime Task::getTaskEndTime(){
+	return _taskEndDateTime;
 }
 
-bool Task::getIsDone() {
-	return true;
+ptime Task::getTaskDeadline(){
+	return _taskDeadline;
 }
 
-void Task::setTaskStartDatetime(ptime datetimeToSet) {
-	return;
+time_duration Task::getTaskDuration(){
+	return _taskDuration;
 }
 
-void Task::setTaskEndDatetime(ptime datetimeToSet) {
-	return;
+string Task::getTaskName(){
+	return _taskName;
 }
 
-void Task::setTaskDeadline(ptime datetimeToSet) {
-	return;
+string Task::getTaskDetails(){
+	return _taskDetails;
 }
 
-
-void Task::setTaskDuration(int durationToSet) {
-	return;
+vector<string> Task::getTaskTags(){
+	return _taskTags;
 }
 
-void Task::setTaskName(string nameToSet) {
-	return;
+bool Task::isTaskOverlapWith(Task myTask){
+	bool isOverlap = false;
+
+	if(_taskStartDateTime< myTask.getTaskStartTime() && _taskEndDateTime > myTask.getTaskStartTime())
+		isOverlap = true;
+	else {
+		if(_taskStartDateTime< myTask.getTaskEndTime() && _taskEndDateTime > myTask.getTaskEndTime())
+			isOverlap = true;
+	}
+	return isOverlap;
 }
 
-void Task::setTaskDetails(string detailsToSet) {
-	return;
+//Returns true if myTask is earlier than this task
+bool Task::isEarlierThan(Task myTask){
+	bool isEarlier = false;
+
+	if(myTask.getTaskStartTime() < _taskStartDateTime){
+		isEarlier = true;
+	}
+	return isEarlier;
 }
 
-void Task::setTaskTags(vector<string> tagsToSet) {
-	return;
-}
-
-void Task::setIsDone() {
-	return;
-}
-
-void Task::setIsNotDone() {
-	return;
-}

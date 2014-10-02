@@ -1,53 +1,72 @@
 #include "State.h"
 
-
-State::State(void) {
+//Constructor
+State::State(){
+	maxIndex = 0;
 }
 
-void State::addTask(Task taskToAdd) {
-	return;
+//Operations
+/*
+   This function will need to create a unique index for task
+**/
+void State::addTask(Task taskToAdd){
+	taskToAdd.setTaskIndex(maxIndex);
+	maxIndex++;
+	_entireListOfTasks.push_back(taskToAdd);
 }
 
-void State::deleteTask(int taskIndexToDelete) {
-	return;
+void State::deleteTask(int taskIndexToDelete){
+	for(unsigned int i=0; i< _entireListOfTasks.size();i++){
+		if(_entireListOfTasks[i].getTaskIndex() == taskIndexToDelete)
+			_entireListOfTasks.erase(_entireListOfTasks.begin() + i);
+	}
 }
 
-void State::doneTask(int taskIndexToDo) {
-	return;
+void State::clearAllTasks(){
+	_entireListOfTasks.clear();
 }
 
-void State::clearAllTasks() {
-	return;
+vector<Task> State::getAllTasks(){
+	return _entireListOfTasks;
 }
 
-vector<Task> State::getAllTasks() {
-	vector<Task> a;
-	return a;
+vector<Task> State::getTimedTasks(){
+	vector<Task> timedTasks;
+
+	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
+		if((_entireListOfTasks[i]).getTaskType() == TIMED)
+			timedTasks.push_back(_entireListOfTasks[i]);
+	}
+	return timedTasks;
+}
+vector<Task> State::getDeadlineTasks(){
+	vector<Task> deadlineTasks;
+
+	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
+		if((_entireListOfTasks[i]).getTaskType() == DEADLINE)
+			deadlineTasks.push_back(_entireListOfTasks[i]);
+	}
+	return deadlineTasks;
 }
 
-vector<Task> State::getTimedTasks() {
-	vector<Task> a;
-	return a;
+vector<Task> State::getFloatingTasks(){
+	vector<Task> floatingTasks;
+
+	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
+		if((_entireListOfTasks[i]).getTaskType() == FLOATING)
+			floatingTasks.push_back(_entireListOfTasks[i]);
+	}
+	return floatingTasks;
 }
 
-vector<Task> State::getDeadlineTasks() {
-	vector<Task> a;
-	return a;
+void State::setAllTasks(vector<Task> tasksToSet){
+	_entireListOfTasks = tasksToSet;
 }
 
-vector<Task> State::getFloatingTasks() {
-	vector<Task> a;
-	return a;
+void State::setUserMessage(string stringToSet){
+	_userMessage = stringToSet;
 }
 
-void State::setAllTasks(vector<Task> tasksToAdd) {
-	return;
-}
-
-void State::setUserMessage(string stringToSet) {
-	return;
-}
-
-string State::getUserMessage() {
-	return "";
+string State::getUserMessage(){
+	return _userMessage;
 }
