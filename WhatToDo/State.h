@@ -27,7 +27,7 @@ class State{
 
 		//Constants
 		enum TaskType{
-			TIMED = 1, DEADLINE = 2, FLOATING = 3
+			TIMED = 1, DEADLINE, FLOATING
 		};
 };
 
