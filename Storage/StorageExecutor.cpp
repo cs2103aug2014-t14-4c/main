@@ -22,7 +22,7 @@ State StorageExecutor::loadFromStorage(){
 		myIndividualTask = myStorageConverter.convertStringToTask(*myStorageIterator);
 		myConvertedTask.push_back(myIndividualTask);
 	}
-	//pack tasks into state and return as state test test test
+	//pack tasks into state and return as state
 	stateToLoad.setAllTask(myConvertedTask);
 
 	return stateToLoad;
