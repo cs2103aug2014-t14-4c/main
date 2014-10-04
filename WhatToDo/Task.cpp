@@ -4,11 +4,11 @@
 Task::Task(){}
 
 //Setters
-void Task::setTaskStartTime(ptime dateTimeToSet){
+void Task::setTaskStartDatetime(ptime dateTimeToSet){
 	_taskStartDateTime = dateTimeToSet;
 }
 
-void Task::setTaskEndTime(ptime dateTimeToSet){
+void Task::setTaskEndDatetime(ptime dateTimeToSet){
 	_taskEndDateTime = dateTimeToSet;
 }
 
@@ -45,11 +45,11 @@ int Task::getTaskIndex(){
 	return _taskIndex;
 }
 
-ptime Task::getTaskStartTime(){
+ptime Task::getTaskStartDatetime(){
 	return _taskStartDateTime;
 }
 
-ptime Task::getTaskEndTime(){
+ptime Task::getTaskEndDatetime(){
 	return _taskEndDateTime;
 }
 
@@ -76,10 +76,10 @@ vector<string> Task::getTaskTags(){
 bool Task::isTaskOverlapWith(Task myTask){
 	bool isOverlap = false;
 
-	if(_taskStartDateTime< myTask.getTaskStartTime() && _taskEndDateTime > myTask.getTaskStartTime())
+	if(_taskStartDateTime< myTask.getTaskStartDatetime() && _taskEndDateTime > myTask.getTaskStartDatetime())
 		isOverlap = true;
 	else {
-		if(_taskStartDateTime< myTask.getTaskEndTime() && _taskEndDateTime > myTask.getTaskEndTime())
+		if(_taskStartDateTime< myTask.getTaskEndDatetime() && _taskEndDateTime > myTask.getTaskEndDatetime())
 			isOverlap = true;
 	}
 	return isOverlap;
@@ -89,7 +89,7 @@ bool Task::isTaskOverlapWith(Task myTask){
 bool Task::isEarlierThan(Task myTask){
 	bool isEarlier = false;
 
-	if(myTask.getTaskStartTime() < _taskStartDateTime){
+	if(myTask.getTaskStartDatetime() < _taskStartDateTime){
 		isEarlier = true;
 	}
 	return isEarlier;

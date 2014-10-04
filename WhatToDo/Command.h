@@ -12,10 +12,12 @@ class Command {
 		string getSearchKeyword();
 		Task getCurrentTask();
 		int getTaskIndex();
+		bool getParsedStatus();
 		void setSearchKeyword(string searchKeywordToSet);
 		void setCurrentTask(Task currentTaskToSet);
 		void setTaskIndex(int taskIndexToSet);
-		
+		void setParsedStatus(bool parsedStatus);
+
 	protected:
 		string _searchKeyword;
 		Task _currentTask;

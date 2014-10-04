@@ -12,6 +12,7 @@ class State{
 	public:
 		//Constructor
 		State();
+		void doneTask(int indexToSetAsDone);
 
 		//Operations
 		void addTask(Task taskToAdd);
@@ -27,7 +28,7 @@ class State{
 
 		//Constants
 		enum TaskType{
-			TIMED = 1, DEADLINE, FLOATING
+			TIMED = 1, DEADLINE = 2, FLOATING = 3
 		};
 };
 
