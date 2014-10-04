@@ -2,9 +2,10 @@
 
 //Constructor
 Task::Task(){
-	_taskStartDateTime = is_not_a_date_time;
-	_taskEndDateTime = is_not_a_date_time;
-	_taskDeadline = is_not_a_date_time;
+	_taskStartDateTime = not_a_date_time;
+	_taskEndDateTime = not_a_date_time;
+	_taskDeadline = not_a_date_time;
+	_isDone = false;
 }
 
 //Setters
@@ -18,10 +19,6 @@ void Task::setTaskEndTime(ptime dateTimeToSet){
 
 void Task::setTaskDeadline(ptime dateTimeToSet){
 	_taskDeadline = dateTimeToSet;
-}
-
-void Task::setTaskDuration(time_duration durationToSet){
-	_taskDuration = durationToSet;
 }
 
 void Task::setTaskName(string nameToSet){
@@ -38,6 +35,10 @@ void Task::setTaskTags(vector<string> tagsToSet){
 
 void Task::setTaskIndex(int indexToSet){
 	_taskIndex = indexToSet;
+}
+
+void Task::setIsDone(){
+	_isDone = true; 
 }
 
 //Getters
@@ -84,6 +85,10 @@ string Task::getTaskDetails(){
 
 vector<string> Task::getTaskTags(){
 	return _taskTags;
+}
+
+bool Task::getIsDone(){
+	return _isDone;
 }
 
 bool Task::isTaskOverlapWith(Task myTask){

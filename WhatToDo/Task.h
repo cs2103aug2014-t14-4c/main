@@ -1,6 +1,9 @@
 #ifndef TASK_H
 #define TASK_H
 
+//1) isDone;
+//2) LogicData;
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -19,6 +22,7 @@ class Task{
 		vector<string> _taskTags;
 		int _taskIndex;
 		int _taskType;
+		bool _isDone;
 
 	public:
 		//Constructor
@@ -28,11 +32,11 @@ class Task{
 		void setTaskStartTime(ptime dateTimeToSet);
 		void setTaskEndTime(ptime dateTimeToSet);
 		void setTaskDeadline(ptime dateTimeToSet);
-		void setTaskDuration(time_duration durationToSet);
 		void setTaskName(string nameToSet);
 		void setTaskDetails(string detailsToSet); // Not used for now
 		void setTaskTags(vector<string> tagsToSet);
 		void setTaskIndex(int indexToSet);
+		void setIsDone();
 
 		//Getters
 		int getTaskType();
@@ -44,6 +48,7 @@ class Task{
 		string getTaskName();
 		string getTaskDetails();//Not used for now
 		vector<string> getTaskTags();
+		bool getIsDone();
 
 		//Operations
 		bool isTaskOverlapWith(Task myTask);

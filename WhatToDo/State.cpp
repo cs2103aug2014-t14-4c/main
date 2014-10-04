@@ -34,7 +34,7 @@ vector<Task> State::getTimedTasks(){
 	vector<Task> timedTasks;
 
 	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
-		if((_entireListOfTasks[i]).getTaskType() == TIMED)
+		if((_entireListOfTasks[i]).getTaskType() == FIXEDTIME)
 			timedTasks.push_back(_entireListOfTasks[i]);
 	}
 	return timedTasks;

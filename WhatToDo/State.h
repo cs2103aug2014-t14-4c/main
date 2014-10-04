@@ -24,7 +24,11 @@ class State{
 		void setAllTasks(vector<Task> tasksToSet);
 		void setUserMessage(string stringToSet);
 		string getUserMessage();
-};
 
+		//Enumeration
+		enum TaskType{
+			FIXEDTIME = 1, DEADLINE = 2, FLOATING = 3
+		};
+};
 
 #endif
