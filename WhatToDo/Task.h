@@ -1,29 +1,30 @@
 #ifndef TASK_H
 #define TASK_H
 
-// TODO 1) Add Boost
-// 2) State
-// 3) Figure out how to check overlap.
+//1) isDone;
+//2) LogicData;
 
 #include <iostream>
 #include <vector>
 #include <string>
-#include <boost/date_time/gregorian_calendar.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/gregorian_calendar.hpp>
+
 using namespace std;
 using namespace boost::posix_time;
+using namespace boost::gregorian;
 
 class Task{
 	private:
 		ptime _taskStartDateTime;
 		ptime _taskEndDateTime;
 		ptime _taskDeadline;
-		time_duration _taskDuration;
 		string _taskName;
 		string _taskDetails; //Not used for now
 		vector<string> _taskTags;
 		int _taskIndex;
 		int _taskType;
+		bool _isDone;
 
 	public:
 		//Constructor
@@ -33,11 +34,11 @@ class Task{
 		void setTaskStartTime(ptime dateTimeToSet);
 		void setTaskEndTime(ptime dateTimeToSet);
 		void setTaskDeadline(ptime dateTimeToSet);
-		void setTaskDuration(time_duration durationToSet);
 		void setTaskName(string nameToSet);
 		void setTaskDetails(string detailsToSet); // Not used for now
 		void setTaskTags(vector<string> tagsToSet);
 		void setTaskIndex(int indexToSet);
+		void setTaskIsDone();
 
 		//Getters
 		int getTaskType();
@@ -49,10 +50,16 @@ class Task{
 		string getTaskName();
 		string getTaskDetails();//Not used for now
 		vector<string> getTaskTags();
+		bool getTaskIsDone();
 
 		//Operations
 		bool isTaskOverlapWith(Task myTask);
 		bool isEarlierThan(Task myTask);
+
+		//Enumeration
+		enum TaskType{
+			FIXEDTIME = 1, DEADLINE, FLOATING 
+		};
 };
 
 #endif

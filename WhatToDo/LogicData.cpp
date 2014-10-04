@@ -1,44 +1,34 @@
 #include "LogicData.h"
 
+LogicData::LogicData(){}
 
-LogicData::LogicData(void) {
+void LogicData::setCurrentState(State stateToSet){
+	_currentState = stateToSet;
 }
 
-State LogicData::getCurrentState() {
-	State a;
-	return a;
+void LogicData::setViewState(State stateToSet){
+	_viewState = stateToSet;
 }
 
-State LogicData::getViewState() {
-	State a;
-	return a;
+vector<Command> LogicData::getCommandHistory(){
+	return _commandHistory;
 }
 
-vector<Command> LogicData::getCommandHistory() {
-	vector<Command> a;
-	return a;
+void LogicData::addCommandToHistory(Command commandToAdd){
+	_commandHistory.push_back(commandToAdd);
 }
 
-void LogicData::setCurrentState(State stateToSet) {
-	return;
-}
-;
-void LogicData::setViewState(State stateToSet) {
-	return;
+int LogicData::getCurrentCommandHistoryIndex(){
+	return _currentCommandHistoryIndex;
 }
 
-void LogicData::addCommandToHistory(Command commandToAdd) {
-	return;
+//This function resets the view state and current state to initial state
+void LogicData::resetToInitialSettings(){
+	_currentState = _initialState;
+	_viewState = _initialState;
+	_commandHistory.clear();
 }
 
-int LogicData::getCurrentCommandHistoryIndex() {
-	return 0;
-}
+void LogicData::loadInitialSettings(){
 
-void LogicData::resetToInitialSettings() {
-	return;
-}
-
-void LogicData::loadInitialSettings() {
-	return;
 }

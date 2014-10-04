@@ -107,7 +107,7 @@ bool CommandAdd::checkIsInputTimeNotOccupied() {
 	}
 
 	for (i=0; unsigned(i)<listOfTimedTasks.size(); i++) {
-		if (_currentTask.isOverlapWith(listOfTimedTasks[i])) {
+		if (_currentTask.isTaskOverlapWith(listOfTimedTasks[i])) {
 			isInputTimeNotOccupied = false;
 			break;
 		}

@@ -9,6 +9,7 @@ class State{
 		vector<Task> _entireListOfTasks;
 		string _userMessage;
 		int maxIndex;
+
 	public:
 		//Constructor
 		State();
@@ -24,12 +25,6 @@ class State{
 		void setAllTasks(vector<Task> tasksToSet);
 		void setUserMessage(string stringToSet);
 		string getUserMessage();
-
-		//Constants
-		enum TaskType{
-			TIMED = 1, DEADLINE, FLOATING
-		};
 };
-
 
 #endif
