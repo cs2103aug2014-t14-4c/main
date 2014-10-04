@@ -1,12 +1,20 @@
 #include "Command.h"
- 
- 
+
+
 Command::Command(void)
 {
 }
 
 void Command::execute() {
 	return;
+}
+
+void Command::setParsedStatus(bool parsedStatus) {
+	return;
+}
+
+bool Command::getParsedStatus() {
+	return true;
 }
 
 string Command::getSearchKeyword() {
