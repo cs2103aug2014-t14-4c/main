@@ -12,7 +12,6 @@ class State{
 	public:
 		//Constructor
 		State();
-		void doneTask(int indexToSetAsDone);
 
 		//Operations
 		void addTask(Task taskToAdd);

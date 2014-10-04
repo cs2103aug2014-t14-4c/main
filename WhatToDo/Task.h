@@ -28,23 +28,22 @@ class Task{
 	public:
 		//Constructor
 		Task();
-		
 
 		//Setters
-		void setTaskStartDatetime(ptime dateTimeToSet);
-		void setTaskEndDatetime(ptime dateTimeToSet);
+		void setTaskStartTime(ptime dateTimeToSet);
+		void setTaskEndTime(ptime dateTimeToSet);
 		void setTaskDeadline(ptime dateTimeToSet);
 		void setTaskDuration(time_duration durationToSet);
 		void setTaskName(string nameToSet);
 		void setTaskDetails(string detailsToSet); // Not used for now
 		void setTaskTags(vector<string> tagsToSet);
 		void setTaskIndex(int indexToSet);
-		
+
 		//Getters
 		int getTaskType();
 		int getTaskIndex();
-		ptime getTaskStartDatetime();
-		ptime getTaskEndDatetime();
+		ptime getTaskStartTime();
+		ptime getTaskEndTime();
 		ptime getTaskDeadline();
 		time_duration getTaskDuration();
 		string getTaskName();

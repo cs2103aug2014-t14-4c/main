@@ -67,10 +67,6 @@ void State::setUserMessage(string stringToSet){
 	_userMessage = stringToSet;
 }
 
-void State::doneTask(int indexToSetAsDone) {
-	return;
-}
-
 string State::getUserMessage(){
 	return _userMessage;
 }
