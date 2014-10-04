@@ -111,4 +111,3 @@ bool Task::isEarlierThan(Task myTask){
 	}
 	return isEarlier;
 }
-

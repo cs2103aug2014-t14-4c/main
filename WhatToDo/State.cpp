@@ -15,10 +15,12 @@ void State::addTask(Task taskToAdd){
 	_entireListOfTasks.push_back(taskToAdd);
 }
 
+//Need to consider if task to delete cannot be found --> Throw exception/error?
 void State::deleteTask(int taskIndexToDelete){
 	for(unsigned int i=0; i< _entireListOfTasks.size();i++){
-		if(_entireListOfTasks[i].getTaskIndex() == taskIndexToDelete)
+		if(_entireListOfTasks[i].getTaskIndex() == taskIndexToDelete){
 			_entireListOfTasks.erase(_entireListOfTasks.begin() + i);
+		}
 	}
 }
 
@@ -34,17 +36,20 @@ vector<Task> State::getTimedTasks(){
 	vector<Task> timedTasks;
 
 	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
-		if((_entireListOfTasks[i]).getTaskType() == Task::FIXEDTIME)
+		if((_entireListOfTasks[i]).getTaskType() == Task::FIXEDTIME){
 			timedTasks.push_back(_entireListOfTasks[i]);
+		}
 	}
 	return timedTasks;
 }
+
 vector<Task> State::getDeadlineTasks(){
 	vector<Task> deadlineTasks;
 
 	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
-		if((_entireListOfTasks[i]).getTaskType() == Task::DEADLINE)
+		if((_entireListOfTasks[i]).getTaskType() == Task::DEADLINE){
 			deadlineTasks.push_back(_entireListOfTasks[i]);
+		}
 	}
 	return deadlineTasks;
 }
@@ -53,8 +58,9 @@ vector<Task> State::getFloatingTasks(){
 	vector<Task> floatingTasks;
 
 	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
-		if((_entireListOfTasks[i]).getTaskType() == Task::FLOATING)
+		if((_entireListOfTasks[i]).getTaskType() == Task::FLOATING){
 			floatingTasks.push_back(_entireListOfTasks[i]);
+		}
 	}
 	return floatingTasks;
 }
