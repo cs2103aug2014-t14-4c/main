@@ -37,7 +37,7 @@ void Task::setTaskIndex(int indexToSet){
 	_taskIndex = indexToSet;
 }
 
-void Task::setIsDone(){
+void Task::setTaskIsDone(){
 	_isDone = true; 
 }
 
@@ -87,27 +87,26 @@ vector<string> Task::getTaskTags(){
 	return _taskTags;
 }
 
-bool Task::getIsDone(){
+bool Task::getTaskIsDone(){
 	return _isDone;
 }
 
 bool Task::isTaskOverlapWith(Task myTask){
 	bool isOverlap = false;
 
-	if(_taskStartDateTime< myTask.getTaskStartTime() && _taskEndDateTime > myTask.getTaskStartTime())
+	if(_taskStartDateTime < myTask.getTaskStartTime() && _taskEndDateTime > myTask.getTaskStartTime()){
 		isOverlap = true;
-	else {
-		if(_taskStartDateTime< myTask.getTaskEndTime() && _taskEndDateTime > myTask.getTaskEndTime())
-			isOverlap = true;
+	}else if(_taskStartDateTime< myTask.getTaskEndTime() && _taskEndDateTime > myTask.getTaskEndTime()){
+		isOverlap = true;
 	}
 	return isOverlap;
 }
 
-//Returns true if myTask is earlier than this task
+//Returns true if the Task calling this function is earlier than "myTask"
 bool Task::isEarlierThan(Task myTask){
 	bool isEarlier = false;
 
-	if(myTask.getTaskStartTime() < _taskStartDateTime){
+	if(_taskStartDateTime < myTask.getTaskStartTime()){
 		isEarlier = true;
 	}
 	return isEarlier;

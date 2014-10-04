@@ -7,10 +7,12 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <boost/date_time/gregorian_calendar.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/gregorian_calendar.hpp>
+
 using namespace std;
 using namespace boost::posix_time;
+using namespace boost::gregorian;
 
 class Task{
 	private:
@@ -36,7 +38,7 @@ class Task{
 		void setTaskDetails(string detailsToSet); // Not used for now
 		void setTaskTags(vector<string> tagsToSet);
 		void setTaskIndex(int indexToSet);
-		void setIsDone();
+		void setTaskIsDone();
 
 		//Getters
 		int getTaskType();
@@ -48,7 +50,7 @@ class Task{
 		string getTaskName();
 		string getTaskDetails();//Not used for now
 		vector<string> getTaskTags();
-		bool getIsDone();
+		bool getTaskIsDone();
 
 		//Operations
 		bool isTaskOverlapWith(Task myTask);
@@ -56,7 +58,7 @@ class Task{
 
 		//Enumeration
 		enum TaskType{
-			FIXEDTIME = 1, DEADLINE = 2, FLOATING = 3
+			FIXEDTIME = 1, DEADLINE, FLOATING 
 		};
 };
 

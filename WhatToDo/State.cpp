@@ -34,7 +34,7 @@ vector<Task> State::getTimedTasks(){
 	vector<Task> timedTasks;
 
 	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
-		if((_entireListOfTasks[i]).getTaskType() == FIXEDTIME)
+		if((_entireListOfTasks[i]).getTaskType() == Task::FIXEDTIME)
 			timedTasks.push_back(_entireListOfTasks[i]);
 	}
 	return timedTasks;
@@ -43,7 +43,7 @@ vector<Task> State::getDeadlineTasks(){
 	vector<Task> deadlineTasks;
 
 	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
-		if((_entireListOfTasks[i]).getTaskType() == DEADLINE)
+		if((_entireListOfTasks[i]).getTaskType() == Task::DEADLINE)
 			deadlineTasks.push_back(_entireListOfTasks[i]);
 	}
 	return deadlineTasks;
@@ -53,7 +53,7 @@ vector<Task> State::getFloatingTasks(){
 	vector<Task> floatingTasks;
 
 	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
-		if((_entireListOfTasks[i]).getTaskType() == FLOATING)
+		if((_entireListOfTasks[i]).getTaskType() == Task::FLOATING)
 			floatingTasks.push_back(_entireListOfTasks[i]);
 	}
 	return floatingTasks;
