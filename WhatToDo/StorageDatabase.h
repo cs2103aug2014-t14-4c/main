@@ -1,15 +1,17 @@
-#pragma once
 #include <vector>
 #include <string>
-using namespace std;
 
-class StorageDatabase {
+#pragma once
+using namespace std; 
+
+class StorageDatabase{
+	private:
+		string fileName;
+	
 	public:
 		StorageDatabase(void);
 		void writeToDatabase(vector<string> stringToWrite);
-		vector<string>readFromDatabase();
-
-	private:
-
+		vector<vector<string>> readFromDatabase();
+		vector<string> readFromDataBaseIndividualTaskString(); 
 };
 
