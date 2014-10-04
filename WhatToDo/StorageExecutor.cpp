@@ -43,6 +43,7 @@ void StorageExecutor::saveToStorage(State stateToSave){
 	vector<Task> taskToStore = stateToSave.getAllTask(); 
 	//for each task, convert to string using string converter
 	vector<Task>::iterator myTaskIterator = taskToStore.begin();
+
 	while(myTaskIterator!=taskToStore.end()){
 		individualConvertedTask = myStorageConverter.convertTaskToString(*myTaskIterator);
 		//store the converted string into a vector of strings

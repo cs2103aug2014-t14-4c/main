@@ -49,22 +49,22 @@ vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 	//4. get task deadline 
 	myStringParameters.push_back(_getTaskDeadline + taskDeadline + "\n");
 
-	//5. get task duration
-	myStringParameters.push_back(_getTaskDuration + taskDuration + "\n");
-
-	//6. get taskName
+	//5. get taskName
 	myStringParameters.push_back(_getTaskName + taskName + "\n");
 
-	//7. get task details
-	myStringParameters.push_back(_getTaskDetails + taskDetails + "\n");
+	//6. get taskDuration
+	//myStringParameters.push_back(_getTaskDuration + taskDuration + "\n");
+
+	//6. get task details
+	//myStringParameters.push_back(_getTaskDetails + taskDetails + "\n");
 	
-	//8. get task tags
+	//6. get task tags
 	myStringParameters.push_back(_getTaskTags + taskTags +"\n");
 	
-	//9. get task index
-	myStringParameters.push_back(_getTaskIndex + taskIndex + "\n"); 
+	//7. get task index
+	//myStringParameters.push_back(_getTaskIndex + taskIndex + "\n"); 
 	
-	//10. getIsdone
+	//7. getIsdone
 	myStringParameters.push_back(_getTaskIsDone + taskIsDone + "\n"); 
 
 	//finally write the whole vector of string into file
@@ -101,32 +101,35 @@ Task StorageConverter::convertStringToTask(vector<string> stringToConvert){
 	myConvertedTask.setTaskDuration(taskDuration);
 	myIndividualAttributeIterator += 1; */
 
-	//6. convert task name
+	//5. convert task name
 	string taskName = (*myIndividualAttributeIterator).substr(_getTaskName.size());
 	myConvertedTask.setTaskName(taskName);
 	myIndividualAttributeIterator += 1; 
 
-	//7. convert task details 
-	string taskDetails = (*myIndividualAttributeIterator).substr(_getTaskDetails.size());
-	myConvertedTask.setTaskDetails(taskDetails);
-	myIndividualAttributeIterator += 1; 
+	////7. convert task details 
+	//string taskDetails = (*myIndividualAttributeIterator).substr(_getTaskDetails.size());
+	//myConvertedTask.setTaskDetails(taskDetails);
+	//myIndividualAttributeIterator += 1; 
 
-	//8. convert task tags 
+	//6. convert task tags 
 	string taskTags = (*myIndividualAttributeIterator).substr(_getTaskTags.size());
 	vector<string> taskTagVector = taskTagStringToVectorConverter(taskTags);
 	myConvertedTask.setTaskTags(taskTagVector);
 	myIndividualAttributeIterator +=1; 
 
-	//9. convert task index
-	string catenatedIndexString = (*myIndividualAttributeIterator).substr(_getTaskIndex.size()); 
+	//7. convert task index, NOTE task indexis the unique index only for searching function
+	/*string catenatedIndexString = (*myIndividualAttributeIterator).substr(_getTaskIndex.size()); 
 	int taskIndex = atoi(catenatedIndexString.c_str()); 
 	myConvertedTask.setTaskIndex(taskIndex); 
-	myIndividualAttributeIterator +=1;
+	myIndividualAttributeIterator +=1;*/
 	
-	//10. convert isDone
-	//string taskIsDoneString = (*myIndividualAttributeIterator).substr(_getTaskIsDone.size());
-	//bool taskIsDone = taskStringToBooleanConverter(taskIsDoneString);
-	//myConvertedTask.setTaskIsDone(taskIsDone);
+	//7. convert isDone
+	string taskIsDoneString = (*myIndividualAttributeIterator).substr(_getTaskIsDone.size());
+	bool taskIsDone = taskStringToBooleanConverter(taskIsDoneString);
+	
+	if(taskIsDone) {
+		myConvertedTask.setTaskIsDone();
+	}
 
 	//return the converted individual task
 	return myConvertedTask;
