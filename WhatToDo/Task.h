@@ -1,10 +1,6 @@
 #ifndef TASK_H
 #define TASK_H
 
-// TODO 1) Add Boost
-// 2) State
-// 3) Figure out how to check overlap.
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -18,7 +14,6 @@ class Task{
 		ptime _taskStartDateTime;
 		ptime _taskEndDateTime;
 		ptime _taskDeadline;
-		time_duration _taskDuration;
 		string _taskName;
 		string _taskDetails; //Not used for now
 		vector<string> _taskTags;
@@ -53,6 +48,11 @@ class Task{
 		//Operations
 		bool isTaskOverlapWith(Task myTask);
 		bool isEarlierThan(Task myTask);
+
+		//Enumeration
+		enum TaskType{
+			FIXEDTIME = 1, DEADLINE = 2, FLOATING = 3
+		};
 };
 
 #endif

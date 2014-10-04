@@ -1,7 +1,11 @@
 #include "Task.h"
 
 //Constructor
-Task::Task(){}
+Task::Task(){
+	_taskStartDateTime = is_not_a_date_time;
+	_taskEndDateTime = is_not_a_date_time;
+	_taskDeadline = is_not_a_date_time;
+}
 
 //Setters
 void Task::setTaskStartTime(ptime dateTimeToSet){
@@ -38,7 +42,13 @@ void Task::setTaskIndex(int indexToSet){
 
 //Getters
 int Task::getTaskType(){
-	return _taskType;
+	if(!_taskStartDateTime.is_not_a_date_time()){
+		return FIXEDTIME;
+	} else if(!_taskDeadline.is_not_a_date_time()){
+		return DEADLINE;
+	} else {
+		return FLOATING;
+	}
 }
 
 int Task::getTaskIndex(){
@@ -57,8 +67,11 @@ ptime Task::getTaskDeadline(){
 	return _taskDeadline;
 }
 
+//Assumes that taskEndDateTime and taskStartDateTime are initialized
 time_duration Task::getTaskDuration(){
-	return _taskDuration;
+	time_duration taskDurationToReturn;
+	taskDurationToReturn = _taskEndDateTime - _taskStartDateTime;
+	return taskDurationToReturn;
 }
 
 string Task::getTaskName(){
