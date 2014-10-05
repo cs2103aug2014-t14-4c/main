@@ -34,7 +34,6 @@ State StorageExecutor::loadFromStorage(){
 
 void StorageExecutor::saveToStorage(State stateToSave){
 
-	vector<string> convertedTaskToWrite; 
 	StorageDatabase myStorageDatabase;
 	StorageConverter myStorageConverter; 
 	vector<vector<string>> convertedTaskStringStorage; 
@@ -51,7 +50,7 @@ void StorageExecutor::saveToStorage(State stateToSave){
 		myTaskIterator++;
 	}
 	//send to StorageDatabase for writing of file
-	myStorageDatabase.writeToDatabase(convertedTaskToWrite);
+	myStorageDatabase.writeToDatabase(convertedTaskStringStorage);
 	
 	return;
 }

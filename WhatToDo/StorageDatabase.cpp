@@ -1,17 +1,23 @@
 #include "StorageDatabase.h"
 #include <fstream>
 using namespace std;
+const int StorageDatabase::noOfTaskAttributes=7;
 
 StorageDatabase::StorageDatabase(void){
 }
 
-void StorageDatabase::writeToDatabase(vector<string> stringToWrite){
-	vector<string>::iterator myStringIterator = stringToWrite.begin(); 
+void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToWrite){
+	
+	vector<vector<string>>::iterator taskVectorIterator = taskStringVectorToWrite.begin(); 
+	
 	ofstream writeFile;
-	writeFile.open(fileName, ios_base::app);
-	while(myStringIterator != stringToWrite.end()){
-		writeFile << *myStringIterator << endl; 
-		myStringIterator++;
+	writeFile.open(fileName);
+
+	while(taskVectorIterator != taskStringVectorToWrite.end()){
+		for(int i = 0; i< noOfTaskAttributes; i++){
+			writeFile << (*taskVectorIterator)[i] << endl;
+		}
+		taskVectorIterator++;
 	}
 
 	writeFile.close();
@@ -26,17 +32,17 @@ vector<vector<string>> StorageDatabase::readFromDatabase(){
 	//3. push the vector<string> into the vector of vectors
 	vector<vector<string>> stringToRead; 
 	vector<string> individualReadFile;
-	int noOfTaskAttribute = 8;
 	ifstream readFile(fileName);
 	string myText; 
 
-	while(getline(readFile,myText)){
-		for(int i = 0; i<noOfTaskAttribute; i++){
+	while(readFile.peek()!=EOF){
+		for(int i = 0; i<noOfTaskAttributes; i++){
 			getline(readFile,myText);
 			individualReadFile.push_back(myText);
 		//GO TO THE NEXT LINE 
 		}
 		stringToRead.push_back(individualReadFile);
+		//clear to be ready for the next vector<string>
 		individualReadFile.clear();
 	}
 	readFile.close();
@@ -44,18 +50,3 @@ vector<vector<string>> StorageDatabase::readFromDatabase(){
 
 	return stringToRead; 
 }
-
-//vector<string> StorageDatabase::readFromDataBaseIndividualTaskString(){
-//	vector<string> myIndivdualTaskVectorString; 
-//	int noOfAttribute = 8;
-//	string myText; 
-//
-//	ifstream readFile(fileName); 
-//	for(int i = 0; i<noOfAttribute; i++){
-//		getline(readFile,myText);
-//		myIndivdualTaskVectorString.push_back(myText);
-//		//GO TO THE NEXT LINE 
-//	}
-//	return myIndivdualTaskVectorString; 
-//}
-
