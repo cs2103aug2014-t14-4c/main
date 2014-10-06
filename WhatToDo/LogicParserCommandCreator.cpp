@@ -143,7 +143,7 @@ bool LogicParserCommandCreator::isValidCommandWithIndexParameters(void) {
 	if(stringMod.isOneWord(_userInput)) {
 		return false;
 	} else {
-		std::string parameters = stringMod.getParameters(_userInput);
+		std::string parameters = LogicParserCommandCreator::getParameters();
 		return std::all_of(parameters.begin(), parameters.end(), isdigit);
 	}
 }
