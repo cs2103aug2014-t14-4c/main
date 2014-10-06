@@ -1,8 +1,11 @@
 #include "Command.h"
 
 
-Command::Command(void)
-{
+Command::Command(void) {
+	_searchKeyword = "";
+	string _userMessage = "";
+	bool _isCommandValid = true;
+	bool _parsedStatus = true;
 }
 
 void Command::execute() {
@@ -10,11 +13,12 @@ void Command::execute() {
 }
 
 void Command::setParsedStatus(bool parsedStatus) {
+	_parsedStatus = parsedStatus;
 	return;
 }
 
 bool Command::getParsedStatus() {
-	return true;
+	return _parsedStatus;
 }
 
 string Command::getSearchKeyword() {

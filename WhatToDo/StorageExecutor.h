@@ -1,20 +1,14 @@
-#include "State.h"
-#include "StorageConverter.h"
-#include "StorageDatabase.h"
-#include <string>
-#include <vector>
-
 #pragma once
+#include "State.h"
 using namespace std;
 
-class StorageExecutor{
-	private: 
-		vector<string> myStorage;
+class StorageExecutor {
 	public:
 		StorageExecutor(void);
 		State loadFromStorage();
 		void saveToStorage(State stateToSave);
 
-		//HELLLLO haha hahaha storageExecutor
+	private:
+	
 };
 

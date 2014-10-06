@@ -20,6 +20,7 @@ class State{
 		//Operations
 		void addTask(Task taskToAdd);
 		void deleteTask(int taskIndexToDelete);
+		void doneTask(int taskIndexToDo);
 		void clearAllTasks();
 		vector<Task> getAllTasks();
 		vector<Task> getTimedTasks();

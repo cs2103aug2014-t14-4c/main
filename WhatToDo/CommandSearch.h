@@ -15,8 +15,8 @@ class CommandSearch: public Command {
 		void getListOfTaskIndexesNotMatchingSearch();
 		void deleteListOfTaskIndexesNotMatchingSearch();
 		bool checkIsFitsSearchCriteria(Task taskToCheck);
-		bool checkIsFitsTagSearchCriteria();
-		bool checkIsFitsNameSearchCriteria();
+		bool checkIsFitsTagSearchCriteria(Task taskToCheck);
+		bool checkIsFitsNameSearchCriteria(Task taskToCheck);
 		vector<string> _tagsToSearchFor;
 		string _stringToSearchFor;
 		vector<int> _listOfTaskIndexesToDelete;
