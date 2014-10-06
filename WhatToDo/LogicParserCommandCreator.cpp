@@ -50,7 +50,7 @@ Command* LogicParserCommandCreator::createAddCommand(void) {
 	addCommand->setParsedStatus(LogicParserCommandCreator::isValidCommandWithStringParameters());
 
 	if(addCommand->getParsedStatus()) {
-		LogicParserCommandDetailsParser detailsParser(LogicParserCommandCreator::getParameters());
+		LogicParserCommandDetailsParser detailsParser(_userInput);
 		detailsParser.addNewTask(addCommand);
 	}
 

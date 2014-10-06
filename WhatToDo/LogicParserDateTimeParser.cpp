@@ -5,7 +5,7 @@ LogicParserDateTimeParser::LogicParserDateTimeParser(void) {
 
 void LogicParserDateTimeParser::addTaskDateTime(Task* task, std::string& parameters) {
 	std::istringstream iss(parameters);
-	parameters.clear();
+	parameters = "";
 	std::string currentWord;
 	boost::posix_time::ptime startDateTime;
 	boost::posix_time::ptime endDateTime;
@@ -14,20 +14,26 @@ void LogicParserDateTimeParser::addTaskDateTime(Task* task, std::string& paramet
 
 	while(iss >> currentWord) {
 		switch (LogicParserDateTimeParser::determineDateTimeType(currentWord)) {
-			iss.imbue(std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m%Y %H:%M")));
 		case LogicParserDateTimeParser::DateTimeType::START:
+			iss.imbue(std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m%Y %H:%M")));
 			iss >> startDateTime;
 			break;
 		case LogicParserDateTimeParser::DateTimeType::END:
+			iss.imbue(std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m%Y %H:%M")));
 			iss >> endDateTime;
 			break;
 		case LogicParserDateTimeParser::DateTimeType::DEADLINE:
+			iss.imbue(std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m%Y %H:%M")));
 			iss >> deadlineDateTime;
 			break;
 		case LogicParserDateTimeParser::DateTimeType::INVALID:
 			parameters += currentWord + " ";
 		}
 	}
+
+	task->setTaskStartTime(startDateTime);
+	task->setTaskEndTime(endDateTime);
+	task->setTaskDeadline(deadlineDateTime);
 }
 
 LogicParserDateTimeParser::DateTimeType LogicParserDateTimeParser::determineDateTimeType(std::string word) {

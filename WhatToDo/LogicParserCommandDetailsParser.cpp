@@ -26,6 +26,8 @@ void LogicParserCommandDetailsParser::addNewTask(Command* command) {
 	LogicParserCommandDetailsParser::addTaskTags(task);
 	dateTimeParser.addTaskDateTime(task, _parameters);
 	LogicParserCommandDetailsParser::addTaskName(task);
+
+	command->setCurrentTask(*task);
 }
 
 void LogicParserCommandDetailsParser::editExistingTask(Command* command) {
@@ -43,7 +45,7 @@ void LogicParserCommandDetailsParser::addTaskTags(Task* task) {
 	std::vector<std::string> taskTags;
 	std::istringstream iss(_parameters);
 	std::string currentWord;
-	_parameters.clear();
+	_parameters = "";
 
 	while(iss >> currentWord) {
 		if(LogicParserCommandDetailsParser::isTag(currentWord)) {
