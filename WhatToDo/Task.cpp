@@ -5,6 +5,8 @@ Task::Task(){
 	_taskStartDateTime = not_a_date_time;
 	_taskEndDateTime = not_a_date_time;
 	_taskDeadline = not_a_date_time;
+
+
 	_isDone = false;
 }
 
@@ -98,7 +100,9 @@ bool Task::isTaskOverlapWith(Task myTask){
 		isOverlap = true;
 	}else if(_taskStartDateTime< myTask.getTaskEndTime() && _taskEndDateTime > myTask.getTaskEndTime()){
 		isOverlap = true;
-	}
+	}else if(_taskStartDateTime == myTask.getTaskStartTime() || _taskStartDateTime == myTask.getTaskEndTime()){
+		isOverlap = true;
+        }
 	return isOverlap;
 }
 
