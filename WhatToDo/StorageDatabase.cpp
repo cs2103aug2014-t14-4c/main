@@ -6,13 +6,15 @@ const int StorageDatabase::noOfTaskAttributes=7;
 StorageDatabase::StorageDatabase(void){
 }
 
+
+//pass in a vector<vector<string>> where each vector<string> is a task in vector<string> form
 void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToWrite){
 	
 	vector<vector<string>>::iterator taskVectorIterator = taskStringVectorToWrite.begin(); 
 	
 	ofstream writeFile;
 	writeFile.open(fileName);
-
+	//write individual task attributes
 	while(taskVectorIterator != taskStringVectorToWrite.end()){
 		for(int i = 0; i< noOfTaskAttributes; i++){
 			writeFile << (*taskVectorIterator)[i] << endl;
@@ -34,13 +36,13 @@ vector<vector<string>> StorageDatabase::readFromDatabase(){
 	vector<string> individualReadFile;
 	ifstream readFile(fileName);
 	string myText; 
-
+	//if peek != end of file, it will getline to read in the indvidual strings
 	while(readFile.peek()!=EOF){
 		for(int i = 0; i<noOfTaskAttributes; i++){
 			getline(readFile,myText);
 			individualReadFile.push_back(myText);
-		//GO TO THE NEXT LINE 
 		}
+
 		stringToRead.push_back(individualReadFile);
 		//clear to be ready for the next vector<string>
 		individualReadFile.clear();

@@ -16,7 +16,7 @@ State StorageExecutor::loadFromStorage(){
 	Task myIndividualTask; 
 	StorageConverter myStorageConverter; 
 
-	//get vector of strings from StorageDatabase--> do you need fileName?
+	//get vector of strings from StorageDatabase
 	storageToConvert = myStorageDatabase.readFromDatabase();
 	vector<vector<string>>::iterator myStorageIterator = storageToConvert.begin();
 	//convert each string into task using storageConverter
@@ -38,7 +38,7 @@ void StorageExecutor::saveToStorage(State stateToSave){
 	StorageConverter myStorageConverter; 
 	vector<vector<string>> convertedTaskStringStorage; 
 	vector<string> individualConvertedTask;
-
+	//first get all task for a given State and returns a vector of Tasks
 	vector<Task> taskToStore = stateToSave.getAllTask(); 
 	//for each task, convert to string using string converter
 	vector<Task>::iterator myTaskIterator = taskToStore.begin();

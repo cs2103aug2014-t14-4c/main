@@ -6,16 +6,16 @@
 #include <boost/regex.hpp>
 
 using namespace std; 
-
+	//some are commented out as they are not implemented at this moment
 	string _getTaskType = "_taskType: ";
-	string _getTaskStartDateime = "_taskStartDatetime: ";
+	string _getTaskStartDatetime = "_taskStartDatetime: ";
 	string _getTaskEndDatetime = "_taskEndDatetime: ";
 	string _getTaskDeadline = "_taskDeadline: ";
-	string _getTaskDuration = "_taskDuration: ";
+	//string _getTaskDuration = "_taskDuration: ";
 	string _getTaskName = "_taskName: ";
-	string _getTaskDetails = "_taskDetails: ";
+	//string _getTaskDetails = "_taskDetails: ";
 	string _getTaskTags = "_taskTags: ";
-	string _getTaskIndex = "_taskIndex: ";
+	//string _getTaskIndex = "_taskIndex: ";
 	string _getTaskIsDone = "_isDone: ";
 
 StorageConverter::StorageConverter(void){
@@ -23,16 +23,19 @@ StorageConverter::StorageConverter(void){
 
 vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 	string myConvertedString;
-	vector<string> myStringParameters;
+	vector<string> myStringParameters; //to store all the converted strings
+
+	//will convert individual task attributes to strings
+	//note: order of conversion important for the developer, not for the user
 
 	string taskType = to_string(taskToConvert.getTaskType()); 
 	string taskStartDatetime =  ptimeToStringConverter(taskToConvert.getTaskStartTime());
 	string taskEndDatetime = ptimeToStringConverter(taskToConvert.getTaskEndTime());
 	string taskDeadline = ptimeToStringConverter(taskToConvert.getTaskDeadline());
-	string taskDuration = ptimeDurationToStringConverter(taskToConvert.getTaskDuration());
+	//string taskDuration = ptimeDurationToStringConverter(taskToConvert.getTaskDuration());
 	string taskName = taskToConvert.getTaskName(); 
-	string taskDetails = taskToConvert.getTaskDetails(); 
-	string taskIndex = to_string(taskToConvert.getTaskIndex());
+	//string taskDetails = taskToConvert.getTaskDetails(); 
+	//string taskIndex = to_string(taskToConvert.getTaskIndex());
 	string taskTags = taskTagVectorToStringConverter(taskToConvert.getTaskTags());
 	string taskIsDone = boolConverter(taskToConvert.getTaskIsDone());
 	//for each task, convert each attribute of a task into a string
@@ -75,6 +78,10 @@ Task StorageConverter::convertStringToTask(vector<string> stringToConvert){
 	Task myConvertedTask;
 	vector<string>::iterator myIndividualAttributeIterator = stringToConvert.begin(); 
 	
+	//get the substring which is input for conversion
+	//convert individual substrings into task attributes
+	//use task setter methods to "Create" the task
+
 	//1. convert task type
 	string catenatedTaskType = (*myIndividualAttributeIterator).substr(_getTaskType.size()); //this gives some weird error??
 	int taskType  = atoi(catenatedTaskType.c_str());
@@ -82,7 +89,7 @@ Task StorageConverter::convertStringToTask(vector<string> stringToConvert){
 	myIndividualAttributeIterator += 1; 
 
 	//2. convert startime
-	ptime startTime(from_iso_string((*myIndividualAttributeIterator).substr(_getTaskStartDateime.size())));
+	ptime startTime(from_iso_string((*myIndividualAttributeIterator).substr(_getTaskStartDatetime.size())));
 	myConvertedTask.setTaskStartTime(startTime); 
 	myIndividualAttributeIterator += 1; 
 
@@ -106,7 +113,7 @@ Task StorageConverter::convertStringToTask(vector<string> stringToConvert){
 	myConvertedTask.setTaskName(taskName);
 	myIndividualAttributeIterator += 1; 
 
-	////7. convert task details 
+	//7. convert task details 
 	//string taskDetails = (*myIndividualAttributeIterator).substr(_getTaskDetails.size());
 	//myConvertedTask.setTaskDetails(taskDetails);
 	//myIndividualAttributeIterator += 1; 
@@ -123,7 +130,7 @@ Task StorageConverter::convertStringToTask(vector<string> stringToConvert){
 	myConvertedTask.setTaskIndex(taskIndex); 
 	myIndividualAttributeIterator +=1;*/
 	
-	//7. convert isDone
+	//7. convert isDone, isDone initialized false, thus only call if it's true
 	string taskIsDoneString = (*myIndividualAttributeIterator).substr(_getTaskIsDone.size());
 	bool taskIsDone = taskStringToBooleanConverter(taskIsDoneString);
 	
@@ -135,24 +142,28 @@ Task StorageConverter::convertStringToTask(vector<string> stringToConvert){
 	return myConvertedTask;
 }
 
+//convert boolean to string 
 string StorageConverter::boolConverter(bool boolToConvert){
 	stringstream converter; 
 	converter << boolToConvert;
 	return converter.str();
 }
 
+//convert ptime to string
 string StorageConverter::ptimeToStringConverter(ptime myDatetime){
 	string convertedPtimeString; 
 	convertedPtimeString = to_iso_string(myDatetime); 
 	return convertedPtimeString;
 }
 
+//convert duration to string, note: not in use at the moment
 string StorageConverter::ptimeDurationToStringConverter(time_duration myDuration){
 	
 	string convertedPtimeDuration = to_iso_string(myDuration);
 	return convertedPtimeDuration;
 }
 
+//convert vector<string> of task tags to string
 string StorageConverter::taskTagVectorToStringConverter(vector<string> taskTags){
 	string tagString = "";
 	//read through all the vector of strings for task tags 
@@ -167,6 +178,7 @@ string StorageConverter::taskTagVectorToStringConverter(vector<string> taskTags)
 	return tagString;
 }
 
+//convert taskTagstring to vector<string>
 vector<string> StorageConverter::taskTagStringToVectorConverter(string tagString){
 	//pass in the string to a iss object
 	//read individual substr delimited by whitespace
@@ -182,6 +194,7 @@ vector<string> StorageConverter::taskTagStringToVectorConverter(string tagString
 	return tagVector;
 }
 
+//convert string to bool 
 bool StorageConverter::taskStringToBooleanConverter(string boolString){
 	//converting string to boolean
 	bool isDone; 
