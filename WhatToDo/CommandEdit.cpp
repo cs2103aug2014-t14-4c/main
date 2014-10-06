@@ -6,19 +6,18 @@ CommandEdit::CommandEdit(void)
 }
 
 void CommandEdit::execute() {
-	LogicData myLogicData;
-	_currentState = myLogicData.getCurrentState();
+	_currentState = LogicData::getCurrentState();
 	_isCommandValid = checkIsCommandValid();
 	if (_isCommandValid) {
 		deleteExistingTask();
 		performAddOperation();
-		myLogicData.addCommandToHistory(*this);
+		LogicData::addCommandToHistory(this);
 	}
 	else {
 		addUserMessageToCurrentState();
 	}
-	myLogicData.setCurrentState(_currentState);
-	myLogicData.setViewState(_currentState);
+	LogicData::setCurrentState(_currentState);
+	LogicData::setViewState(_currentState);
 	return;
 }
 

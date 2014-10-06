@@ -6,61 +6,69 @@ CommandAdd::CommandAdd(void)
 }
 
 void CommandAdd::execute() {
-	LogicData myLogicData;
-	_currentState = myLogicData.getCurrentState();
+	_currentState = LogicData::getCurrentState();
 	_isCommandValid = checkIsCommandValid();
 	if (_isCommandValid) {
 		performAddOperation();
-		myLogicData.addCommandToHistory(*this);
+		LogicData::addCommandToHistory(this);
 	}
 	else {
 		addUserMessageToCurrentState();
 	}
-	myLogicData.setCurrentState(_currentState);
-	myLogicData.setViewState(_currentState);
+	LogicData::setCurrentState(_currentState);
+	LogicData::setViewState(_currentState);
 	return;
 }
 
 bool CommandAdd::checkIsCommandValid() {
-	bool isEnteredDatetimesValid = checkIfEnteredDatetimesValid();
-	bool isOrderOfDatetimesValid = checkIfOrderOfDatetimesValid();
+	bool isEnteredDateTimesValid = checkIfEnteredDateTimesValid();
+	bool isOrderOfDateTimesValid = checkIfOrderOfDateTimesValid();
 	bool isInputTimeAlreadyOccupied = checkIsInputTimeNotOccupied();
-	bool isCommandValid = isEnteredDatetimesValid && isOrderOfDatetimesValid && isInputTimeAlreadyOccupied;
+	bool isCommandValid = isEnteredDateTimesValid && isOrderOfDateTimesValid && isInputTimeAlreadyOccupied;
 	return isCommandValid;
 }
 
-bool CommandAdd::checkIfEnteredDatetimesValid() {
-	bool isStartDatetimeValid = checkIsDatetimeValid(_currentTask.getTaskStartDatetime());
-	bool isEndDatetimeValid = checkIsDatetimeValid(_currentTask.getTaskEndDatetime());
-	bool isDeadlineDatetimeValid = checkIsDatetimeValid(_currentTask.getTaskDeadline());
-	bool isEnteredDatetimesValid = isStartDatetimeValid && isEndDatetimeValid && isDeadlineDatetimeValid;
-	return isEnteredDatetimesValid;
+bool CommandAdd::checkIfEnteredDateTimesValid() {
+	int currentTaskType = _currentTask.getTaskType();
+	bool isStartDateTimeValid = true;
+	bool isEndDateTimeValid = true;
+	bool isDeadlineDateTimeValid = true;
+
+	if (currentTaskType == 1) {
+		bool isStartDateTimeValid = checkIsDateTimeValid(_currentTask.getTaskStartTime());
+		bool isEndDateTimeValid = checkIsDateTimeValid(_currentTask.getTaskEndTime());
+	}
+	else if (currentTaskType == 2) {
+		bool isDeadlineDateTimeValid = checkIsDateTimeValid(_currentTask.getTaskDeadline());
+	}
+
+	bool isEnteredDateTimesValid = isStartDateTimeValid && isEndDateTimeValid && isDeadlineDateTimeValid;
+	return isEnteredDateTimesValid;
 }
 
-bool CommandAdd::checkIsDatetimeValid(ptime datetimeToCheck) {
-	bool isDatetimeValid = (ptime(date(0,0,0),hours(0)) != datetimeToCheck);
-	if (!isDatetimeValid) {
+bool CommandAdd::checkIsDateTimeValid(ptime dateTimeToCheck) {
+	bool isDateTimeValid =(dateTimeToCheck != not_a_date_time);
+	if (!isDateTimeValid) {
 		_userMessage = "Date entered was not valid!";
-	}
-	return isDatetimeValid;
+	}	
+	return isDateTimeValid;
 }
 	
-bool CommandAdd::checkIfOrderOfDatetimesValid() {
+bool CommandAdd::checkIfOrderOfDateTimesValid() {
 	int currentTaskType = _currentTask.getTaskType();
-	bool isOrderOfDatetimesValid = true;
+	bool isOrderOfDateTimesValid = true;
 
 	if (currentTaskType == 1) {
 		bool isStartAfterCurrentTime = checkIsStartAfterCurrentTime();
 		bool isEndAfterStart = checkIsEndAfterStart();
-		bool isDeadlineAfterEnd = checkIsDeadlineAfterEnd();
-		isOrderOfDatetimesValid = isStartAfterCurrentTime && isEndAfterStart && isDeadlineAfterEnd;
+		isOrderOfDateTimesValid = isStartAfterCurrentTime && isEndAfterStart;
 	}
 	else if (currentTaskType == 2) {
 		bool isDeadlineAfterCurrentTime = checkIsDeadlineAfterCurrentTime();
-		isOrderOfDatetimesValid = isDeadlineAfterCurrentTime;
+		isOrderOfDateTimesValid = isDeadlineAfterCurrentTime;
 	}
 	
-	return isOrderOfDatetimesValid;
+	return isOrderOfDateTimesValid;
 }
 
 bool CommandAdd::checkIsDeadlineAfterCurrentTime() {
@@ -73,7 +81,7 @@ bool CommandAdd::checkIsDeadlineAfterCurrentTime() {
 
 
 bool CommandAdd::checkIsStartAfterCurrentTime() {
-	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask.getTaskStartDatetime();
+	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask.getTaskStartTime();
 	if (!isStartAfterCurrentTime) {
 		_userMessage = "The start time has already passed!";
 	}
@@ -81,19 +89,11 @@ bool CommandAdd::checkIsStartAfterCurrentTime() {
 }
 
 bool CommandAdd::checkIsEndAfterStart() {
-	bool isEndAfterStart = _currentTask.getTaskStartDatetime() <= _currentTask.getTaskEndDatetime();
+	bool isEndAfterStart = _currentTask.getTaskStartTime() <= _currentTask.getTaskEndTime();
 	if (!isEndAfterStart) {
 		_userMessage = "The end time cannot be before the start time!";
 	}
 	return isEndAfterStart;
-}
-
-bool CommandAdd::checkIsDeadlineAfterEnd() {
-	bool isDeadlineAfterEnd = _currentTask.getTaskEndDatetime() <= _currentTask.getTaskDeadline();
-	if (!isDeadlineAfterEnd) {
-		_userMessage = "The deadline cannot be before the end time!";
-	}
-	return isDeadlineAfterEnd;
 }
 
 bool CommandAdd::checkIsInputTimeNotOccupied() {
@@ -109,6 +109,7 @@ bool CommandAdd::checkIsInputTimeNotOccupied() {
 	for (i=0; unsigned(i)<listOfTimedTasks.size(); i++) {
 		if (_currentTask.isTaskOverlapWith(listOfTimedTasks[i])) {
 			isInputTimeNotOccupied = false;
+			_userMessage = "There is already a scheduled task at that slot!";
 			break;
 		}
 	}

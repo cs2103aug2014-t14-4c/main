@@ -6,12 +6,11 @@ CommandDone::CommandDone(void)
 }
 
 void CommandDone::execute() {
-	LogicData myLogicData;
-	_currentState = myLogicData.getCurrentState();
+	_currentState = LogicData::getCurrentState();
 	performDoneOperation();
-	myLogicData.addCommandToHistory(*this);
-	myLogicData.setCurrentState(_currentState);
-	myLogicData.setViewState(_currentState);
+	LogicData::addCommandToHistory(this);
+	LogicData::setCurrentState(_currentState);
+	LogicData::setViewState(_currentState);
 	return;
 }
 

@@ -5,36 +5,40 @@
 #include <vector>
 #include "State.h"
 #include "StorageExecutor.h"
-#include "Command.h"
+
+class Command;
 
 //currentcommandhistoryindex --> Need to check where it should be initialised and how.
 
 class LogicData{
 
 	private:
-		State _currentState;
-		State _viewState;
-		State _initialState;
-		vector<Command> _commandHistory;
-		int _currentCommandHistoryIndex;
+		static State _currentState;
+		static State _viewState;
+		static State _initialState;
+		static vector<Command*> _commandHistory;
+		static int _currentCommandHistoryIndex;
+
 	public:
 		//Constructor
 		LogicData();
 
 		//setters
-		void setCurrentState(State stateToSet);
-		void setViewState(State stateToSet);
+		static void setCurrentState(State stateToSet);
+		static void setViewState(State stateToSet);
 
 		//getters
-		State getCurrentState();
-		State getViewState();
+		static State getCurrentState();
+		static State getViewState();
 
 		//operations
-		vector<Command> getCommandHistory();
-		void addCommandToHistory(Command commandToAdd);
-		int getCurrentCommandHistoryIndex();
-		void resetToInitialSettings();
-		void loadInitialSettings();
+		static vector<Command*> getCommandHistory();
+		static void addCommandToHistory(Command* commandToAdd);
+		static int getCurrentCommandHistoryIndex();
+		static void resetToInitialSettings();
+		static void loadInitialSettings();
+		static void setCommandHistoryIndex(int indexToSet);
+		static void fakeinitiate(State fakestate);
 };
 
 #endif

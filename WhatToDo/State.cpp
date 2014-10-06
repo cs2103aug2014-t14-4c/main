@@ -24,6 +24,14 @@ void State::deleteTask(int taskIndexToDelete){
 	}
 }
 
+void State::doneTask(int taskIndexToDo) {
+	for(unsigned int i=0; i< _entireListOfTasks.size();i++){
+		if(_entireListOfTasks[i].getTaskIndex() == taskIndexToDo){
+			_entireListOfTasks[i].setTaskIsDone();
+		}
+	}
+}
+
 void State::clearAllTasks(){
 	_entireListOfTasks.clear();
 }

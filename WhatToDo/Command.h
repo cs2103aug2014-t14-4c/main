@@ -1,9 +1,12 @@
-#pragma once
+#ifndef COMMAND_H
+#define COMMAND_H
+
 #include <string>
 #include <vector>
 #include "Task.h"
 #include "State.h"
 using namespace std;
+
 
 class Command {
 	public:
@@ -25,5 +28,7 @@ class Command {
 		string _userMessage;
 		State _currentState;
 		bool _isCommandValid;
+		bool _parsedStatus;
 };
 
+#endif

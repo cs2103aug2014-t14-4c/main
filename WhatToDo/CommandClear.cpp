@@ -6,8 +6,7 @@ CommandClear::CommandClear(void)
 }
 
 void CommandClear::execute() {
-	LogicData myLogicData;
-	_currentState = myLogicData.getCurrentState();
-	myLogicData.setViewState(_currentState);
+	_currentState = LogicData::getCurrentState();
+	LogicData::setViewState(_currentState);
 	return;
 }

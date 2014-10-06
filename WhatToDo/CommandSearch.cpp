@@ -1,15 +1,15 @@
 #include "CommandSearch.h"
-
+#include <sstream>
+using namespace std;
 
 CommandSearch::CommandSearch(void)
 {
 }
 
 void CommandSearch::execute() {
-	LogicData myLogicData;
-	_currentState = myLogicData.getCurrentState();
+	_currentState = LogicData::getCurrentState();
 	performSearchOperation();
-	myLogicData.setViewState(_currentState);
+	LogicData::setViewState(_currentState);
 	return;
 }
 
@@ -18,6 +18,19 @@ void CommandSearch::performSearchOperation() {
 	getNameToSearchFor();
 	getListOfTaskIndexesNotMatchingSearch();
 	deleteListOfTaskIndexesNotMatchingSearch();
+
+	/*
+	int i;
+	string msg = "";
+	ostringstream a;
+	for (i=0; unsigned(i)<_tagsToSearchFor.size(); i++) {
+		a << _tagsToSearchFor[i] << " ";
+	}
+	msg = a.str();
+	_currentState.setUserMessage(msg + _stringToSearchFor);
+	*/
+
+
 	return;
 }
 
@@ -79,33 +92,41 @@ void CommandSearch::deleteListOfTaskIndexesNotMatchingSearch() {
 }
 
 bool CommandSearch::checkIsFitsSearchCriteria(Task taskToCheck) {
-	bool isFitsTagSearchCriteria = checkIsFitsTagSearchCriteria();
-	bool isFitsNameSearchCriteria = checkIsFitsNameSearchCriteria();
-	bool isFitsSearchCriteria = isFitsTagSearchCriteria || isFitsNameSearchCriteria;
+	bool isFitsTagSearchCriteria = checkIsFitsTagSearchCriteria(taskToCheck);
+	bool isFitsNameSearchCriteria = checkIsFitsNameSearchCriteria(taskToCheck);
+	bool isFitsSearchCriteria = isFitsTagSearchCriteria && isFitsNameSearchCriteria;
 	return isFitsSearchCriteria;
 }
 
-bool CommandSearch::checkIsFitsTagSearchCriteria() {
+bool CommandSearch::checkIsFitsTagSearchCriteria(Task taskToCheck) {
 	int i;
 	int j;
 	string taskTag;
-	bool isFitsTagSearchCriteria = false;
-	vector<string> listOfTagsForTask = _currentTask.getTaskTags();
+	bool isFitsTagSearchCriteria = true;
+	bool currentTagFound = false;
+	vector<string> listOfTagsForTask = taskToCheck.getTaskTags();
 
-	for (i=0; unsigned(i)<listOfTagsForTask.size(); i++) {
-		for (j=0; unsigned(j)<_tagsToSearchFor.size(); j++) {
+	for (j=0; unsigned(j)<_tagsToSearchFor.size(); j++) {
+		for (i=0; unsigned(i)<listOfTagsForTask.size(); i++) {
 			taskTag = listOfTagsForTask[i];
 			if (taskTag.find(_tagsToSearchFor[j]) != string::npos) {
-				isFitsTagSearchCriteria = true;
+				currentTagFound = true;
 			}
+		}
+		if (!currentTagFound) {
+			isFitsTagSearchCriteria = false;
+			break;
+		}
+		else {
+			currentTagFound = false;
 		}
 	}
 
 	return isFitsTagSearchCriteria;
 }
 
-bool CommandSearch::checkIsFitsNameSearchCriteria() {
-	string taskName = _currentTask.getTaskName();
+bool CommandSearch::checkIsFitsNameSearchCriteria(Task taskToCheck) {
+	string taskName = taskToCheck.getTaskName();
 	bool isFitsNameSearchCriteria = taskName.find(_stringToSearchFor) != string::npos;
 	return isFitsNameSearchCriteria;
 }

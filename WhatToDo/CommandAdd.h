@@ -15,13 +15,12 @@ class CommandAdd: public Command {
 		bool checkIsCommandValid();
 		void performAddOperation();
 		void addUserMessageToCurrentState();
-		bool checkIfEnteredDatetimesValid();
-		bool checkIfOrderOfDatetimesValid();
+		bool checkIfEnteredDateTimesValid();
+		bool checkIfOrderOfDateTimesValid();
 		bool checkIsInputTimeNotOccupied();
-		bool checkIsDatetimeValid(ptime datetimeToCheck);
+		bool checkIsDateTimeValid(ptime dateTimeToCheck);
 		bool checkIsDeadlineAfterCurrentTime();
 		bool checkIsStartAfterCurrentTime();
 		bool checkIsEndAfterStart();
-		bool checkIsDeadlineAfterEnd();
 };
 
