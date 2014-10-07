@@ -100,7 +100,7 @@ bool Task::isTaskOverlapWith(Task myTask){
 		isOverlap = true;
 	}else if(_taskStartDateTime< myTask.getTaskEndTime() && _taskEndDateTime > myTask.getTaskEndTime()){
 		isOverlap = true;
-	}else if(_taskStartDateTime == myTask.getTaskStartTime() || _taskStartDateTime == myTask.getTaskEndTime()){
+	}else if(_taskStartDateTime == myTask.getTaskStartTime() || _taskEndDateTime == myTask.getTaskEndTime()){
 		isOverlap = true;
         }
 	return isOverlap;
