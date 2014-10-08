@@ -27,7 +27,7 @@ State StorageExecutor::loadFromStorage(){
 	}
 
 	//pack tasks into state and return as state
-	stateToLoad.setAllTask(myConvertedTask);
+	stateToLoad.setAllTasks(myConvertedTask);
 
 	return stateToLoad;
 }
@@ -39,7 +39,7 @@ void StorageExecutor::saveToStorage(State stateToSave){
 	vector<vector<string>> convertedTaskStringStorage; 
 	vector<string> individualConvertedTask;
 	//first get all task for a given State and returns a vector of Tasks
-	vector<Task> taskToStore = stateToSave.getAllTask(); 
+	vector<Task> taskToStore = stateToSave.getAllTasks(); 
 	//for each task, convert to string using string converter
 	vector<Task>::iterator myTaskIterator = taskToStore.begin();
 

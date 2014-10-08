@@ -3,7 +3,8 @@
 using namespace std;
 const int StorageDatabase::noOfTaskAttributes=5;
 
-StorageDatabase::StorageDatabase(void){
+StorageDatabase::StorageDatabase(){
+	fileName = "integrate2.txt";
 }
 
 
@@ -19,6 +20,7 @@ void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToW
 		for(int i = 0; i< noOfTaskAttributes; i++){
 			writeFile << (*taskVectorIterator)[i] << endl;
 		}
+		writeFile << endl; 
 		taskVectorIterator++;
 	}
 
@@ -42,7 +44,8 @@ vector<vector<string>> StorageDatabase::readFromDatabase(){
 			getline(readFile,myText);
 			individualReadFile.push_back(myText);
 		}
-
+		//read newline character
+		getline(readFile,myText);
 		stringToRead.push_back(individualReadFile);
 		//clear to be ready for the next vector<string>
 		individualReadFile.clear();

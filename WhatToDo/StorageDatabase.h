@@ -10,7 +10,7 @@ class StorageDatabase{
 		static const int noOfTaskAttributes; 
 	
 	public:
-		StorageDatabase(void);
+		StorageDatabase();
 		void writeToDatabase(vector<vector<string>> taskStringVectorToWrite);
 		vector<vector<string>> readFromDatabase();
 		vector<string> readFromDataBaseIndividualTaskString(); 

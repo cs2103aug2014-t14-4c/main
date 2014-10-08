@@ -8,18 +8,20 @@ using namespace std;
 
 class StorageConverter{
 	private:
-		string _getTaskType;
-		string _getTaskStartDateime;
-		string _getTaskEndDatetime;
-		string _getTaskDeadline;
-		string _getTaskDuration;
-		string _getTaskName;
-		string _getTaskDetails;
-		string _getTaskTags;
-		string _getTaskIndex;
-		string _getTaskIsDone;
+
 
 	public:
+		static string _getTaskType;
+		static string _getTaskStartDatetime;
+		static string _getTaskEndDatetime;
+		static string _getTaskDeadline;
+		static string _getTaskDuration;
+		static string _getTaskName;
+		static string _getTaskDetails;
+		static string _getTaskTags;
+		static string _getTaskIndex;
+		static string _getTaskIsDone;
+
 		string ptimeToStringConverter(ptime myDatetime);
 		string ptimeDurationToStringConverter(time_duration myDuration);
 		StorageConverter(void);

@@ -7,17 +7,17 @@
 #include <boost/lexical_cast.hpp>
 
 using namespace std; 
-	//some are commented out as they are not implemented at this moment
-	string _getTaskType = "_taskType: ";
-	string _getTaskStartDatetime = "_taskStartDatetime: ";
-	string _getTaskEndDatetime = "_taskEndDatetime: ";
-	string _getTaskDeadline = "_taskDeadline: ";
-	//string _getTaskDuration = "_taskDuration: ";
-	string _getTaskName = "_taskName: ";
-	//string _getTaskDetails = "_taskDetails: ";
-	string _getTaskTags = "_taskTags: ";
-	//string _getTaskIndex = "_taskIndex: ";
-	string _getTaskIsDone = "_isDone: ";
+//some are commented out as they are not implemented at this moment
+string StorageConverter::_getTaskType = "_taskType: ";
+string StorageConverter::_getTaskStartDatetime = "_taskStartDatetime: ";
+string StorageConverter::_getTaskEndDatetime = "_taskEndDatetime: ";
+string StorageConverter::_getTaskDeadline = "_taskDeadline: ";
+//string _getTaskDuration = "_taskDuration: ";
+string StorageConverter::_getTaskName = "_taskName: ";
+//string _getTaskDetails = "_taskDetails: ";
+string StorageConverter::_getTaskTags = "_taskTags: ";
+//string _getTaskIndex = "_taskIndex: ";
+string StorageConverter::_getTaskIsDone = "_isDone: ";
 
 StorageConverter::StorageConverter(void){
 }
@@ -44,8 +44,11 @@ vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 	//1. getTaskType
 	//myStringParameters.push_back(_getTaskType + taskType);
 	
-	//2. get start datetime 
-	myStringParameters.push_back(_getTaskStartDateime + taskStartDatetime);
+	//2. get start datetime
+	
+	myStringParameters.push_back(_getTaskStartDatetime + taskStartDatetime);
+
+
 
 	//3. get end datetime
 	myStringParameters.push_back(_getTaskEndDatetime + taskEndDatetime); 
