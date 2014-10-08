@@ -112,7 +112,7 @@ bool CommandSearch::checkIsFitsTagSearchCriteria(Task taskToCheck) {
 	for (j=0; unsigned(j)<_tagsToSearchFor.size(); j++) {
 		for (i=0; unsigned(i)<listOfTagsForTask.size(); i++) {
 			taskTag = listOfTagsForTask[i];
-			if (taskTag.find(_tagsToSearchFor[j]) != string::npos) {
+			if (convertToLower(taskTag).find(_tagsToSearchFor[j]) != string::npos) {
 				currentTagFound = true;
 			}
 		}
@@ -130,6 +130,14 @@ bool CommandSearch::checkIsFitsTagSearchCriteria(Task taskToCheck) {
 
 bool CommandSearch::checkIsFitsNameSearchCriteria(Task taskToCheck) {
 	string taskName = taskToCheck.getTaskName();
-	bool isFitsNameSearchCriteria = taskName.find(_stringToSearchFor) != string::npos;
+	bool isFitsNameSearchCriteria = convertToLower(taskName).find(_stringToSearchFor) != string::npos;
 	return isFitsNameSearchCriteria;
+}
+
+string CommandSearch::convertToLower(string toConvert) {
+	int i;
+	for (i=0; unsigned(i)<toConvert.size(); i++) {
+		toConvert[i] = tolower(toConvert[i]);
+	}
+	return toConvert;
 }
