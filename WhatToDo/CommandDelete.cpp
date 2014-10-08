@@ -6,6 +6,9 @@ CommandDelete::CommandDelete(void)
 }
 
 void CommandDelete::execute() {
+	if (!_parsedStatus) {
+		return;
+	}
 	_currentState = LogicData::getCurrentState();
 	performDeleteOperation();
 	LogicData::addCommandToHistory(this);

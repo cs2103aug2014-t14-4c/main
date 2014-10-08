@@ -6,6 +6,9 @@ CommandRedo::CommandRedo(void)
 }
 
 void CommandRedo::execute() {
+	if (!_parsedStatus) {
+		return;
+	}
 	_commandHistory = LogicData::getCommandHistory();
 	_currentCommandHistoryIndex = LogicData::getCurrentCommandHistoryIndex();
 	_isCommandValid = checkIsRedoPossible();

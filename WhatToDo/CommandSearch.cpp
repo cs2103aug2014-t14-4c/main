@@ -7,6 +7,9 @@ CommandSearch::CommandSearch(void)
 }
 
 void CommandSearch::execute() {
+	if (!_parsedStatus) {
+		return;
+	}
 	_currentState = LogicData::getCurrentState();
 	performSearchOperation();
 	LogicData::setViewState(_currentState);

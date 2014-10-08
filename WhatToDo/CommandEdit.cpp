@@ -6,7 +6,13 @@ CommandEdit::CommandEdit(void)
 }
 
 void CommandEdit::execute() {
+	if (!_parsedStatus) {
+		return;
+	}
 	_currentState = LogicData::getCurrentState();
+	if (!_parsedStatus) {
+		return;
+	}
 	_isCommandValid = checkIsCommandValid();
 	if (_isCommandValid) {
 		deleteExistingTask();

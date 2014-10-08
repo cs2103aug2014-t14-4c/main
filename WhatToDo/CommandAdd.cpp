@@ -7,6 +7,9 @@ CommandAdd::CommandAdd(void)
 
 void CommandAdd::execute() {
 	_currentState = LogicData::getCurrentState();
+	if (!_parsedStatus) {
+		return;
+	}
 	_isCommandValid = checkIsCommandValid();
 	if (_isCommandValid) {
 		performAddOperation();

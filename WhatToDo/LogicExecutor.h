@@ -1,11 +1,14 @@
 #pragma once
 #include "State.h"
+#include "Task.h"
+#include "LogicParser.h"
+#include "Command.h"
 using namespace std;
 
 class LogicExecutor {
 	public:
 		LogicExecutor(void);
-		State getNewState(string commandLineInput);
+		static State getNewState(string commandLineInput);
 
 	private:
 

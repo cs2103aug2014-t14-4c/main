@@ -6,6 +6,9 @@ CommandDone::CommandDone(void)
 }
 
 void CommandDone::execute() {
+	if (!_parsedStatus) {
+		return;
+	}
 	_currentState = LogicData::getCurrentState();
 	performDoneOperation();
 	LogicData::addCommandToHistory(this);
