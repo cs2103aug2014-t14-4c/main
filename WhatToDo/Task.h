@@ -52,9 +52,11 @@ class Task{
 		vector<string> getTaskTags();
 		bool getTaskIsDone();
 
+
 		//Operations
 		bool isTaskOverlapWith(Task myTask);
 		bool isEarlierThan(Task myTask);
+
 
 		//Enumeration
 		enum TaskType{

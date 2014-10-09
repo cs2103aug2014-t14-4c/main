@@ -13,6 +13,8 @@ LogicData::LogicData(){
 
 void LogicData::setCurrentState(State stateToSet){
 	_currentState = stateToSet;
+	StorageExecutor myStorageExecutor;
+	myStorageExecutor.saveToStorage(_currentState);
 }
 
 void LogicData::setViewState(State stateToSet){
@@ -48,7 +50,11 @@ void LogicData::resetToInitialSettings(){
 }
 
 void LogicData::loadInitialSettings(){
-
+	StorageExecutor myStorageExecutor;
+	State initialState = myStorageExecutor.loadFromStorage();
+	_initialState = initialState;
+	_currentState = initialState;
+	_viewState = initialState;
 }
 
 void LogicData::setCommandHistoryIndex(int indexToSet) {

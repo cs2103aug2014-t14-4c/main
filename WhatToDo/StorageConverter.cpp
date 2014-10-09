@@ -1,26 +1,31 @@
 #include "StorageConverter.h"
+#include <string>
+#include <vector>
+#include "Task.h"
+#include <sstream>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
-string StorageConverter::TITLE_TASKTYPE = "Task Type: ";
-string StorageConverter::TITLE_TASKSTARTDATETIME = "Start Datetime: ";
-string StorageConverter::TITLE_TASKENDDATETIME = "End Datetime: ";
-string StorageConverter::TITLE_TASKDEADLINE = "Task Deadline: ";
-//string TITLE_TASKDURATION = "Task Duration: ";
-string StorageConverter::TITLE_TASKNAME = "Task Name: ";
-//string TITLE_TASKDETAILS = "Task Details: ";
-string StorageConverter::TITLE_TASKTAGS = "Task Tags: ";
-//string TITLE_TASKINDEX = "Task Index: ";
-string StorageConverter::TITLE_TASKISDONE = "Task isDone Status: ";
-string StorageConverter::NOT_A_DATETIME = "not-a-date-time"; 
-
+using namespace std; 
 //some are commented out as they are not implemented at this moment
+string StorageConverter::_getTaskType = "_taskType: ";
+string StorageConverter::_getTaskStartDatetime = "_taskStartDatetime: ";
+string StorageConverter::_getTaskEndDatetime = "_taskEndDatetime: ";
+string StorageConverter::_getTaskDeadline = "_taskDeadline: ";
+//string _getTaskDuration = "_taskDuration: ";
+string StorageConverter::_getTaskName = "_taskName: ";
+//string _getTaskDetails = "_taskDetails: ";
+string StorageConverter::_getTaskTags = "_taskTags: ";
+//string _getTaskIndex = "_taskIndex: ";
+string StorageConverter::_getTaskIsDone = "_isDone: ";
 
 StorageConverter::StorageConverter(void){
-	taskDatetimeString= "";
 }
 
 vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
-
-	
+	string myConvertedString;
+	vector<string> myStringParameters; //to store all the converted strings
+	myStringParameters.clear(); //safety net
 	//will convert individual task attributes to strings
 	//note: order of conversion important for the developer, not for the user
 
@@ -37,121 +42,128 @@ vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 	//for each task, convert each attribute of a task into a string
 	
 	//1. getTaskType
-	//taskStringAttributes.push_back(_getTaskType + taskType);
+	//myStringParameters.push_back(_getTaskType + taskType);
 	
 	//2. get start datetime
 	
-	taskStringAttributes.push_back(TITLE_TASKSTARTDATETIME + taskStartDatetime);
+	myStringParameters.push_back(_getTaskStartDatetime + taskStartDatetime);
+
+
 
 	//3. get end datetime
-	taskStringAttributes.push_back(TITLE_TASKENDDATETIME + taskEndDatetime); 
+	myStringParameters.push_back(_getTaskEndDatetime + taskEndDatetime); 
 
 	//4. get task deadline 
-	taskStringAttributes.push_back(TITLE_TASKDEADLINE + taskDeadline);
+	myStringParameters.push_back(_getTaskDeadline + taskDeadline);
 
 	//5. get taskName
-	taskStringAttributes.push_back(TITLE_TASKNAME + taskName);
+	myStringParameters.push_back(_getTaskName + taskName);
 
 	//6. get taskDuration
-	//taskStringAttributes.push_back(TITLE_TASKDURATION + taskDuration + "\n");
+	//myStringParameters.push_back(_getTaskDuration + taskDuration + "\n");
 
 	//6. get task details
-	//taskStringAttributes.push_back(TITLE_TASKDETAILS + taskDetails + "\n");
+	//myStringParameters.push_back(_getTaskDetails + taskDetails + "\n");
 	
 	//6. get task tags
-	taskStringAttributes.push_back(TITLE_TASKTAGS + taskTags);
+	myStringParameters.push_back(_getTaskTags + taskTags);
 	
 	//7. get task index
-	//taskStringAttributes.push_back(TITLE_TASKINDEX + taskIndex + "\n"); 
+	//myStringParameters.push_back(_getTaskIndex + taskIndex + "\n"); 
 	
 	//7. getIsdone
-	taskStringAttributes.push_back(TITLE_TASKISDONE + taskIsDone); 
+	myStringParameters.push_back(_getTaskIsDone + taskIsDone); 
 
 	//finally write the whole vector of string into file
-	return taskStringAttributes; 
+	return myStringParameters; 
 }
 
 Task StorageConverter::convertStringToTask(vector<string> stringToConvert){
-
-	vector<string>::iterator taskAttributeIterator = stringToConvert.begin(); 
+	Task myConvertedTask;
+	vector<string>::iterator myIndividualAttributeIterator = stringToConvert.begin(); 
 	
 	//get the substring which is input for conversion
 	//convert individual substrings into task attributes
 	//use task setter methods to "Create" the task
 
 	//1. convert task type
-	//string concatenatedTaskType = (*taskAttributeIterator).substr(TITLE_TASKTYPE.size()); //this gives some weird error??
+	//string concatenatedTaskType = (*myIndividualAttributeIterator).substr(_getTaskType.size()); //this gives some weird error??
 	//int taskType  = atoi(concatenatedTaskType.c_str());
 	//myConvertedTask.setTaskT(taskType); 
-	//taskAttributeIterator += 1; 
+	//myIndividualAttributeIterator += 1; 
 
 	//2. convert startime
-	taskDatetimeString = (*taskAttributeIterator).substr(TITLE_TASKSTARTDATETIME.size());
-	if (taskDatetimeString == NOT_A_DATETIME){
-		convertedTask.setTaskStartTime(not_a_date_time); 
-	} else {
-		ptime taskStartTime(from_iso_string(taskDatetimeString));
-		convertedTask.setTaskStartTime(taskStartTime);
-	}
-	taskAttributeIterator++; 
+	string later = "";
 
-	//3. convert endtime
-	taskDatetimeString = (*taskAttributeIterator).substr(TITLE_TASKENDDATETIME.size());
-	if (taskDatetimeString == NOT_A_DATETIME){
-		convertedTask.setTaskEndTime(not_a_date_time); 
-	} else {
-		ptime taskEndTime(from_iso_string(taskDatetimeString));
-		convertedTask.setTaskEndTime(taskEndTime);
+	later = (*myIndividualAttributeIterator).substr(_getTaskStartDatetime.size());
+	if (later == "not-a-date-time") {
+		myConvertedTask.setTaskStartTime(not_a_date_time); 
 	}
-	taskAttributeIterator++; 
+	else {
+		ptime startTime(from_iso_string((*myIndividualAttributeIterator).substr(_getTaskStartDatetime.size())));
+		myConvertedTask.setTaskStartTime(startTime); 
+	}
+	myIndividualAttributeIterator++; 
+
+	////3. convert endtime
+	later = (*myIndividualAttributeIterator).substr(_getTaskEndDatetime.size());
+	if (later == "not-a-date-time") {
+		myConvertedTask.setTaskEndTime(not_a_date_time); 
+	}
+	else {
+		ptime endTime(from_iso_string((*myIndividualAttributeIterator).substr(_getTaskEndDatetime.size())));
+		myConvertedTask.setTaskEndTime(endTime);
+	}
+	myIndividualAttributeIterator++; 
 
 	//4. convert task deadline
-	taskDatetimeString = (*taskAttributeIterator).substr(TITLE_TASKDEADLINE.size());
-	if (taskDatetimeString == NOT_A_DATETIME){
-		convertedTask.setTaskDeadline(not_a_date_time); 
-	} else {
-		ptime taskDeadLine(from_iso_string(taskDatetimeString));
-		convertedTask.setTaskDeadline(taskDeadLine); 
+	later = (*myIndividualAttributeIterator).substr(_getTaskDeadline.size());
+	if (later == "not-a-date-time") {
+		myConvertedTask.setTaskDeadline(not_a_date_time); 
 	}
-	taskAttributeIterator++; 
+	else {
+		ptime deadLine(from_iso_string((*myIndividualAttributeIterator).substr(_getTaskDeadline.size())));
+		myConvertedTask.setTaskDeadline(deadLine); 
+	}
+	myIndividualAttributeIterator++; 
 
 	//5. convert task duration
-	/*time_duration taskDuration = duration_from_string((*taskAttributeIterator).substr(TASK_DURATION.size())); 
-	convertedTask.setTaskDuration(taskDuration);
-	taskAttributeIterator += 1; */
+	/*time_duration taskDuration = duration_from_string((*myIndividualAttributeIterator).substr(_getTaskDuration.size())); 
+	myConvertedTask.setTaskDuration(taskDuration);
+	myIndividualAttributeIterator += 1; */
 
 	//5. convert task name
-	string taskName = (*taskAttributeIterator).substr(TITLE_TASKNAME.size());
-	convertedTask.setTaskName(taskName);
-	taskAttributeIterator++; 
+	string taskName = (*myIndividualAttributeIterator).substr(_getTaskName.size());
+	myConvertedTask.setTaskName(taskName);
+	myIndividualAttributeIterator++; 
 
 	//7. convert task details 
-	//string taskDetails = (*taskAttributeIterator).substr(TITLE_TASKDETAILS.size());
-	//convertedTask.setTaskDetails(taskDetails);
-	//taskAttributeIterator += 1; 
+	//string taskDetails = (*myIndividualAttributeIterator).substr(_getTaskDetails.size());
+	//myConvertedTask.setTaskDetails(taskDetails);
+	//myIndividualAttributeIterator += 1; 
 
 	//6. convert task tags 
-	string taskTags = (*taskAttributeIterator).substr(TITLE_TASKTAGS.size());
+	string taskTags = (*myIndividualAttributeIterator).substr(_getTaskTags.size());
 	vector<string> taskTagVector = taskTagStringToVectorConverter(taskTags);
-	convertedTask.setTaskTags(taskTagVector);
-	taskAttributeIterator++; 
+	myConvertedTask.setTaskTags(taskTagVector);
+	myIndividualAttributeIterator++; 
 
 	//7. convert task index, NOTE task index is the unique index only for searching function
-	/*string catenatedIndexString = (*taskAttributeIterator).substr(TITLE_TASKINDEX.size()); 
+	/*string catenatedIndexString = (*myIndividualAttributeIterator).substr(_getTaskIndex.size()); 
 	int taskIndex = atoi(catenatedIndexString.c_str()); 
-	convertedTask.setTaskIndex(taskIndex); 
-	taskAttributeIterator +=1;*/
+	myConvertedTask.setTaskIndex(taskIndex); 
+	myIndividualAttributeIterator +=1;*/
 	
 	//7. convert isDone, isDone initialized false, thus only call if it's true
-	string taskIsDoneString = (*taskAttributeIterator).substr(TITLE_TASKISDONE.size());
+	string taskIsDoneString = (*myIndividualAttributeIterator).substr(_getTaskIsDone.size());
 	bool taskIsDone = taskStringToBooleanConverter(taskIsDoneString);
 	
 	if(taskIsDone) {
-		convertedTask.setTaskIsDone();
+		myConvertedTask.setTaskIsDone();
 	}
 
 	//return the converted individual task
-	return convertedTask;
+	return myConvertedTask;
 }
 
 //convert boolean to string 
@@ -218,4 +230,3 @@ bool StorageConverter::taskStringToBooleanConverter(string boolString){
 	}
 	return isDone; 
 }
-

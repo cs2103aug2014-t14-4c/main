@@ -20,6 +20,7 @@ class CommandSearch: public Command {
 		vector<string> _tagsToSearchFor;
 		string _stringToSearchFor;
 		vector<int> _listOfTaskIndexesToDelete;
+		string convertToLower(string toConvert);
 
 };
 

@@ -19,9 +19,9 @@ std::string LogicParserStringModifier::transformToLowercase(std::string text) {
 	return text;
 }
 
-bool LogicParserStringModifier::isOneWord(std::string text) {
+bool LogicParserStringModifier::isOneWord(std::string text, const std::string delimiters) {
 	text = LogicParserStringModifier::trimWhiteSpace(text);
-	return (std::all_of(text.begin(), text.end(), isalnum));
+	return (text.find_first_of(delimiters) == std::string::npos);
 }
 
 std::string LogicParserStringModifier::trimWhiteSpace(std::string text) {
