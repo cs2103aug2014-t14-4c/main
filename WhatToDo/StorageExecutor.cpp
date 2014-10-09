@@ -1,8 +1,5 @@
 #include "StorageExecutor.h"
-#include "State.h"
-#include "StorageConverter.h"
-#include "StorageDatabase.h"
-#include "Task.h"
+
 using namespace std; 
 
 StorageExecutor::StorageExecutor(void){
@@ -12,6 +9,7 @@ State StorageExecutor::loadFromStorage(){
 	State stateToLoad; 
 	vector<vector<string>> storageToConvert; 
 	vector<Task> myConvertedTask; 
+	myConvertedTask.clear();
 	StorageDatabase myStorageDatabase; 
 	Task myIndividualTask; 
 	StorageConverter myStorageConverter; 
