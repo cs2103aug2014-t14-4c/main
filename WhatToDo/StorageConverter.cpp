@@ -32,7 +32,7 @@ vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 	//string taskType = to_string(taskToConvert.getTaskType()); 
 	string taskStartDatetime =  ptimeToStringConverter(taskToConvert.getTaskStartTime());
 	string taskEndDatetime = ptimeToStringConverter(taskToConvert.getTaskEndTime());
-	//string taskDeadline = ptimeToStringConverter(taskToConvert.getTaskDeadline());
+	string taskDeadline = ptimeToStringConverter(taskToConvert.getTaskDeadline());
 	//string taskDuration = ptimeDurationToStringConverter(taskToConvert.getTaskDuration());
 	string taskName = taskToConvert.getTaskName(); 
 	//string taskDetails = taskToConvert.getTaskDetails(); 
@@ -53,8 +53,8 @@ vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 	//3. get end datetime
 	myStringParameters.push_back(_getTaskEndDatetime + taskEndDatetime); 
 
-	////4. get task deadline 
-	//myStringParameters.push_back(_getTaskDeadline + taskDeadline);
+	//4. get task deadline 
+	myStringParameters.push_back(_getTaskDeadline + taskDeadline);
 
 	//5. get taskName
 	myStringParameters.push_back(_getTaskName + taskName);
@@ -102,10 +102,10 @@ Task StorageConverter::convertStringToTask(vector<string> stringToConvert){
 	myConvertedTask.setTaskEndTime(endTime);
 	myIndividualAttributeIterator++; 
 
-	////4. convert task deadline
-	//ptime deadLine(from_iso_string((*myIndividualAttributeIterator).substr(_getTaskDeadline.size())));
-	//myConvertedTask.setTaskDeadline(deadLine); 
-	//myIndividualAttributeIterator++; 
+	//4. convert task deadline
+	ptime deadLine(from_iso_string((*myIndividualAttributeIterator).substr(_getTaskDeadline.size())));
+	myConvertedTask.setTaskDeadline(deadLine); 
+	myIndividualAttributeIterator++; 
 
 	//5. convert task duration
 	/*time_duration taskDuration = duration_from_string((*myIndividualAttributeIterator).substr(_getTaskDuration.size())); 

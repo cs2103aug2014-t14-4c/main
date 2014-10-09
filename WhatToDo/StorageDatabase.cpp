@@ -1,7 +1,7 @@
 #include "StorageDatabase.h"
 #include <fstream>
 using namespace std;
-const int StorageDatabase::noOfTaskAttributes=5;
+const int StorageDatabase::noOfTaskAttributes=6;
 
 StorageDatabase::StorageDatabase(){
 	fileName = "integrate2.txt";
