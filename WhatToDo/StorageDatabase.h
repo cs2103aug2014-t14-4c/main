@@ -16,3 +16,5 @@ class StorageDatabase{
 		vector<string> readFromDataBaseIndividualTaskString(); 
 };
 
+
+
