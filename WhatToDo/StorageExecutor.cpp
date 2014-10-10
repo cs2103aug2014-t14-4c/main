@@ -1,25 +1,16 @@
 #include "StorageExecutor.h"
-#include "State.h"
-#include "StorageConverter.h"
-#include "StorageDatabase.h"
-#include "Task.h"
+
 using namespace std; 
 
 StorageExecutor::StorageExecutor(void){
 }
 
 State StorageExecutor::loadFromStorage(){
-	State stateToLoad; 
-	vector<vector<string>> storageToConvert; 
-	vector<Task> myConvertedTask; 
-	StorageDatabase myStorageDatabase; 
-	Task myIndividualTask; 
-	StorageConverter myStorageConverter; 
-
 	//get vector of strings from StorageDatabase
 	storageToConvert = myStorageDatabase.readFromDatabase();
 	vector<vector<string>>::iterator myStorageIterator = storageToConvert.begin();
-	//convert each string into task using storageConverter
+	
+	//convert each string into task using storageConverterdddd
 	while(myStorageIterator!=storageToConvert.end()){
 		myIndividualTask = myStorageConverter.convertStringToTask(*myStorageIterator);
 		myConvertedTask.push_back(myIndividualTask);
@@ -27,17 +18,16 @@ State StorageExecutor::loadFromStorage(){
 	}
 
 	//pack tasks into state and return as state
-	stateToLoad.setAllTasks(myConvertedTask);
+	vector<Task>::iterator taskIterator = myConvertedTask.begin();
+	while(taskIterator!= myConvertedTask.end()){
+		stateToLoad.addTask(*taskIterator); 
+		taskIterator++; 
+	}
 
 	return stateToLoad;
 }
 
 void StorageExecutor::saveToStorage(State stateToSave){
-
-	StorageDatabase myStorageDatabase;
-	StorageConverter myStorageConverter; 
-	vector<vector<string>> convertedTaskStringStorage; 
-	vector<string> individualConvertedTask;
 	//first get all task for a given State and returns a vector of Tasks
 	vector<Task> taskToStore = stateToSave.getAllTasks(); 
 	//for each task, convert to string using string converter

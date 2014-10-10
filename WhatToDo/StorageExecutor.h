@@ -1,15 +1,25 @@
+#pragma once
+
 #include "State.h"
 #include "StorageConverter.h"
 #include "StorageDatabase.h"
 #include <string>
 #include <vector>
 
-#pragma once
+
 using namespace std;
 
 class StorageExecutor{
 	private: 
 		vector<string> myStorage;
+		vector<vector<string>> storageToConvert; 
+		StorageDatabase myStorageDatabase;
+		vector<Task> myConvertedTask; 
+		StorageConverter myStorageConverter; 
+		State stateToLoad; 
+		Task myIndividualTask; 
+		vector<vector<string>> convertedTaskStringStorage; 
+		vector<string> individualConvertedTask;
 	public:
 		StorageExecutor(void);
 		State loadFromStorage();
@@ -17,4 +27,5 @@ class StorageExecutor{
 
 		//HELLLLO haha hahaha storageExecutor
 };
+
 

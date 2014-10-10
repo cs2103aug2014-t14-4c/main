@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <vector>
 #include <sstream>
@@ -8,19 +9,22 @@ using namespace std;
 
 class StorageConverter{
 	private:
-
+		Task convertedTask; 
+		vector<string> taskStringAttributes;
+		string taskDatetimeString; 
 
 	public:
-		static string _getTaskType;
-		static string _getTaskStartDatetime;
-		static string _getTaskEndDatetime;
-		static string _getTaskDeadline;
-		static string _getTaskDuration;
-		static string _getTaskName;
-		static string _getTaskDetails;
-		static string _getTaskTags;
-		static string _getTaskIndex;
-		static string _getTaskIsDone;
+		static string TITLE_TASKTYPE;
+		static string TITLE_TASKSTARTDATETIME;
+		static string TITLE_TASKENDDATETIME;
+		static string TITLE_TASKDEADLINE;
+		static string TITLE_TASKDURATION;
+		static string TITLE_TASKNAME;
+		static string TITLE_TASKDETAILS;
+		static string TITLE_TASKTAGS;
+		static string TITLE_TASKINDEX;
+		static string TITLE_TASKISDONE;
+		static string NOT_A_DATETIME;
 
 		string ptimeToStringConverter(ptime myDatetime);
 		string ptimeDurationToStringConverter(time_duration myDuration);
