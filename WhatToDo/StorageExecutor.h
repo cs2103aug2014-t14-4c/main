@@ -13,8 +13,8 @@ class StorageExecutor{
 	private: 
 		vector<string> myStorage;
 		vector<vector<string>> storageToConvert; 
-		StorageDatabase myStorageDatabase;
 		vector<Task> myConvertedTask; 
+		StorageDatabase myStorageDatabase;
 		StorageConverter myStorageConverter; 
 		State stateToLoad; 
 		Task myIndividualTask; 

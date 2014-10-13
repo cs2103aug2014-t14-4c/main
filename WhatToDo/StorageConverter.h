@@ -25,12 +25,16 @@ class StorageConverter{
 		static string TITLE_TASKINDEX;
 		static string TITLE_TASKISDONE;
 		static string NOT_A_DATETIME;
-
-		string ptimeToStringConverter(ptime myDatetime);
-		string ptimeDurationToStringConverter(time_duration myDuration);
+		
 		StorageConverter(void);
+
+		//primary conversion functions
 		vector<string> convertTaskToString(Task taskToConvert);
 		Task convertStringToTask(vector<string> stringToConvert);
+
+		//secondary coversion functions
+		string ptimeToStringConverter(ptime myDatetime);
+		string ptimeDurationToStringConverter(time_duration myDuration);
 		string boolConverter(bool boolToConvert);
 		string taskTagVectorToStringConverter(vector<string> taskTags);
 		vector<string> taskTagStringToVectorConverter(string tagString);

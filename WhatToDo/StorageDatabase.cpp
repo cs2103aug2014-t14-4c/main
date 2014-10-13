@@ -1,11 +1,12 @@
 #include "StorageDatabase.h"
 #include <fstream>
 using namespace std;
-const int StorageDatabase::noOfTaskAttributes=6;
 
 StorageDatabase::StorageDatabase(){
 	fileName = "integrate2.txt";
 }
+int StorageDatabase::START=0;
+int StorageDatabase::NO_OF_ATTRIBUTES = 6;
 
 
 //pass in a vector<vector<string>> where each vector<string> is a task in vector<string> form
@@ -17,7 +18,7 @@ void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToW
 	writeFile.open(fileName);
 	//write individual task attributes
 	while(taskVectorIterator != taskStringVectorToWrite.end()){
-		for(int i = 0; i< noOfTaskAttributes; i++){
+		for(int i = START; i< NO_OF_ATTRIBUTES; i++){
 			writeFile << (*taskVectorIterator)[i] << endl;
 		}
 		writeFile << endl; 
@@ -40,7 +41,7 @@ vector<vector<string>> StorageDatabase::readFromDatabase(){
 	string myText; 
 	//if peek != end of file, it will getline to read in the indvidual strings
 	while(readFile.peek()!=EOF){
-		for(int i = 0; i<noOfTaskAttributes; i++){
+		for(int i = START; i<NO_OF_ATTRIBUTES; i++){
 			getline(readFile,myText);
 			individualReadFile.push_back(myText);
 		}

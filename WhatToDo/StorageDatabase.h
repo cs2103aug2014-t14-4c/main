@@ -11,6 +11,8 @@ class StorageDatabase{
 	
 	public:
 		StorageDatabase();
+		static int START;
+		static int NO_OF_ATTRIBUTES;
 		void writeToDatabase(vector<vector<string>> taskStringVectorToWrite);
 		vector<vector<string>> readFromDatabase();
 		vector<string> readFromDataBaseIndividualTaskString(); 
