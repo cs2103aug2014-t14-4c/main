@@ -14,6 +14,8 @@ public:
 	std::string transformToLowercase(std::string text);
 	//Checks if a given string consists of only one word
 	bool isOneWord(std::string text, const std::string delimiters = " \f\n\r\t\v");
+	//Checks if a given string consists of only digits
+	bool isNumber(std::string text);
 	//Trims the whitespace around a given string
 	std::string trimWhiteSpace(std::string text);
 	//Trims the whitespace on the left of a given string
