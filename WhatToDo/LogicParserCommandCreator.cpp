@@ -47,7 +47,7 @@ std::string LogicParserCommandCreator::getParameters(void) {
 
 Command* LogicParserCommandCreator::createAddCommand(void) {
 	Command* addCommand = new CommandAdd;
-	addCommand->setParsedStatus(true);
+	addCommand->setParsedStatus(LogicParserCommandCreator::isValidCommandWithStringParameters());
 
 	if(addCommand->getParsedStatus()) {
 		LogicParserCommandDetailsParser detailsParser(_userInput);
