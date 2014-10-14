@@ -24,6 +24,11 @@ bool LogicParserStringModifier::isOneWord(std::string text, const std::string de
 	return (text.find_first_of(delimiters) == std::string::npos);
 }
 
+bool LogicParserStringModifier::isNumber(std::string text) {
+	text = LogicParserStringModifier::trimWhiteSpace(text);
+	return std::all_of(text.begin(), text.end(), isdigit);
+}
+
 std::string LogicParserStringModifier::trimWhiteSpace(std::string text) {
 	return LogicParserStringModifier::trimLeft(LogicParserStringModifier::trimRight(text));
 }

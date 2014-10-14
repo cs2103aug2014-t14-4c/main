@@ -6,7 +6,7 @@ class LogicParser {
 	public:
 		//Constructor
 		LogicParser(void);
-		//This is the only thing you have to worry about.
+		//Interface to the parser.
 		Command* getCommandFromUserInput(std::string userInput);
 };
 
