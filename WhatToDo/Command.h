@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <assert.h>
 #include "Task.h"
 #include "State.h"
 #include "LogicData.h"
@@ -33,8 +34,8 @@ class Command {
 		int _commandTaskIndex;
 		string _searchKeyword;
 		string _userMessage;
-		Task _currentTask;
-		State _currentState;
+		Task* _currentTask;
+		State* _currentState;
 
 		// All Protected Functions
 		bool checkIsParsedCorrectly();

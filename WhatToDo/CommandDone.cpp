@@ -21,6 +21,6 @@ void CommandDone::execute() {
 }
 
 void CommandDone::performDoneOperation() {
-	_currentState.doneTask(_commandTaskIndex);
+	_currentState->doneTask(_commandTaskIndex);
 	return;
 }

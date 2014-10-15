@@ -23,6 +23,6 @@ void CommandEdit::execute() {
 }
 
 void CommandEdit::deleteExistingTask() {
-	_currentState.deleteTask(_commandTaskIndex);
+	_currentState->deleteTask(_commandTaskIndex);
 	return;
 }

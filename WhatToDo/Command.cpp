@@ -6,6 +6,8 @@ Command::Command(void) {
 	_isParsedCorrectly = true;
 	_searchKeyword = "";
 	_userMessage = "";
+	_currentTask = NULL;
+	_currentState = NULL;
 }
 
 void Command::execute() {
@@ -25,7 +27,7 @@ string Command::getSearchKeyword() {
 }
 
 Task Command::getCurrentTask() {
-	return _currentTask;
+	return *_currentTask;
 }
 
 void Command::setTaskIndex(int commandTaskIndexToSet) {
@@ -44,7 +46,8 @@ void Command::setSearchKeyword(string searchKeywordToSet) {
 }
 
 void Command::setCurrentTask(Task currentTaskToSet) {
-	_currentTask = currentTaskToSet;
+	_currentTask = new Task;
+	*_currentTask = currentTaskToSet;
 	return;
 }
 
@@ -56,22 +59,24 @@ bool Command::checkIsParsedCorrectly() {
 }
 
 void Command::retrieveExistingViewState() {
-	_currentState = LogicData::getViewState();
+	_currentState = new State;
+	*_currentState = LogicData::getViewState();
 	return;
 }
 
 void Command::retrieveExistingCurrentState() {
-	_currentState = LogicData::getCurrentState();
+	_currentState = new State;
+	*_currentState = LogicData::getCurrentState();
 	return;
 }
 
 void Command::setNewCurrentState() {
-	LogicData::setCurrentState(_currentState);
+	LogicData::setCurrentState(*_currentState);
 	return;
 }
 
 void Command::setNewViewState() {
-	LogicData::setViewState(_currentState);
+	LogicData::setViewState(*_currentState);
 	return;
 }
 
@@ -81,7 +86,7 @@ void Command::addThisCommandToHistory(Command* commandToAdd) {
 }
 
 void Command::addUserMessageToCurrentState() {
-	_currentState.setUserMessage(_userMessage);
+	_currentState->setUserMessage(_userMessage);
 	return;
 }
 

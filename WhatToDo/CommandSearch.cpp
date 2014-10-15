@@ -64,7 +64,7 @@ void CommandSearch::getNameToSearchFor() {
 
 void CommandSearch::getListOfTaskIndexesNotMatchingSearch() {
 	int i;
-	vector<Task> listOfAllTasks = _currentState.getAllTasks();
+	vector<Task> listOfAllTasks = _currentState->getAllTasks();
 	
 	for (i=0; unsigned(i)<listOfAllTasks.size(); i++) {
 		if (!checkIsFitsSearchCriteria(listOfAllTasks[i])) {
@@ -79,7 +79,7 @@ void CommandSearch::deleteListOfTaskIndexesNotMatchingSearch() {
 	int i;
 
 	for (i=0; unsigned(i)<_listOfTaskIndexesToDelete.size(); i++) {
-		_currentState.deleteTask(_listOfTaskIndexesToDelete[i]);
+		_currentState->deleteTask(_listOfTaskIndexesToDelete[i]);
 	}
 	return;
 }

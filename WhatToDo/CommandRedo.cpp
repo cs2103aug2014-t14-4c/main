@@ -17,7 +17,6 @@ void CommandRedo::execute() {
 		storeRemainingCommandsInHistory();
 	}
 
-	addUserMessageToCurrentState();
 	return;
 }
 

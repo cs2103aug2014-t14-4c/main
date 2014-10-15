@@ -21,6 +21,6 @@ void CommandDelete::execute() {
 }
 
 void CommandDelete::performDeleteOperation() {
-	_currentState.deleteTask(_commandTaskIndex);
+	_currentState->deleteTask(_commandTaskIndex);
 	return;
 }

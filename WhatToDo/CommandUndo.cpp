@@ -17,7 +17,6 @@ void CommandUndo::execute() {
 		storeRemainingCommandsInHistory();
 	}
 
-	addUserMessageToCurrentState();
 	return;
 }
 

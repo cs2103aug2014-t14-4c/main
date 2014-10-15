@@ -6,6 +6,7 @@ CommandAdd::CommandAdd(void)
 }
 
 void CommandAdd::execute() {
+	//assert(&_currentTask != NULL);
 	retrieveExistingCurrentState();
 	checkIsParsedCorrectly();
 	checkIsCommandValid();
@@ -31,17 +32,17 @@ bool CommandAdd::checkIsCommandValid() {
 }
 
 bool CommandAdd::checkIfEnteredDateTimesValid() {
-	int currentTaskType = _currentTask.getTaskType();
+	int currentTaskType = _currentTask->getTaskType();
 	bool isStartDateTimeValid = true;
 	bool isEndDateTimeValid = true;
 	bool isDeadlineDateTimeValid = true;
 
 	if (currentTaskType == Task::FIXEDTIME) {
-		isStartDateTimeValid = checkIsDateTimeValid(_currentTask.getTaskStartTime());
-		isEndDateTimeValid = checkIsDateTimeValid(_currentTask.getTaskEndTime());
+		isStartDateTimeValid = checkIsDateTimeValid(_currentTask->getTaskStartTime());
+		isEndDateTimeValid = checkIsDateTimeValid(_currentTask->getTaskEndTime());
 	}
 	else if (currentTaskType == Task::DEADLINE) {
-		isDeadlineDateTimeValid = checkIsDateTimeValid(_currentTask.getTaskDeadline());
+		isDeadlineDateTimeValid = checkIsDateTimeValid(_currentTask->getTaskDeadline());
 	}
 
 	bool isEnteredDateTimesValid = isStartDateTimeValid && isEndDateTimeValid && isDeadlineDateTimeValid;
@@ -57,7 +58,7 @@ bool CommandAdd::checkIsDateTimeValid(ptime dateTimeToCheck) {
 }
 	
 bool CommandAdd::checkIfOrderOfDateTimesValid() {
-	int currentTaskType = _currentTask.getTaskType();
+	int currentTaskType = _currentTask->getTaskType();
 	bool isOrderOfDateTimesValid = true;
 
 	if (currentTaskType == Task::FIXEDTIME) {
@@ -74,7 +75,7 @@ bool CommandAdd::checkIfOrderOfDateTimesValid() {
 }
 
 bool CommandAdd::checkIsDeadlineAfterCurrentTime() {
-	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask.getTaskDeadline();
+	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask->getTaskDeadline();
 	if (!isStartAfterCurrentTime) {
 		_userMessage = "The deadline has already passed!";
 	}
@@ -83,7 +84,7 @@ bool CommandAdd::checkIsDeadlineAfterCurrentTime() {
 
 
 bool CommandAdd::checkIsStartAfterCurrentTime() {
-	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask.getTaskStartTime();
+	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask->getTaskStartTime();
 	if (!isStartAfterCurrentTime) {
 		_userMessage = "The start time has already passed!";
 	}
@@ -91,7 +92,7 @@ bool CommandAdd::checkIsStartAfterCurrentTime() {
 }
 
 bool CommandAdd::checkIsEndAfterStart() {
-	bool isEndAfterStart = _currentTask.getTaskStartTime() <= _currentTask.getTaskEndTime();
+	bool isEndAfterStart = _currentTask->getTaskStartTime() <= _currentTask->getTaskEndTime();
 	if (!isEndAfterStart) {
 		_userMessage = "The end time cannot be before the start time!";
 	}
@@ -99,8 +100,8 @@ bool CommandAdd::checkIsEndAfterStart() {
 }
 
 bool CommandAdd::checkIsInputTimeNotOccupied() {
-	vector<Task> listOfTimedTasks = _currentState.getTimedTasks();
-	int currentTaskType = _currentTask.getTaskType();
+	vector<Task> listOfTimedTasks = _currentState->getTimedTasks();
+	int currentTaskType = _currentTask->getTaskType();
 	bool isInputTimeNotOccupied = true;
 	int i;
 
@@ -109,7 +110,7 @@ bool CommandAdd::checkIsInputTimeNotOccupied() {
 	}
 
 	for (i=0; unsigned(i)<listOfTimedTasks.size(); i++) {
-		if (_currentTask.isTaskOverlapWith(listOfTimedTasks[i])) {
+		if (_currentTask->isTaskOverlapWith(listOfTimedTasks[i])) {
 			isInputTimeNotOccupied = false;
 			_userMessage = "There is already a scheduled task at that slot!";
 			break;
@@ -120,6 +121,6 @@ bool CommandAdd::checkIsInputTimeNotOccupied() {
 }
 
 void CommandAdd::performAddOperation() {
-	_currentState.addTask(_currentTask);
+	_currentState->addTask(*_currentTask);
 	return;
 }
