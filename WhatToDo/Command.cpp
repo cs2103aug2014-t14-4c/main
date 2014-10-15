@@ -1,6 +1,5 @@
 #include "Command.h"
 
-
 Command::Command(void) {
 	_commandTaskIndex = 0;
 	_isCommandValid = true;
@@ -57,12 +56,12 @@ bool Command::checkIsParsedCorrectly() {
 }
 
 void Command::retrieveExistingViewState() {
-	_currentState = LogicData::getCurrentState();
+	_currentState = LogicData::getViewState();
 	return;
 }
 
 void Command::retrieveExistingCurrentState() {
-	_currentState = LogicData::getViewState();
+	_currentState = LogicData::getCurrentState();
 	return;
 }
 
