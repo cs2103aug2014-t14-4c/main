@@ -4,9 +4,18 @@ LogicParser::LogicParser(void) {
 }
 
 Command* LogicParser::getCommandFromUserInput(std::string userInput) {
-	LogicParserCommandCreator commandCreator;
+	try {
+		if(userInput.empty())
+			throw "User input is empty";
 
-	Command* command = commandCreator.createCommand(userInput);
+		LogicParserCommandCreator commandCreator;
+	
+		Command* command = commandCreator.createCommand(userInput);
 
-	return command;
+		return command;
+		}
+
+	catch(std::string error) {
+		std::cout << error << std::endl;
+	}
 }
