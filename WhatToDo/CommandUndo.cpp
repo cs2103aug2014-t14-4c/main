@@ -6,18 +6,24 @@ CommandUndo::CommandUndo(void)
 }
 
 void CommandUndo::execute() {
-	checkIsParsedCorrectly();
 	log("\nCommand Undo Initiated:\n");
 	retrieveCommandHistory();
 	retrieveCommandHistoryIndex();
 	assert(_currentCommandHistoryIndex >= 0);
 	assert(_currentCommandHistoryIndex <= _commandHistory.size());
-	checkIsCommandValid();
-
-	if (_isParsedCorrectly && _isCommandValid) {
+	
+	try {
+		checkIsParsedCorrectly();
+		checkIsCommandValid();
 		resetLogicDataSettings();
 		runAllRelevantCommandsAgain();
 		storeRemainingCommandsInHistory();
+	}
+	catch (string errorMsg) {
+		_userMessage = errorMsg;
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
 	}
 
 	return;
@@ -45,7 +51,8 @@ void CommandUndo::storeRemainingCommandsInHistory() {
 
 bool CommandUndo::checkIsCommandValid() {
 	bool isUndoPossible;
-	if (_currentCommandHistoryIndex <= 0) {
+	if ((_currentCommandHistoryIndex <= 0) || (_currentCommandHistoryIndex > _commandHistory.size())) {
+		throw string("Cannot undo anymore!");
 		isUndoPossible = false;
 	}
 	else {

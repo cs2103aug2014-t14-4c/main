@@ -7,13 +7,17 @@ CommandClear::CommandClear(void)
 
 void CommandClear::execute() {
 	log("\nCommand Clear Initiated:\n");
-	checkIsParsedCorrectly();
 	
-	if (_isParsedCorrectly) {
+	try {
+		checkIsParsedCorrectly();
 		retrieveExistingCurrentState();
 		setNewViewState();
 	}
+	catch (string errorMsg) {
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
+	}
 
-	addUserMessageToCurrentState();
 	return;
 }

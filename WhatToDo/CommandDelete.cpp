@@ -6,19 +6,23 @@ CommandDelete::CommandDelete(void)
 }
 
 void CommandDelete::execute() {
-	assert(_commandTaskIndex >= 0);
 	log("\nCommand Delete Initiated:\n");
-	checkIsParsedCorrectly();
+	assert(_commandTaskIndex >= 0);
 	
-	if (_isParsedCorrectly) {
+	try {
+		checkIsParsedCorrectly();
 		retrieveExistingCurrentState();
 		performDeleteOperation();
 		addThisCommandToHistory(this);
 		setNewCurrentState();
 		setNewViewState();
 	}
-
-	addUserMessageToCurrentState();
+	catch (string errorMsg) {
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
+	}
+	
 	return;
 }
 

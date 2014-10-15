@@ -55,7 +55,8 @@ void Command::setCurrentTask(Task currentTaskToSet) {
 
 bool Command::checkIsParsedCorrectly() {
 	if (!_isParsedCorrectly) {
-		_userMessage = "Please enter correct input format!";
+		throw string("Cannot perform command");
+		_isParsedCorrectly = false;
 	}
 	log("Function called: checkIsParsedCorrectly(): _userMessage set as:" + _userMessage + "\n");
 	return _isParsedCorrectly;

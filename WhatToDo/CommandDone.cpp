@@ -6,19 +6,23 @@ CommandDone::CommandDone(void)
 }
 
 void CommandDone::execute() {
-	assert(_commandTaskIndex >= 0);
 	log("\nCommand Done Initiated:\n");
-	checkIsParsedCorrectly();
+	assert(_commandTaskIndex >= 0);
 	
-	if (_isParsedCorrectly) {
+	try {
+		checkIsParsedCorrectly();
 		retrieveExistingCurrentState();
 		performDoneOperation();
 		addThisCommandToHistory(this);
 		setNewCurrentState();
 		setNewViewState();
 	}
+	catch (string errorMsg) {
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
+	}
 
-	addUserMessageToCurrentState();
 	return;
 }
 

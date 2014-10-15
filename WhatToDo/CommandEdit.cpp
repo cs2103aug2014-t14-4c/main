@@ -6,22 +6,26 @@ CommandEdit::CommandEdit(void)
 }
 
 void CommandEdit::execute() {
+	log("\nCommand Edit Initiated:\n");
 	assert(_currentTask != NULL);
 	assert(_commandTaskIndex >= 0);
-	log("\nCommand Edit Initiated:\n");
-	retrieveExistingCurrentState();
-	checkIsParsedCorrectly();
-	checkIsCommandValid();
 	
-	if (_isParsedCorrectly && _isCommandValid) {
+	try {
+		checkIsParsedCorrectly();
+		retrieveExistingCurrentState();
+		checkIsCommandValid();
 		deleteExistingTask();
 		performAddOperation();
 		addThisCommandToHistory(this);
 		setNewCurrentState();
 		setNewViewState();
 	}
+	catch (string errorMsg) {
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
+	}
 
-	addUserMessageToCurrentState();
 	return;
 }
 

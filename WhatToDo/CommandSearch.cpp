@@ -8,15 +8,19 @@ CommandSearch::CommandSearch(void)
 
 void CommandSearch::execute() {
 	log("\nCommand Search Initiated:\n");
-	checkIsParsedCorrectly();
 
-	if (_isParsedCorrectly) {
+	try {
+		checkIsParsedCorrectly();
 		retrieveExistingCurrentState();
 		performSearchOperation();
 		setNewViewState();
 	}
-
-	addUserMessageToCurrentState();
+	catch (string errorMsg) {
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
+	}
+	
 	return;
 }
 

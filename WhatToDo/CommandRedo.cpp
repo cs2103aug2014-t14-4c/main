@@ -7,17 +7,23 @@ CommandRedo::CommandRedo(void)
 
 void CommandRedo::execute() {
 	log("\nCommand Redo Initiated:\n");
-	checkIsParsedCorrectly();
 	retrieveCommandHistory();
 	retrieveCommandHistoryIndex();
 	assert(_currentCommandHistoryIndex >= 0);
 	assert(_currentCommandHistoryIndex <= _commandHistory.size());
-	checkIsCommandValid();
-
-	if (_isParsedCorrectly && _isCommandValid) {
+	
+	try {
+		checkIsParsedCorrectly();
+		checkIsCommandValid();
 		resetLogicDataSettings();
 		runAllRelevantCommandsAgain();
 		storeRemainingCommandsInHistory();
+	}
+	catch (string errorMsg) {
+		_userMessage = errorMsg;
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
 	}
 
 	return;
@@ -25,7 +31,8 @@ void CommandRedo::execute() {
 
 bool CommandRedo::checkIsCommandValid() {
 	bool isRedoPossible;
-	if (unsigned(_currentCommandHistoryIndex) >= _commandHistory.size()) {
+	if ((_currentCommandHistoryIndex < 0) || (_currentCommandHistoryIndex >= _commandHistory.size())) {
+		throw string("Cannot redo anymore!");
 		isRedoPossible = false;
 	}
 	else {

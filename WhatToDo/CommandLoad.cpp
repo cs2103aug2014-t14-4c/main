@@ -7,7 +7,17 @@ CommandLoad::CommandLoad(void)
 
 void CommandLoad::execute() {
 	log("\nCommand Load initiated:\n");
-	loadLogicDataSettings();
+
+	try {
+		checkIsParsedCorrectly();
+		loadLogicDataSettings();
+	}
+	catch (string errorMsg) {
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
+	}
+
 	return;
 }
 

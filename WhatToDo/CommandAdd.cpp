@@ -6,20 +6,24 @@ CommandAdd::CommandAdd(void)
 }
 
 void CommandAdd::execute() {
-	assert(_currentTask != NULL);
 	log("\nCommand Add Initiated:\n");
-	retrieveExistingCurrentState();
-	checkIsParsedCorrectly();
-	checkIsCommandValid();
+	assert(_currentTask != NULL);
 	
-	if (_isParsedCorrectly && _isCommandValid) {
+	try {
+		checkIsParsedCorrectly();
+		retrieveExistingCurrentState();
+		checkIsCommandValid();
 		performAddOperation();
 		addThisCommandToHistory(this);
 		setNewCurrentState();
 		setNewViewState();
 	}
+	catch (string errorMsg) {
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
+	}
 
-	addUserMessageToCurrentState();
 	return;
 }
 
@@ -57,7 +61,7 @@ bool CommandAdd::checkIfEnteredDateTimesValid() {
 bool CommandAdd::checkIsDateTimeValid(ptime dateTimeToCheck) {
 	bool isDateTimeValid =(dateTimeToCheck != not_a_date_time);
 	if (!isDateTimeValid) {
-		_userMessage = "Date entered was not valid!";
+		throw string("Date entered was not valid!");
 	}	
 	return isDateTimeValid;
 }
@@ -82,7 +86,7 @@ bool CommandAdd::checkIfOrderOfDateTimesValid() {
 bool CommandAdd::checkIsDeadlineAfterCurrentTime() {
 	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask->getTaskDeadline();
 	if (!isStartAfterCurrentTime) {
-		_userMessage = "The deadline has already passed!";
+		throw string("The deadline has already passed!");
 	}
 	return isStartAfterCurrentTime;
 }
@@ -91,7 +95,7 @@ bool CommandAdd::checkIsDeadlineAfterCurrentTime() {
 bool CommandAdd::checkIsStartAfterCurrentTime() {
 	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask->getTaskStartTime();
 	if (!isStartAfterCurrentTime) {
-		_userMessage = "The start time has already passed!";
+		throw string("The start time has already passed!");
 	}
 	return isStartAfterCurrentTime;
 }
@@ -99,7 +103,7 @@ bool CommandAdd::checkIsStartAfterCurrentTime() {
 bool CommandAdd::checkIsEndAfterStart() {
 	bool isEndAfterStart = _currentTask->getTaskStartTime() <= _currentTask->getTaskEndTime();
 	if (!isEndAfterStart) {
-		_userMessage = "The end time cannot be before the start time!";
+		throw string("The end time cannot be before the start time!");
 	}
 	return isEndAfterStart;
 }
@@ -117,7 +121,7 @@ bool CommandAdd::checkIsInputTimeNotOccupied() {
 	for (i=0; unsigned(i)<listOfTimedTasks.size(); i++) {
 		if (_currentTask->isTaskOverlapWith(listOfTimedTasks[i])) {
 			isInputTimeNotOccupied = false;
-			_userMessage = "There is already a scheduled task at that slot!";
+			throw string("There is already a scheduled task at that slot!");
 			break;
 		}
 	}
