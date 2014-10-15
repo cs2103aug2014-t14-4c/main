@@ -6,6 +6,10 @@ CommandLoad::CommandLoad(void)
 }
 
 void CommandLoad::execute() {
-	LogicData::loadInitialSettings();
+	loadLogicDataSettings();
 	return;
+}
+
+void CommandLoad::loadLogicDataSettings() {
+	LogicData::loadInitialSettings();
 }

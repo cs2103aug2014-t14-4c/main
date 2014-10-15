@@ -1,7 +1,5 @@
 #pragma once
 #include "Command.h"
-#include "LogicData.h"
-#include <iostream>
 using namespace std;
 
 class CommandUndo: public Command {
@@ -9,11 +7,16 @@ class CommandUndo: public Command {
 		CommandUndo(void);
 		void execute();
 
-	private:
-		void runAllCommandsAgain();
-		void storeRemainingCommandsInHistory();
-		vector<Command*> _commandHistory;
+	protected:
+		// All Protected Attributes
 		int _currentCommandHistoryIndex;
-		bool checkIsUndoPossible();
+		vector<Command*> _commandHistory;
+
+		// All Protected Functions
+		void runAllRelevantCommandsAgain();
+		void storeRemainingCommandsInHistory();
+		bool checkIsCommandValid();
+		void retrieveCommandHistory();
+		void retrieveCommandHistoryIndex();
 };
 

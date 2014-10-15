@@ -1,6 +1,5 @@
 #pragma once
 #include "Command.h"
-#include "LogicData.h"
 #include "boost\date_time.hpp"
 using namespace std;
 using namespace boost::gregorian;
@@ -14,7 +13,6 @@ class CommandAdd: public Command {
 	protected:
 		bool checkIsCommandValid();
 		void performAddOperation();
-		void addUserMessageToCurrentState();
 		bool checkIfEnteredDateTimesValid();
 		bool checkIfOrderOfDateTimesValid();
 		bool checkIsInputTimeNotOccupied();

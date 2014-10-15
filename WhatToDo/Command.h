@@ -5,6 +5,7 @@
 #include <vector>
 #include "Task.h"
 #include "State.h"
+#include "LogicData.h"
 using namespace std;
 
 
@@ -12,23 +13,38 @@ class Command {
 	public:
 		Command(void);
 		virtual void execute();
-		string getSearchKeyword();
-		Task getCurrentTask();
+
+		// All Getter Functions
 		int getTaskIndex();
 		bool getParsedStatus();
+		string getSearchKeyword();
+		Task getCurrentTask();
+		
+		// All Setter Functions
+		void setTaskIndex(int commandTaskIndexToSet);
+		void setParsedStatus(bool parsedStatus);
 		void setSearchKeyword(string searchKeywordToSet);
 		void setCurrentTask(Task currentTaskToSet);
-		void setTaskIndex(int taskIndexToSet);
-		void setParsedStatus(bool parsedStatus);
 
 	protected:
-		string _searchKeyword;
-		Task _currentTask;
-		int _taskIndex;
-		string _userMessage;
-		State _currentState;
+		// All Command Attributes
+		bool _isParsedCorrectly;
 		bool _isCommandValid;
-		bool _parsedStatus;
+		int _commandTaskIndex;
+		string _searchKeyword;
+		string _userMessage;
+		Task _currentTask;
+		State _currentState;
+
+		// All Protected Functions
+		bool checkIsParsedCorrectly();
+		void retrieveExistingViewState();
+		void retrieveExistingCurrentState();
+		void setNewCurrentState();
+		void setNewViewState();
+		void addThisCommandToHistory(Command* commandToAdd);
+		void addUserMessageToCurrentState();
+		void resetLogicDataSettings();
 };
 
 #endif

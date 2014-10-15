@@ -6,18 +6,21 @@ CommandDelete::CommandDelete(void)
 }
 
 void CommandDelete::execute() {
-	if (!_parsedStatus) {
-		return;
+	checkIsParsedCorrectly();
+	
+	if (_isParsedCorrectly) {
+		retrieveExistingCurrentState();
+		performDeleteOperation();
+		addThisCommandToHistory(this);
+		setNewCurrentState();
+		setNewViewState();
 	}
-	_currentState = LogicData::getCurrentState();
-	performDeleteOperation();
-	LogicData::addCommandToHistory(this);
-	LogicData::setCurrentState(_currentState);
-	LogicData::setViewState(_currentState);
+
+	addUserMessageToCurrentState();
 	return;
 }
 
 void CommandDelete::performDeleteOperation() {
-	_currentState.deleteTask(_taskIndex);
+	_currentState.deleteTask(_commandTaskIndex);
 	return;
 }

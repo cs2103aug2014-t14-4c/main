@@ -6,28 +6,23 @@ CommandEdit::CommandEdit(void)
 }
 
 void CommandEdit::execute() {
-	if (!_parsedStatus) {
-		return;
-	}
-	_currentState = LogicData::getCurrentState();
-	if (!_parsedStatus) {
-		return;
-	}
-	_isCommandValid = checkIsCommandValid();
-	if (_isCommandValid) {
+	retrieveExistingCurrentState();
+	checkIsParsedCorrectly();
+	checkIsCommandValid();
+	
+	if (_isParsedCorrectly && _isCommandValid) {
 		deleteExistingTask();
 		performAddOperation();
-		LogicData::addCommandToHistory(this);
+		addThisCommandToHistory(this);
+		setNewCurrentState();
+		setNewViewState();
 	}
-	else {
-		addUserMessageToCurrentState();
-	}
-	LogicData::setCurrentState(_currentState);
-	LogicData::setViewState(_currentState);
+
+	addUserMessageToCurrentState();
 	return;
 }
 
 void CommandEdit::deleteExistingTask() {
-	_currentState.deleteTask(_taskIndex);
+	_currentState.deleteTask(_commandTaskIndex);
 	return;
 }

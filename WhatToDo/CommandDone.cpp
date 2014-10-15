@@ -6,18 +6,21 @@ CommandDone::CommandDone(void)
 }
 
 void CommandDone::execute() {
-	if (!_parsedStatus) {
-		return;
+	checkIsParsedCorrectly();
+	
+	if (_isParsedCorrectly) {
+		retrieveExistingCurrentState();
+		performDoneOperation();
+		addThisCommandToHistory(this);
+		setNewCurrentState();
+		setNewViewState();
 	}
-	_currentState = LogicData::getCurrentState();
-	performDoneOperation();
-	LogicData::addCommandToHistory(this);
-	LogicData::setCurrentState(_currentState);
-	LogicData::setViewState(_currentState);
+
+	addUserMessageToCurrentState();
 	return;
 }
 
 void CommandDone::performDoneOperation() {
-	_currentState.doneTask(_taskIndex);
+	_currentState.doneTask(_commandTaskIndex);
 	return;
 }

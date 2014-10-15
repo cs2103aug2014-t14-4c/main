@@ -6,21 +6,22 @@ CommandUndo::CommandUndo(void)
 }
 
 void CommandUndo::execute() {
-	if (!_parsedStatus) {
-		return;
-	}
-	_commandHistory = LogicData::getCommandHistory();
-	_currentCommandHistoryIndex = LogicData::getCurrentCommandHistoryIndex();
-	_isCommandValid = checkIsUndoPossible();
-	if (_isCommandValid) {
-		LogicData::resetToInitialSettings();
-		runAllCommandsAgain();
+	checkIsParsedCorrectly();
+	retrieveCommandHistory();
+	retrieveCommandHistoryIndex();
+	checkIsCommandValid();
+
+	if (_isParsedCorrectly && _isCommandValid) {
+		resetLogicDataSettings();
+		runAllRelevantCommandsAgain();
 		storeRemainingCommandsInHistory();
 	}
+
+	addUserMessageToCurrentState();
 	return;
 }
 
-void CommandUndo::runAllCommandsAgain() {
+void CommandUndo::runAllRelevantCommandsAgain() {
 	int i;
 	for (i=0; i<_currentCommandHistoryIndex; i++) {
 		_commandHistory[i]->execute();
@@ -37,7 +38,7 @@ void CommandUndo::storeRemainingCommandsInHistory() {
 	return;
 }
 
-bool CommandUndo::checkIsUndoPossible() {
+bool CommandUndo::checkIsCommandValid() {
 	bool isUndoPossible;
 	if (_currentCommandHistoryIndex <= 0) {
 		isUndoPossible = false;
@@ -47,4 +48,14 @@ bool CommandUndo::checkIsUndoPossible() {
 		_currentCommandHistoryIndex--;
 	}
 	return isUndoPossible;
+}
+
+void CommandUndo::retrieveCommandHistory() {
+	_commandHistory = LogicData::getCommandHistory();
+	return;
+}
+
+void CommandUndo::retrieveCommandHistoryIndex() {
+	_currentCommandHistoryIndex = LogicData::getCurrentCommandHistoryIndex();
+	return;
 }

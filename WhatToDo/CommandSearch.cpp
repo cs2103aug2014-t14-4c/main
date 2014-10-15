@@ -7,12 +7,15 @@ CommandSearch::CommandSearch(void)
 }
 
 void CommandSearch::execute() {
-	if (!_parsedStatus) {
-		return;
+	checkIsParsedCorrectly();
+
+	if (_isParsedCorrectly) {
+		retrieveExistingCurrentState();
+		performSearchOperation();
+		setNewViewState();
 	}
-	_currentState = LogicData::getCurrentState();
-	performSearchOperation();
-	LogicData::setViewState(_currentState);
+
+	addUserMessageToCurrentState();
 	return;
 }
 
@@ -21,19 +24,6 @@ void CommandSearch::performSearchOperation() {
 	getNameToSearchFor();
 	getListOfTaskIndexesNotMatchingSearch();
 	deleteListOfTaskIndexesNotMatchingSearch();
-
-	/*
-	int i;
-	string msg = "";
-	ostringstream a;
-	for (i=0; unsigned(i)<_tagsToSearchFor.size(); i++) {
-		a << _tagsToSearchFor[i] << " ";
-	}
-	msg = a.str();
-	_currentState.setUserMessage(msg + _stringToSearchFor);
-	*/
-
-
 	return;
 }
 
