@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
 #include <assert.h>
 #include "Task.h"
 #include "State.h"
@@ -36,6 +37,8 @@ class Command {
 		string _userMessage;
 		Task* _currentTask;
 		State* _currentState;
+		string _logFileName;
+		bool _loggingModeOn;
 
 		// All Protected Functions
 		bool checkIsParsedCorrectly();
@@ -46,6 +49,7 @@ class Command {
 		void addThisCommandToHistory(Command* commandToAdd);
 		void addUserMessageToCurrentState();
 		void resetLogicDataSettings();
+		void log(string stringToLog);
 };
 
 #endif

@@ -7,6 +7,7 @@ CommandSearch::CommandSearch(void)
 }
 
 void CommandSearch::execute() {
+	log("\nCommand Search Initiated:\n");
 	checkIsParsedCorrectly();
 
 	if (_isParsedCorrectly) {

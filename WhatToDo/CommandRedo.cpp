@@ -6,6 +6,7 @@ CommandRedo::CommandRedo(void)
 }
 
 void CommandRedo::execute() {
+	log("\nCommand Redo Initiated:\n");
 	checkIsParsedCorrectly();
 	retrieveCommandHistory();
 	retrieveCommandHistoryIndex();
@@ -31,5 +32,8 @@ bool CommandRedo::checkIsCommandValid() {
 		isRedoPossible = true;
 		_currentCommandHistoryIndex++;
 	}
+
+	log("Function called: checkIsCommandValid(): updated _currentCommandHistoryIndex: " + to_string(_currentCommandHistoryIndex) + "\n");
+	log("Function called: checkIsCommandValid(): isUndoPossible: " + to_string(isRedoPossible) + "\n");
 	return isRedoPossible;
 }

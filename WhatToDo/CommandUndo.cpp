@@ -7,6 +7,7 @@ CommandUndo::CommandUndo(void)
 
 void CommandUndo::execute() {
 	checkIsParsedCorrectly();
+	log("\nCommand Undo Initiated:\n");
 	retrieveCommandHistory();
 	retrieveCommandHistoryIndex();
 	assert(_currentCommandHistoryIndex >= 0);
@@ -27,6 +28,7 @@ void CommandUndo::runAllRelevantCommandsAgain() {
 	for (i=0; i<_currentCommandHistoryIndex; i++) {
 		_commandHistory[i]->execute();
 	}
+	log("Function called: runAllRelevantCommandsAgain(): _currentCommandHistoryIndex: " + to_string(_currentCommandHistoryIndex) + "\n");
 	return;
 }
 
@@ -36,6 +38,8 @@ void CommandUndo::storeRemainingCommandsInHistory() {
 		LogicData::addCommandToHistory(_commandHistory[i]);
 	}
 	LogicData::setCommandHistoryIndex(_currentCommandHistoryIndex);
+	log("Function called: storeRemainingCommandsInHistory(): size of _commandHistory: " + to_string(_commandHistory.size()) + "\n");
+	log("Function called: storeRemainingCommandsInHistory(): _currentCommandHistoryIndex: " + to_string(_currentCommandHistoryIndex) + "\n");
 	return;
 }
 
@@ -48,15 +52,20 @@ bool CommandUndo::checkIsCommandValid() {
 		isUndoPossible = true;
 		_currentCommandHistoryIndex--;
 	}
+
+	log("Function called: checkIsCommandValid(): updated _currentCommandHistoryIndex: " + to_string(_currentCommandHistoryIndex) + "\n");
+	log("Function called: checkIsCommandValid(): isUndoPossible: " + to_string(isUndoPossible) + "\n");
 	return isUndoPossible;
 }
 
 void CommandUndo::retrieveCommandHistory() {
 	_commandHistory = LogicData::getCommandHistory();
+	log("Function called: retrieveCommandHistory(): size of CommandHistory: " + to_string(_commandHistory.size()) + "\n");
 	return;
 }
 
 void CommandUndo::retrieveCommandHistoryIndex() {
 	_currentCommandHistoryIndex = LogicData::getCurrentCommandHistoryIndex();
+	log("Function called: retrieveCommandHistoryIndex(): _currentCommandHistoryIndex: " + to_string(_currentCommandHistoryIndex) + "\n");
 	return;
 }

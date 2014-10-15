@@ -7,6 +7,7 @@ CommandAdd::CommandAdd(void)
 
 void CommandAdd::execute() {
 	assert(_currentTask != NULL);
+	log("\nCommand Add Initiated:\n");
 	retrieveExistingCurrentState();
 	checkIsParsedCorrectly();
 	checkIsCommandValid();
@@ -28,6 +29,10 @@ bool CommandAdd::checkIsCommandValid() {
 	bool isInputTimeAlreadyOccupied = checkIsInputTimeNotOccupied();
 	bool isCommandValid = isEnteredDateTimesValid && isOrderOfDateTimesValid && isInputTimeAlreadyOccupied;
 	_isCommandValid = isCommandValid;
+	log("Function called: checkIsCommandValid(): isEnteredDateTimesValid: " + to_string(isEnteredDateTimesValid) + "\n");
+	log("Function called: checkIsCommandValid(): isOrderOfDateTimesValid: " + to_string(isOrderOfDateTimesValid) + "\n");
+	log("Function called: checkIsCommandValid(): isInputTimeAlreadyOccupied: " + to_string(isInputTimeAlreadyOccupied) + "\n");
+	log("Function called: checkIsCommandValid(): _isCommandValid: " + to_string(_isCommandValid) + "\n");
 	return isCommandValid;
 }
 
@@ -122,5 +127,6 @@ bool CommandAdd::checkIsInputTimeNotOccupied() {
 
 void CommandAdd::performAddOperation() {
 	_currentState->addTask(*_currentTask);
+	log("Function called: performAddOperation(): name of Task added: " + _currentTask->getTaskName() + "\n");
 	return;
 }

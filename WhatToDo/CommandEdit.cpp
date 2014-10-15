@@ -8,6 +8,7 @@ CommandEdit::CommandEdit(void)
 void CommandEdit::execute() {
 	assert(_currentTask != NULL);
 	assert(_commandTaskIndex >= 0);
+	log("\nCommand Edit Initiated:\n");
 	retrieveExistingCurrentState();
 	checkIsParsedCorrectly();
 	checkIsCommandValid();
@@ -26,5 +27,6 @@ void CommandEdit::execute() {
 
 void CommandEdit::deleteExistingTask() {
 	_currentState->deleteTask(_commandTaskIndex);
+	log("Function called: deleteExistingTask(): _commandTaskIndex deleted: " + to_string(_commandTaskIndex) + "\n");
 	return;
 }
