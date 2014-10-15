@@ -6,7 +6,7 @@ CommandAdd::CommandAdd(void)
 }
 
 void CommandAdd::execute() {
-	//assert(&_currentTask != NULL);
+	assert(_currentTask != NULL);
 	retrieveExistingCurrentState();
 	checkIsParsedCorrectly();
 	checkIsCommandValid();

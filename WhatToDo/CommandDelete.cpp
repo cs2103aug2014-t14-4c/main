@@ -6,6 +6,7 @@ CommandDelete::CommandDelete(void)
 }
 
 void CommandDelete::execute() {
+	assert(_commandTaskIndex >= 0);
 	checkIsParsedCorrectly();
 	
 	if (_isParsedCorrectly) {

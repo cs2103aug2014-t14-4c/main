@@ -6,6 +6,7 @@ CommandDone::CommandDone(void)
 }
 
 void CommandDone::execute() {
+	assert(_commandTaskIndex >= 0);
 	checkIsParsedCorrectly();
 	
 	if (_isParsedCorrectly) {

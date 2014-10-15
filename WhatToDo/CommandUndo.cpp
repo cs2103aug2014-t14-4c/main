@@ -9,6 +9,8 @@ void CommandUndo::execute() {
 	checkIsParsedCorrectly();
 	retrieveCommandHistory();
 	retrieveCommandHistoryIndex();
+	assert(_currentCommandHistoryIndex >= 0);
+	assert(_currentCommandHistoryIndex <= _commandHistory.size());
 	checkIsCommandValid();
 
 	if (_isParsedCorrectly && _isCommandValid) {

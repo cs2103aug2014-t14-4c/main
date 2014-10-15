@@ -6,6 +6,8 @@ CommandEdit::CommandEdit(void)
 }
 
 void CommandEdit::execute() {
+	assert(_currentTask != NULL);
+	assert(_commandTaskIndex >= 0);
 	retrieveExistingCurrentState();
 	checkIsParsedCorrectly();
 	checkIsCommandValid();
