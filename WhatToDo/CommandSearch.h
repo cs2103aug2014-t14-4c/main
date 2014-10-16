@@ -1,6 +1,5 @@
 #pragma once
 #include "Command.h"
-#include "LogicData.h"
 using namespace std;
 
 class CommandSearch: public Command {

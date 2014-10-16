@@ -7,12 +7,20 @@ CommandSearch::CommandSearch(void)
 }
 
 void CommandSearch::execute() {
-	if (!_parsedStatus) {
-		return;
+	log("\nCommand Search Initiated:\n");
+
+	try {
+		checkIsParsedCorrectly();
+		retrieveExistingCurrentState();
+		performSearchOperation();
+		setNewViewState();
 	}
-	_currentState = LogicData::getCurrentState();
-	performSearchOperation();
-	LogicData::setViewState(_currentState);
+	catch (string errorMsg) {
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
+	}
+	
 	return;
 }
 
@@ -21,19 +29,6 @@ void CommandSearch::performSearchOperation() {
 	getNameToSearchFor();
 	getListOfTaskIndexesNotMatchingSearch();
 	deleteListOfTaskIndexesNotMatchingSearch();
-
-	/*
-	int i;
-	string msg = "";
-	ostringstream a;
-	for (i=0; unsigned(i)<_tagsToSearchFor.size(); i++) {
-		a << _tagsToSearchFor[i] << " ";
-	}
-	msg = a.str();
-	_currentState.setUserMessage(msg + _stringToSearchFor);
-	*/
-
-
 	return;
 }
 
@@ -74,7 +69,7 @@ void CommandSearch::getNameToSearchFor() {
 
 void CommandSearch::getListOfTaskIndexesNotMatchingSearch() {
 	int i;
-	vector<Task> listOfAllTasks = _currentState.getAllTasks();
+	vector<Task> listOfAllTasks = _currentState->getAllTasks();
 	
 	for (i=0; unsigned(i)<listOfAllTasks.size(); i++) {
 		if (!checkIsFitsSearchCriteria(listOfAllTasks[i])) {
@@ -89,7 +84,7 @@ void CommandSearch::deleteListOfTaskIndexesNotMatchingSearch() {
 	int i;
 
 	for (i=0; unsigned(i)<_listOfTaskIndexesToDelete.size(); i++) {
-		_currentState.deleteTask(_listOfTaskIndexesToDelete[i]);
+		_currentState->deleteTask(_listOfTaskIndexesToDelete[i]);
 	}
 	return;
 }

@@ -6,18 +6,28 @@ CommandDone::CommandDone(void)
 }
 
 void CommandDone::execute() {
-	if (!_parsedStatus) {
-		return;
+	log("\nCommand Done Initiated:\n");
+	assert(_commandTaskIndex >= 0);
+	
+	try {
+		checkIsParsedCorrectly();
+		retrieveExistingCurrentState();
+		performDoneOperation();
+		addThisCommandToHistory(this);
+		setNewCurrentState();
+		setNewViewState();
 	}
-	_currentState = LogicData::getCurrentState();
-	performDoneOperation();
-	LogicData::addCommandToHistory(this);
-	LogicData::setCurrentState(_currentState);
-	LogicData::setViewState(_currentState);
+	catch (string errorMsg) {
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
+	}
+
 	return;
 }
 
 void CommandDone::performDoneOperation() {
-	_currentState.doneTask(_taskIndex);
+	_currentState->doneTask(_commandTaskIndex);
+	log("Function called: performDoneOperation(): _commandTaskIndex marked as done: " + to_string(_commandTaskIndex) + "\n");
 	return;
 }

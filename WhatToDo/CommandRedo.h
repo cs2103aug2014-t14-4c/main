@@ -1,19 +1,14 @@
 #pragma once
-#include "Command.h"
-#include "LogicData.h"
+#include "CommandUndo.h"
 using namespace std;
 
-class CommandRedo: public Command {
+class CommandRedo: public CommandUndo {
 	public:
 		CommandRedo(void);
 		void execute();
 
 	private:
-		void runAllCommandsAgain();
-		void storeRemainingCommandsInHistory();
-		vector<Command*> _commandHistory;
-		int _currentCommandHistoryIndex;
-		bool checkIsRedoPossible();
+		bool checkIsCommandValid();
 
 };
 

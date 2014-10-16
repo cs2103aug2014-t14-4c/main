@@ -1,6 +1,5 @@
 #pragma once
 #include "Command.h"
-#include "LogicData.h"
 using namespace std;
 
 class CommandLoad: public Command {
@@ -9,6 +8,6 @@ class CommandLoad: public Command {
 		void execute();
 
 	private:
-
+		void loadLogicDataSettings();
 };
 

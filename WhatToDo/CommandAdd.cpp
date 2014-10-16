@@ -6,20 +6,24 @@ CommandAdd::CommandAdd(void)
 }
 
 void CommandAdd::execute() {
-	_currentState = LogicData::getCurrentState();
-	if (!_parsedStatus) {
-		return;
-	}
-	_isCommandValid = checkIsCommandValid();
-	if (_isCommandValid) {
+	log("\nCommand Add Initiated:\n");
+	assert(_currentTask != NULL);
+	
+	try {
+		checkIsParsedCorrectly();
+		retrieveExistingCurrentState();
+		checkIsCommandValid();
 		performAddOperation();
-		LogicData::addCommandToHistory(this);
+		addThisCommandToHistory(this);
+		setNewCurrentState();
+		setNewViewState();
 	}
-	else {
+	catch (string errorMsg) {
+		retrieveExistingViewState();
 		addUserMessageToCurrentState();
+		setNewViewState();
 	}
-	LogicData::setCurrentState(_currentState);
-	LogicData::setViewState(_currentState);
+
 	return;
 }
 
@@ -28,21 +32,26 @@ bool CommandAdd::checkIsCommandValid() {
 	bool isOrderOfDateTimesValid = checkIfOrderOfDateTimesValid();
 	bool isInputTimeAlreadyOccupied = checkIsInputTimeNotOccupied();
 	bool isCommandValid = isEnteredDateTimesValid && isOrderOfDateTimesValid && isInputTimeAlreadyOccupied;
+	_isCommandValid = isCommandValid;
+	log("Function called: checkIsCommandValid(): isEnteredDateTimesValid: " + to_string(isEnteredDateTimesValid) + "\n");
+	log("Function called: checkIsCommandValid(): isOrderOfDateTimesValid: " + to_string(isOrderOfDateTimesValid) + "\n");
+	log("Function called: checkIsCommandValid(): isInputTimeAlreadyOccupied: " + to_string(isInputTimeAlreadyOccupied) + "\n");
+	log("Function called: checkIsCommandValid(): _isCommandValid: " + to_string(_isCommandValid) + "\n");
 	return isCommandValid;
 }
 
 bool CommandAdd::checkIfEnteredDateTimesValid() {
-	int currentTaskType = _currentTask.getTaskType();
+	int currentTaskType = _currentTask->getTaskType();
 	bool isStartDateTimeValid = true;
 	bool isEndDateTimeValid = true;
 	bool isDeadlineDateTimeValid = true;
 
-	if (currentTaskType == 1) {
-		bool isStartDateTimeValid = checkIsDateTimeValid(_currentTask.getTaskStartTime());
-		bool isEndDateTimeValid = checkIsDateTimeValid(_currentTask.getTaskEndTime());
+	if (currentTaskType == Task::FIXEDTIME) {
+		isStartDateTimeValid = checkIsDateTimeValid(_currentTask->getTaskStartTime());
+		isEndDateTimeValid = checkIsDateTimeValid(_currentTask->getTaskEndTime());
 	}
-	else if (currentTaskType == 2) {
-		bool isDeadlineDateTimeValid = checkIsDateTimeValid(_currentTask.getTaskDeadline());
+	else if (currentTaskType == Task::DEADLINE) {
+		isDeadlineDateTimeValid = checkIsDateTimeValid(_currentTask->getTaskDeadline());
 	}
 
 	bool isEnteredDateTimesValid = isStartDateTimeValid && isEndDateTimeValid && isDeadlineDateTimeValid;
@@ -52,21 +61,21 @@ bool CommandAdd::checkIfEnteredDateTimesValid() {
 bool CommandAdd::checkIsDateTimeValid(ptime dateTimeToCheck) {
 	bool isDateTimeValid =(dateTimeToCheck != not_a_date_time);
 	if (!isDateTimeValid) {
-		_userMessage = "Date entered was not valid!";
+		throw string("Date entered was not valid!");
 	}	
 	return isDateTimeValid;
 }
 	
 bool CommandAdd::checkIfOrderOfDateTimesValid() {
-	int currentTaskType = _currentTask.getTaskType();
+	int currentTaskType = _currentTask->getTaskType();
 	bool isOrderOfDateTimesValid = true;
 
-	if (currentTaskType == 1) {
+	if (currentTaskType == Task::FIXEDTIME) {
 		bool isStartAfterCurrentTime = checkIsStartAfterCurrentTime();
 		bool isEndAfterStart = checkIsEndAfterStart();
 		isOrderOfDateTimesValid = isStartAfterCurrentTime && isEndAfterStart;
 	}
-	else if (currentTaskType == 2) {
+	else if (currentTaskType == Task::DEADLINE) {
 		bool isDeadlineAfterCurrentTime = checkIsDeadlineAfterCurrentTime();
 		isOrderOfDateTimesValid = isDeadlineAfterCurrentTime;
 	}
@@ -75,44 +84,44 @@ bool CommandAdd::checkIfOrderOfDateTimesValid() {
 }
 
 bool CommandAdd::checkIsDeadlineAfterCurrentTime() {
-	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask.getTaskDeadline();
+	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask->getTaskDeadline();
 	if (!isStartAfterCurrentTime) {
-		_userMessage = "The deadline has already passed!";
+		throw string("The deadline has already passed!");
 	}
 	return isStartAfterCurrentTime;
 }
 
 
 bool CommandAdd::checkIsStartAfterCurrentTime() {
-	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask.getTaskStartTime();
+	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask->getTaskStartTime();
 	if (!isStartAfterCurrentTime) {
-		_userMessage = "The start time has already passed!";
+		throw string("The start time has already passed!");
 	}
 	return isStartAfterCurrentTime;
 }
 
 bool CommandAdd::checkIsEndAfterStart() {
-	bool isEndAfterStart = _currentTask.getTaskStartTime() <= _currentTask.getTaskEndTime();
+	bool isEndAfterStart = _currentTask->getTaskStartTime() <= _currentTask->getTaskEndTime();
 	if (!isEndAfterStart) {
-		_userMessage = "The end time cannot be before the start time!";
+		throw string("The end time cannot be before the start time!");
 	}
 	return isEndAfterStart;
 }
 
 bool CommandAdd::checkIsInputTimeNotOccupied() {
-	vector<Task> listOfTimedTasks = _currentState.getTimedTasks();
-	int currentTaskType = _currentTask.getTaskType();
+	vector<Task> listOfTimedTasks = _currentState->getTimedTasks();
+	int currentTaskType = _currentTask->getTaskType();
 	bool isInputTimeNotOccupied = true;
 	int i;
 
-	if (currentTaskType != 1) {
+	if (currentTaskType != Task::FIXEDTIME) {
 		return isInputTimeNotOccupied;
 	}
 
 	for (i=0; unsigned(i)<listOfTimedTasks.size(); i++) {
-		if (_currentTask.isTaskOverlapWith(listOfTimedTasks[i])) {
+		if (_currentTask->isTaskOverlapWith(listOfTimedTasks[i])) {
 			isInputTimeNotOccupied = false;
-			_userMessage = "There is already a scheduled task at that slot!";
+			throw string("There is already a scheduled task at that slot!");
 			break;
 		}
 	}
@@ -121,11 +130,7 @@ bool CommandAdd::checkIsInputTimeNotOccupied() {
 }
 
 void CommandAdd::performAddOperation() {
-	_currentState.addTask(_currentTask);
-	return;
-}
-
-void CommandAdd::addUserMessageToCurrentState() {
-	_currentState.setUserMessage(_userMessage);
+	_currentState->addTask(*_currentTask);
+	log("Function called: performAddOperation(): name of Task added: " + _currentTask->getTaskName() + "\n");
 	return;
 }

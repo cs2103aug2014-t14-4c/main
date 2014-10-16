@@ -6,10 +6,18 @@ CommandClear::CommandClear(void)
 }
 
 void CommandClear::execute() {
-	if (!_parsedStatus) {
-		return;
+	log("\nCommand Clear Initiated:\n");
+	
+	try {
+		checkIsParsedCorrectly();
+		retrieveExistingCurrentState();
+		setNewViewState();
 	}
-	_currentState = LogicData::getCurrentState();
-	LogicData::setViewState(_currentState);
+	catch (string errorMsg) {
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
+	}
+
 	return;
 }

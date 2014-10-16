@@ -6,28 +6,31 @@ CommandEdit::CommandEdit(void)
 }
 
 void CommandEdit::execute() {
-	if (!_parsedStatus) {
-		return;
-	}
-	_currentState = LogicData::getCurrentState();
-	if (!_parsedStatus) {
-		return;
-	}
-	_isCommandValid = checkIsCommandValid();
-	if (_isCommandValid) {
+	log("\nCommand Edit Initiated:\n");
+	assert(_currentTask != NULL);
+	assert(_commandTaskIndex >= 0);
+	
+	try {
+		checkIsParsedCorrectly();
+		retrieveExistingCurrentState();
+		checkIsCommandValid();
 		deleteExistingTask();
 		performAddOperation();
-		LogicData::addCommandToHistory(this);
+		addThisCommandToHistory(this);
+		setNewCurrentState();
+		setNewViewState();
 	}
-	else {
+	catch (string errorMsg) {
+		retrieveExistingViewState();
 		addUserMessageToCurrentState();
+		setNewViewState();
 	}
-	LogicData::setCurrentState(_currentState);
-	LogicData::setViewState(_currentState);
+
 	return;
 }
 
 void CommandEdit::deleteExistingTask() {
-	_currentState.deleteTask(_taskIndex);
+	_currentState->deleteTask(_commandTaskIndex);
+	log("Function called: deleteExistingTask(): _commandTaskIndex deleted: " + to_string(_commandTaskIndex) + "\n");
 	return;
 }

@@ -6,6 +6,22 @@ CommandLoad::CommandLoad(void)
 }
 
 void CommandLoad::execute() {
-	LogicData::loadInitialSettings();
+	log("\nCommand Load initiated:\n");
+
+	try {
+		checkIsParsedCorrectly();
+		loadLogicDataSettings();
+	}
+	catch (string errorMsg) {
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
+	}
+
 	return;
+}
+
+void CommandLoad::loadLogicDataSettings() {
+	LogicData::loadInitialSettings();
+	log("Function called: loadLogicDataSettings()\n");
 }

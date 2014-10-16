@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "Command.h"
 #include "CommandAdd.h"
 #include "CommandDelete.h"
@@ -13,17 +14,14 @@
 #include "LogicParserCommandDetailsParser.h"
 #include "LogicParserStringModifier.h"
 
-//TODO
-//Use patterns to detect more variations of the various commands.
-
-const std::string COMMAND_DELETE = "/delete";
-const std::string COMMAND_DONE = "/done";
-const std::string COMMAND_CLEAR = "/clear";
-const std::string COMMAND_EDIT = "/edit";
-const std::string COMMAND_LOAD = "/load";
-const std::string COMMAND_REDO = "/redo";
-const std::string COMMAND_SEARCH = "/search";
-const std::string COMMAND_UNDO = "/undo";
+const std::array<std::string, 2> COMMANDS_CLEAR = {"/clear", "/c"};
+const std::array<std::string, 3> COMMANDS_DELETE = {"/delete", "/del", "/d"};
+const std::array<std::string, 3> COMMANDS_DONE = {"/done, /ok, /finished"};
+const std::array<std::string, 2> COMMANDS_EDIT = {"/edit", "/e"};
+const std::array<std::string, 1> COMMANDS_LOAD = {"/load"};
+const std::array<std::string, 2> COMMANDS_REDO = {"/redo", "/r"};
+const std::array<std::string, 4> COMMANDS_SEARCH = {"/search", "/s", "/find", "/f"};
+const std::array<std::string, 2> COMMANDS_UNDO = {"/undo", "/u"};
 
 class LogicParserCommandCreator {
 public:
@@ -36,6 +34,15 @@ private:
 
 	std::string getUserCommand(void);
 	std::string getParameters(void);
+	
+	bool isClearCommand(void);
+	bool isDeleteCommand(void);
+	bool isDoneCommand(void);
+	bool isEditCommand(void);
+	bool isLoadCommand(void);
+	bool isRedoCommand(void);
+	bool isSearchCommand(void);
+	bool isUndoCommand(void);
 
 	Command* createAddCommand(void);
 	Command* createClearCommand(void);
@@ -47,8 +54,8 @@ private:
 	Command* createSearchCommand(void);
 	Command* createUndoCommand(void);
 
-	bool isValidCommandWithStringParameters(void);
-	bool isValidCommandWithIndexParameters(void);
-	bool isValidCommandWithNoParameters(void);
+	bool isCommandWithParameters(void);
+	bool isCommandWithNoParameters(void);
+	bool isCommandWithIndexParameters(void);
 };
 

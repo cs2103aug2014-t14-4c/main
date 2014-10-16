@@ -6,45 +6,41 @@ CommandRedo::CommandRedo(void)
 }
 
 void CommandRedo::execute() {
-	if (!_parsedStatus) {
-		return;
-	}
-	_commandHistory = LogicData::getCommandHistory();
-	_currentCommandHistoryIndex = LogicData::getCurrentCommandHistoryIndex();
-	_isCommandValid = checkIsRedoPossible();
-	if (_isCommandValid) {
-		LogicData::resetToInitialSettings();
-		runAllCommandsAgain();
+	log("\nCommand Redo Initiated:\n");
+	retrieveCommandHistory();
+	retrieveCommandHistoryIndex();
+	assert(_currentCommandHistoryIndex >= 0);
+	assert(_currentCommandHistoryIndex <= _commandHistory.size());
+	
+	try {
+		checkIsParsedCorrectly();
+		checkIsCommandValid();
+		resetLogicDataSettings();
+		runAllRelevantCommandsAgain();
 		storeRemainingCommandsInHistory();
 	}
-	return;
-}
-
-void CommandRedo::runAllCommandsAgain() {
-	int i;
-	for (i=0; i<_currentCommandHistoryIndex; i++) {
-		_commandHistory[i]->execute();
+	catch (string errorMsg) {
+		_userMessage = errorMsg;
+		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
 	}
+
 	return;
 }
 
-void CommandRedo::storeRemainingCommandsInHistory() {
-	int i;
-	for (i=_currentCommandHistoryIndex; unsigned(i)<_commandHistory.size(); i++) {
-		LogicData::addCommandToHistory(_commandHistory[i]);
-	}
-	LogicData::setCommandHistoryIndex(_currentCommandHistoryIndex);
-	return;
-}
-
-bool CommandRedo::checkIsRedoPossible() {
+bool CommandRedo::checkIsCommandValid() {
 	bool isRedoPossible;
-	if (unsigned(_currentCommandHistoryIndex) >= _commandHistory.size()) {
+	if ((_currentCommandHistoryIndex < 0) || (_currentCommandHistoryIndex >= _commandHistory.size())) {
+		throw string("Cannot redo anymore!");
 		isRedoPossible = false;
 	}
 	else {
 		isRedoPossible = true;
 		_currentCommandHistoryIndex++;
 	}
+
+	log("Function called: checkIsCommandValid(): updated _currentCommandHistoryIndex: " + to_string(_currentCommandHistoryIndex) + "\n");
+	log("Function called: checkIsCommandValid(): isUndoPossible: " + to_string(isRedoPossible) + "\n");
 	return isRedoPossible;
 }
