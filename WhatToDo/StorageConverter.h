@@ -12,9 +12,11 @@ class StorageConverter{
 		Task convertedTask; 
 		vector<string> taskStringAttributes;
 		string taskDatetimeString; 
+		string taskName;
+		string taskTags;
+		string taskIsDone; 
 
 	public:
-
 		static string TITLE_TASKSTARTDATETIME;
 		static string TITLE_TASKENDDATETIME;
 		static string TITLE_TASKDEADLINE;
@@ -27,14 +29,22 @@ class StorageConverter{
 
 		//primary conversion functions
 		vector<string> convertTaskToString(Task taskToConvert);
-		Task convertStringToTask(vector<string> stringToConvert);
 
-		//secondary coversion functions
-		string ptimeToStringConverter(ptime myDatetime);
-		string ptimeDurationToStringConverter(time_duration myDuration);
-		string boolConverter(bool boolToConvert);
-		string taskTagVectorToStringConverter(vector<string> taskTags);
+		//subfunctions for conversion from task to string
+		string convertTaskPtimeToString(ptime myDatetime);
+		string convertTaskPtimeDurationToString(time_duration myDuration);
+		string convertTaskBoolToString(bool boolToConvert);
+		string convertTaskTagVectorToString(vector<string> taskTags);
+
+		//primary conversion function
+		Task convertStringToTask(vector<string> stringToConvert);
+		
+		//secondary functions for conversion from string to task
 		vector<string> taskTagStringToVectorConverter(string tagString);
-		bool taskStringToBooleanConverter(string boolString);
-};
+		void convertStringIsdoneToTask();
+		void convertStringStartDatetimeToTask();
+		void convertStringEndDatetimeToTask();
+		void convertStringDeadlineToTask();
+		void convertStringTasktagToTask();
+}; 
 
