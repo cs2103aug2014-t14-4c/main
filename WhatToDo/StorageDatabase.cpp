@@ -1,5 +1,6 @@
 #include "StorageDatabase.h"
 #include <fstream>
+#include <iostream>
 using namespace std;
 
 StorageDatabase::StorageDatabase(){
@@ -13,9 +14,28 @@ int StorageDatabase::NO_OF_ATTRIBUTES = 6;
 void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToWrite){
 	
 	vector<vector<string>>::iterator taskVectorIterator = taskStringVectorToWrite.begin(); 
+	assert(&taskVectorIterator != NULL);
 	
 	ofstream writeFile;
 	writeFile.open(fileName);
+
+	try{
+		//note that can be created as a function so can test elsewhere in programme
+		if(NO_OF_ATTRIBUTES < 6){
+			throw 1;
+		}
+		if(NO_OF_ATTRIBUTES >6){
+			throw 2;
+		}
+	}catch(int errorCode){
+		if(errorCode == 1){
+			cout << "number of attributes less than 6!!" << endl;
+		}
+		if(errorCode ==2){
+			cout << "number of attributes more than 6!" << endl;
+		}
+	}
+
 	//write individual task attributes
 	while(taskVectorIterator != taskStringVectorToWrite.end()){
 		for(int i = START; i< NO_OF_ATTRIBUTES; i++){
@@ -29,16 +49,17 @@ void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToW
 	return;
 }
 
+//logic:
+//1. check no of attributes for each task
+//2. ifstream to getline the amount of attributes to store in the vector<string>
+//3. push the vector<string> into the vector of vectors
 vector<vector<string>> StorageDatabase::readFromDatabase(){
 
-	//logic: check if works 
-	//1. check no of attributes for each task
-	//2. ifstream to getline the amount of attributes to store in the vector<string>
-	//3. push the vector<string> into the vector of vectors
 	vector<vector<string>> stringToRead; 
 	vector<string> individualReadFile;
 	ifstream readFile(fileName);
 	string myText; 
+	
 	//if peek != end of file, it will getline to read in the indvidual strings
 	while(readFile.peek()!=EOF){
 		for(int i = START; i<NO_OF_ATTRIBUTES; i++){
@@ -50,9 +71,9 @@ vector<vector<string>> StorageDatabase::readFromDatabase(){
 		stringToRead.push_back(individualReadFile);
 		//clear to be ready for the next vector<string>
 		individualReadFile.clear();
+		assert(individualReadFile.empty());
 	}
 	readFile.close();
-	//how toooo readd??????
 
 	return stringToRead; 
 }
