@@ -1,5 +1,6 @@
 #pragma once
 #include "Command.h"
+#include "CommandSearchPowerSearch.h"
 using namespace std;
 
 class CommandSearch: public Command {
@@ -20,6 +21,6 @@ class CommandSearch: public Command {
 		string _stringToSearchFor;
 		vector<int> _listOfTaskIndexesToDelete;
 		string convertToLower(string toConvert);
-
+		CommandSearchPowerSearch* _myPowerSearch;
 };
 

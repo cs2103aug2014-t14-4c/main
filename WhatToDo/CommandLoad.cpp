@@ -13,6 +13,7 @@ void CommandLoad::execute() {
 		loadLogicDataSettings();
 	}
 	catch (string errorMsg) {
+		_userMessage = errorMsg;
 		retrieveExistingViewState();
 		addUserMessageToCurrentState();
 		setNewViewState();

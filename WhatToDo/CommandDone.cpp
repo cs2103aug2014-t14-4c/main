@@ -18,6 +18,7 @@ void CommandDone::execute() {
 		setNewViewState();
 	}
 	catch (string errorMsg) {
+		_userMessage = errorMsg;
 		retrieveExistingViewState();
 		addUserMessageToCurrentState();
 		setNewViewState();

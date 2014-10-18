@@ -2,8 +2,8 @@
 #include <sstream>
 using namespace std;
 
-CommandSearch::CommandSearch(void)
-{
+CommandSearch::CommandSearch(void) {
+	_myPowerSearch = new CommandSearchPowerSearch;
 }
 
 void CommandSearch::execute() {
@@ -16,6 +16,7 @@ void CommandSearch::execute() {
 		setNewViewState();
 	}
 	catch (string errorMsg) {
+		_userMessage = errorMsg;
 		retrieveExistingViewState();
 		addUserMessageToCurrentState();
 		setNewViewState();
@@ -125,7 +126,7 @@ bool CommandSearch::checkIsFitsTagSearchCriteria(Task taskToCheck) {
 
 bool CommandSearch::checkIsFitsNameSearchCriteria(Task taskToCheck) {
 	string taskName = taskToCheck.getTaskName();
-	bool isFitsNameSearchCriteria = convertToLower(taskName).find(_stringToSearchFor) != string::npos;
+	bool isFitsNameSearchCriteria = _myPowerSearch->checkIsFound(convertToLower(taskName), _stringToSearchFor);
 	return isFitsNameSearchCriteria;
 }
 
