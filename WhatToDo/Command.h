@@ -21,12 +21,14 @@ class Command {
 		bool getParsedStatus();
 		string getSearchKeyword();
 		Task getCurrentTask();
+		string getUserMessage();
 		
 		// All Setter Functions
 		void setTaskIndex(int commandTaskIndexToSet);
 		void setParsedStatus(bool parsedStatus);
 		void setSearchKeyword(string searchKeywordToSet);
 		void setCurrentTask(Task currentTaskToSet);
+		void setUserMessage(string userMessageToSet);
 
 	protected:
 		// All Command Attributes

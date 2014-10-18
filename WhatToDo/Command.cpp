@@ -32,6 +32,10 @@ Task Command::getCurrentTask() {
 	return *_currentTask;
 }
 
+string Command::getUserMessage() {
+	return _userMessage;
+}
+
 void Command::setTaskIndex(int commandTaskIndexToSet) {
 	_commandTaskIndex = commandTaskIndexToSet;
 	return;
@@ -50,6 +54,11 @@ void Command::setSearchKeyword(string searchKeywordToSet) {
 void Command::setCurrentTask(Task currentTaskToSet) {
 	_currentTask = new Task;
 	*_currentTask = currentTaskToSet;
+	return;
+}
+
+void Command::setUserMessage(string userMessageToSet) {
+	_userMessage = userMessageToSet;
 	return;
 }
 
