@@ -1,12 +1,16 @@
 #include "CommandClear.h"
 
+// These are the static variables that cannot be initialized in header file
 
-CommandClear::CommandClear(void)
-{
+string CommandClear::LOGGING_MSG_EXECUTE_COMMAND_CLEAR = "\nCommand Clear Initiated:\n";
+
+
+CommandClear::CommandClear(void) {
 }
 
 void CommandClear::execute() {
-	log("\nCommand Clear Initiated:\n");
+	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_CLEAR.c_str());
+	log(buffer);
 	
 	try {
 		checkIsParsedCorrectly();

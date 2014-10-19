@@ -1,5 +1,9 @@
 #include "CommandSearchPowerSearch.h"
 
+int CommandSearchPowerSearch::INITIAL_VALUE_PARTIAL_SHORT_HAND_INDEX = 1;
+int CommandSearchPowerSearch::INITIAL_VALUE_FUZZYSEARCH_IDEAL_FOUND_INDEX = 0;
+int CommandSearchPowerSearch::INITIAL_VALUE_FUZZYSEARCH_DEFAULT_ERROR = 1;
+double CommandSearchPowerSearch::FUZZY_SEARCH_MATCH_REORD_TOLERANCE = 0.75;
 
 CommandSearchPowerSearch::CommandSearchPowerSearch(void) {
 }
@@ -92,7 +96,7 @@ bool CommandSearchPowerSearch::checkIsFoundByShorthandSearch(string searchToken)
 
 	for (i=0; unsigned(i)<tokenizedMainString.size(); i++) {
 		string currentMainToken = tokenizedMainString[i];
-		int indexPartialShorthandLastFound = 1;
+		int indexPartialShorthandLastFound = INITIAL_VALUE_PARTIAL_SHORT_HAND_INDEX;
 		isFound = true;
 		
 		for (j=0; unsigned(j)<searchToken.size(); j++) {
@@ -199,11 +203,11 @@ string CommandSearchPowerSearch::getFirstCharacters(vector<string> tokenizedMain
 bool CommandSearchPowerSearch::checkIsMatchesFuzzySearch(string mainToken, string searchToken) {
 	vector<int> matchRecord;
 	vector<int> errorRecord;
-	int idealFoundIndex = 0;
+	int defaultError = INITIAL_VALUE_FUZZYSEARCH_DEFAULT_ERROR;
+	int idealFoundIndex = INITIAL_VALUE_FUZZYSEARCH_IDEAL_FOUND_INDEX;
 	int actualFoundIndex;
-	int defaultError = 1;
-	int lowerBound = 0;
-	int upperBound = 0;
+	int lowerBound;
+	int upperBound;
 	int i;
 	bool isFound;
 
@@ -249,9 +253,8 @@ int CommandSearchPowerSearch::toZeroIfNegative(int toConvert) {
 }
 
 bool CommandSearchPowerSearch::detIfmatchRecordAcceptable(vector<int> matchRecord) {
-	double tolerance = 0.8;
-	double percentageFit = 0;
-	double totalSum = 0.0;
+	double percentageFit;
+	double totalSum = 0;
 	int i;
 
 	for (i=0; unsigned(i)<matchRecord.size(); i++) {
@@ -260,7 +263,7 @@ bool CommandSearchPowerSearch::detIfmatchRecordAcceptable(vector<int> matchRecor
 
 	percentageFit = totalSum / matchRecord.size();
 
-	if (percentageFit >= tolerance) {
+	if (percentageFit >= FUZZY_SEARCH_MATCH_REORD_TOLERANCE) {
 		return true;
 	}
 	else {

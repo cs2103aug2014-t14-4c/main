@@ -1,13 +1,18 @@
 #include "CommandSearch.h"
-#include <sstream>
-using namespace std;
+
+// These are the static variables that cannot be initialized in header file
+
+string CommandSearch::TAG_DELIMITER = "#";
+string CommandSearch::LOGGING_MSG_EXECUTE_COMMAND_SEARCH = "\nCommand Search Initiated:\n";
+
 
 CommandSearch::CommandSearch(void) {
 	_myPowerSearch = new CommandSearchPowerSearch;
 }
 
 void CommandSearch::execute() {
-	log("\nCommand Search Initiated:\n");
+	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_SEARCH.c_str());
+	log(buffer);
 
 	try {
 		checkIsParsedCorrectly();
@@ -40,9 +45,9 @@ void CommandSearch::getTagsToSearchFor() {
 	int endPos;
 	string currentTag;
 
-	while (_searchKeyword.find("#", posOfNextTag) != string::npos) {
-		posOfCurrentTag = _searchKeyword.find("#", posOfNextTag);
-		posOfNextTag = _searchKeyword.find("#", posOfCurrentTag+1);
+	while (_searchKeyword.find(TAG_DELIMITER, posOfNextTag) != string::npos) {
+		posOfCurrentTag = _searchKeyword.find(TAG_DELIMITER, posOfNextTag);
+		posOfNextTag = _searchKeyword.find(TAG_DELIMITER, posOfCurrentTag+1);
 
 		if (posOfNextTag != string::npos) {
 			startPos = posOfCurrentTag + 1;
@@ -63,7 +68,7 @@ void CommandSearch::getTagsToSearchFor() {
 }
 
 void CommandSearch::getNameToSearchFor() {
-	int firstTagPos = _searchKeyword.find("#");
+	int firstTagPos = _searchKeyword.find(TAG_DELIMITER);
 	_stringToSearchFor = _searchKeyword.substr(0,firstTagPos);
 	return;
 }

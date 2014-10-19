@@ -1,5 +1,7 @@
 #pragma once
+
 #include "CommandUndo.h"
+
 using namespace std;
 
 class CommandRedo: public CommandUndo {
@@ -7,8 +9,17 @@ class CommandRedo: public CommandUndo {
 		CommandRedo(void);
 		void execute();
 
-	private:
-		bool checkIsCommandValid();
+	protected:
 
+		// CommandRedo Functions For Execution
+
+		bool checkIsCommandValid();
+		
+		// All Static Constants And Variables
+
+		static string LOGGING_MSG_EXECUTE_COMMAND_REDO;
+		static string LOGGING_MSG_CHECK_IS_COMMAND_VALID;
+
+		static string ERROR_MSG_CANNOT_REDO_ANYMORE;
 };
 

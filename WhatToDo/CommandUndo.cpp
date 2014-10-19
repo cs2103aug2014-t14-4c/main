@@ -1,12 +1,23 @@
 #include "CommandUndo.h"
 
+// These are the static variables that cannot be initialized in header file
 
-CommandUndo::CommandUndo(void)
-{
+string CommandUndo::LOGGING_MSG_EXECUTE_COMMAND_UNDO = "\nCommand Add Initiated:\n";
+string CommandUndo::LOGGING_MSG_RUN_RELEVANT_COMMANDS_AGAIN = "Function called: runAllRelevantCommandsAgain(): _currentCommandHistoryIndex: %s\n";
+string CommandUndo::LOGGING_MSG_STORE_REMAINING_COMMANDS = "Function called: storeRemainingCommandsInHistory(): size of _commandHistory: %s\nFunction called: storeRemainingCommandsInHistory(): _currentCommandHistoryIndex: %s\n";
+string CommandUndo::LOGGING_MSG_CHECK_IS_COMMAND_VALID = "Function called: checkIsCommandValid(): updated _currentCommandHistoryIndex: %s\nFunction called: checkIsCommandValid(): isUndoPossible: %s\n";
+string CommandUndo::LOGGING_MSG_RETRIEVE_COMMAND_HISTORY = "Function called: retrieveCommandHistory(): size of CommandHistory: %s\n";
+string CommandUndo::LOGGING_MSG_RETRIEVE_COMMAND_HISTORY_INDEX = "Function called: retrieveCommandHistoryIndex(): _currentCommandHistoryIndex: %s\n";
+
+string CommandUndo::ERROR_MSG_CANNOT_UNDO_ANYMORE = "Cannot undo anymore!";
+
+
+CommandUndo::CommandUndo(void) {
 }
 
 void CommandUndo::execute() {
-	log("\nCommand Undo Initiated:\n");
+	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_UNDO.c_str());
+	log(buffer);
 	retrieveCommandHistory();
 	retrieveCommandHistoryIndex();
 	assert(_currentCommandHistoryIndex >= 0);
@@ -34,7 +45,8 @@ void CommandUndo::runAllRelevantCommandsAgain() {
 	for (i=0; i<_currentCommandHistoryIndex; i++) {
 		_commandHistory[i]->execute();
 	}
-	log("Function called: runAllRelevantCommandsAgain(): _currentCommandHistoryIndex: " + to_string(_currentCommandHistoryIndex) + "\n");
+	sprintf_s(buffer, LOGGING_MSG_RUN_RELEVANT_COMMANDS_AGAIN.c_str(), to_string(_currentCommandHistoryIndex).c_str());
+	log(buffer);
 	return;
 }
 
@@ -44,15 +56,15 @@ void CommandUndo::storeRemainingCommandsInHistory() {
 		LogicData::addCommandToHistory(_commandHistory[i]);
 	}
 	LogicData::setCommandHistoryIndex(_currentCommandHistoryIndex);
-	log("Function called: storeRemainingCommandsInHistory(): size of _commandHistory: " + to_string(_commandHistory.size()) + "\n");
-	log("Function called: storeRemainingCommandsInHistory(): _currentCommandHistoryIndex: " + to_string(_currentCommandHistoryIndex) + "\n");
+	sprintf_s(buffer, LOGGING_MSG_STORE_REMAINING_COMMANDS.c_str(), to_string(_commandHistory.size()).c_str(), to_string(_currentCommandHistoryIndex).c_str());
+	log(buffer);
 	return;
 }
 
 bool CommandUndo::checkIsCommandValid() {
 	bool isUndoPossible;
 	if ((_currentCommandHistoryIndex <= 0) || (_currentCommandHistoryIndex > _commandHistory.size())) {
-		throw string("Cannot undo anymore!");
+		throw ERROR_MSG_CANNOT_UNDO_ANYMORE;
 		isUndoPossible = false;
 	}
 	else {
@@ -60,19 +72,21 @@ bool CommandUndo::checkIsCommandValid() {
 		_currentCommandHistoryIndex--;
 	}
 
-	log("Function called: checkIsCommandValid(): updated _currentCommandHistoryIndex: " + to_string(_currentCommandHistoryIndex) + "\n");
-	log("Function called: checkIsCommandValid(): isUndoPossible: " + to_string(isUndoPossible) + "\n");
+	sprintf_s(buffer, LOGGING_MSG_CHECK_IS_COMMAND_VALID.c_str(), to_string(_currentCommandHistoryIndex).c_str(), to_string(isUndoPossible).c_str());
+	log(buffer);
 	return isUndoPossible;
 }
 
 void CommandUndo::retrieveCommandHistory() {
 	_commandHistory = LogicData::getCommandHistory();
-	log("Function called: retrieveCommandHistory(): size of CommandHistory: " + to_string(_commandHistory.size()) + "\n");
+	sprintf_s(buffer, LOGGING_MSG_RETRIEVE_COMMAND_HISTORY.c_str(), to_string(_commandHistory.size()).c_str());
+	log(buffer);
 	return;
 }
 
 void CommandUndo::retrieveCommandHistoryIndex() {
 	_currentCommandHistoryIndex = LogicData::getCurrentCommandHistoryIndex();
-	log("Function called: retrieveCommandHistoryIndex(): _currentCommandHistoryIndex: " + to_string(_currentCommandHistoryIndex) + "\n");
+	sprintf_s(buffer, LOGGING_MSG_RETRIEVE_COMMAND_HISTORY_INDEX.c_str(), to_string(_currentCommandHistoryIndex).c_str());
+	log(buffer);
 	return;
 }

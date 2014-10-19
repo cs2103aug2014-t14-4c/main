@@ -1,14 +1,19 @@
 #include "CommandEdit.h"
 
+// These are the static variables that cannot be initialized in header file
 
-CommandEdit::CommandEdit(void)
-{
+string CommandEdit::LOGGING_MSG_EXECUTE_COMMAND_EDIT = "\nCommand Edit Initiated:\n";
+string CommandEdit::LOGGING_MSG_DELETE_EXISTING_TASK = "Function called: deleteExistingTask(): _commandTaskIndex deleted: %s\n";
+
+
+CommandEdit::CommandEdit(void) {
 }
 
 void CommandEdit::execute() {
-	log("\nCommand Edit Initiated:\n");
 	assert(_currentTask != NULL);
 	assert(_commandTaskIndex >= 0);
+	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_EDIT.c_str());
+	log(buffer);
 	
 	try {
 		checkIsParsedCorrectly();
@@ -32,6 +37,7 @@ void CommandEdit::execute() {
 
 void CommandEdit::deleteExistingTask() {
 	_currentState->deleteTask(_commandTaskIndex);
-	log("Function called: deleteExistingTask(): _commandTaskIndex deleted: " + to_string(_commandTaskIndex) + "\n");
+	sprintf_s(buffer, LOGGING_MSG_DELETE_EXISTING_TASK.c_str(), to_string(_commandTaskIndex).c_str());
+	log(buffer);
 	return;
 }

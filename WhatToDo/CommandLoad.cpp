@@ -1,13 +1,19 @@
 #include "CommandLoad.h"
 
+// These are the static variables that cannot be initialized in header file
+
+string CommandLoad::LOGGING_MSG_EXECUTE_COMMAND_LOAD = "\nCommand Load Initiated:\n";
+string CommandLoad::LOGGING_MSG_LOAD_LOGIC_DATA_SETTINGS = "Function called: loadLogicDataSettings()\n";
+
 
 CommandLoad::CommandLoad(void)
 {
 }
 
 void CommandLoad::execute() {
-	log("\nCommand Load initiated:\n");
-
+	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_LOAD.c_str());
+	log(buffer);
+	
 	try {
 		checkIsParsedCorrectly();
 		loadLogicDataSettings();
@@ -24,5 +30,7 @@ void CommandLoad::execute() {
 
 void CommandLoad::loadLogicDataSettings() {
 	LogicData::loadInitialSettings();
-	log("Function called: loadLogicDataSettings()\n");
+	sprintf_s(buffer, LOGGING_MSG_LOAD_LOGIC_DATA_SETTINGS.c_str());
+	log(buffer);
+	return;
 }

@@ -1,12 +1,17 @@
 #include "CommandDelete.h"
 
+// These are the static variables that cannot be initialized in header file
 
-CommandDelete::CommandDelete(void)
-{
+string CommandDelete::LOGGING_MSG_EXECUTE_COMMAND_DELETE = "\nCommand Delete Initiated:\n";
+string CommandDelete::LOGGING_MSG_PERFORM_DELETE = "Function called: performDeleteOperation(): _commandTaskIndex deleted: %s\n";
+
+
+CommandDelete::CommandDelete(void) {
 }
 
 void CommandDelete::execute() {
-	log("\nCommand Delete Initiated:\n");
+	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_DELETE.c_str());
+	log(buffer);
 	assert(_commandTaskIndex >= 0);
 	
 	try {
@@ -29,6 +34,7 @@ void CommandDelete::execute() {
 
 void CommandDelete::performDeleteOperation() {
 	_currentState->deleteTask(_commandTaskIndex);
-	log("Function called: performDeleteOperation(): _commandTaskIndex deleted: " + to_string(_commandTaskIndex) + "\n");
+	sprintf_s(buffer, LOGGING_MSG_PERFORM_DELETE.c_str(), to_string(_commandTaskIndex).c_str());
+	log(buffer);
 	return;
 }

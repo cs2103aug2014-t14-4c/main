@@ -1,5 +1,7 @@
 #pragma once
+
 #include "Command.h"
+
 using namespace std;
 
 class CommandClear: public Command {
@@ -7,6 +9,10 @@ class CommandClear: public Command {
 		CommandClear(void);
 		void execute();
 
-	private:
+	protected:
+
+		// All Static Constants And Variables
+
+		static string LOGGING_MSG_EXECUTE_COMMAND_CLEAR;
 };
 

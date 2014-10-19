@@ -1,12 +1,17 @@
 #include "CommandDone.h"
 
+// These are the static variables that cannot be initialized in header file
 
-CommandDone::CommandDone(void)
-{
+string CommandDone::LOGGING_MSG_EXECUTE_COMMAND_DONE = "\nCommand Done Initiated:\n";
+string CommandDone::LOGGING_MSG_PERFORM_DONE = "Function called: performDoneOperation(): _commandTaskIndex marked as done: %s\n";
+
+
+CommandDone::CommandDone(void) {
 }
 
 void CommandDone::execute() {
-	log("\nCommand Done Initiated:\n");
+	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_DONE.c_str());
+	log(buffer);
 	assert(_commandTaskIndex >= 0);
 	
 	try {
@@ -29,6 +34,7 @@ void CommandDone::execute() {
 
 void CommandDone::performDoneOperation() {
 	_currentState->doneTask(_commandTaskIndex);
-	log("Function called: performDoneOperation(): _commandTaskIndex marked as done: " + to_string(_commandTaskIndex) + "\n");
+	sprintf_s(buffer, LOGGING_MSG_PERFORM_DONE.c_str(), to_string(_commandTaskIndex).c_str());
+	log(buffer);
 	return;
 }

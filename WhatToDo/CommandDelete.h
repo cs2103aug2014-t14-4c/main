@@ -1,5 +1,7 @@
 #pragma once
+
 #include "Command.h"
+
 using namespace std;
 
 class CommandDelete: public Command {
@@ -7,7 +9,15 @@ class CommandDelete: public Command {
 		CommandDelete(void);
 		void execute();
 
-	private:
+	protected:
+		
+		// CommandDelete Functions For Execution
+
 		void performDeleteOperation();
+
+		// All Static Constants And Variables
+
+		static string LOGGING_MSG_EXECUTE_COMMAND_DELETE;
+		static string LOGGING_MSG_PERFORM_DELETE;
 };
 
