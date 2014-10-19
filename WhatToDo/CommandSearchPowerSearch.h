@@ -31,8 +31,7 @@ class CommandSearchPowerSearch {
 		string getFirstCharacters(vector<string>tokenizedMainString);
 
 		bool isInRange(int lowerBound, int upperBound, int toCheckRange);
-		int toAbsIfNegative(int toConvert);
-		int toAbsIfPositive(int toConvert);
+		int toZeroIfNegative(int toConvert);
 		bool detIfmatchRecordAcceptable(vector<int> matchRecord);
 
 		enum FoundType{

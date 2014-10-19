@@ -108,7 +108,7 @@ bool CommandSearch::checkIsFitsTagSearchCriteria(Task taskToCheck) {
 	for (j=0; unsigned(j)<_tagsToSearchFor.size(); j++) {
 		for (i=0; unsigned(i)<listOfTagsForTask.size(); i++) {
 			taskTag = listOfTagsForTask[i];
-			if (convertToLower(taskTag).find(_tagsToSearchFor[j]) != string::npos) {
+			if (_myPowerSearch->checkIsFound(convertToLower(taskTag), _tagsToSearchFor[j])) {
 				currentTagFound = true;
 			}
 		}

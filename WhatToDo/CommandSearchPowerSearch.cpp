@@ -68,9 +68,17 @@ bool CommandSearchPowerSearch::powerSearchRemainingString(string searchToken) {
 }
 
 bool CommandSearchPowerSearch::checkIsFoundByFuzzySearch(string searchToken) {
+	string mainString = _mainString;
 	bool isFound = false;
-	if (checkIsMatchesFuzzySearch(_remainingString, searchToken)) {
-		isFound = true;
+	int mainStringSize = mainString.size();
+	int i=0;
+	
+	for (i=0; unsigned(i)<mainStringSize; i++) {
+		if (checkIsMatchesFuzzySearch(mainString, searchToken)) {
+			isFound = true;
+			break;
+		}
+		mainString.erase(mainString.begin());
 	}
 	return isFound;
 }
@@ -203,7 +211,7 @@ bool CommandSearchPowerSearch::checkIsMatchesFuzzySearch(string mainToken, strin
 		idealFoundIndex = i;
 		lowerBound = idealFoundIndex - defaultError;
 		upperBound = idealFoundIndex + defaultError;
-		actualFoundIndex = mainToken.find(searchToken[i], toAbsIfPositive(lowerBound));
+		actualFoundIndex = mainToken.find(searchToken[i], toZeroIfNegative(lowerBound));
 
 		if (actualFoundIndex == string::npos) {
 			matchRecord.push_back(NOTFOUND);
@@ -233,14 +241,7 @@ bool CommandSearchPowerSearch::isInRange(int lowerBound, int upperBound, int toC
 	return true;
 }
 
-int CommandSearchPowerSearch::toAbsIfNegative(int toConvert) {
-	if (toConvert <= 0) {
-		return toConvert*(-1);
-	}
-	return 0;
-}
-
-int CommandSearchPowerSearch::toAbsIfPositive(int toConvert) {
+int CommandSearchPowerSearch::toZeroIfNegative(int toConvert) {
 	if (toConvert >= 0) {
 		return toConvert;
 	}
@@ -248,7 +249,7 @@ int CommandSearchPowerSearch::toAbsIfPositive(int toConvert) {
 }
 
 bool CommandSearchPowerSearch::detIfmatchRecordAcceptable(vector<int> matchRecord) {
-	double tolerance = 0.7;
+	double tolerance = 0.8;
 	double percentageFit = 0;
 	double totalSum = 0.0;
 	int i;
