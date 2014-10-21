@@ -13,14 +13,18 @@ using namespace std;
 
 class commandfield{
 public:
-	commandfield();
-	~commandfield();
+	static commandfield* Instance();
 	void init(sf::RenderWindow* window);
 	void draw();
 	void resizedUpdate();
 	void eventHandler(sf::Event, sf::Vector2f);
 	void setActive(bool);
 private:
+	commandfield();
+	~commandfield(){};
+	commandfield& operator=(commandfield const&){};
+	static commandfield* m_pInstance;
+
 	void getPastedString(string);
 	std::string getCommandFieldContent();
 	void backSpace();

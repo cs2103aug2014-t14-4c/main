@@ -37,7 +37,6 @@ private:
 	sf::View viewTasksAgenda, viewTasksCalendar;			// Agenda, Calendar view
 
 	button btn_toggleView, btn_undo, btn_redo, btn_delete;
-	commandfield commandfield;
 
 	int view; // 0 = calendar, 1 = agenda
 	bool b_dragging;

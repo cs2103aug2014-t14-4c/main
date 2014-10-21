@@ -19,7 +19,7 @@ void SFMLManager::init(){
 
 	calendar::Instance()->init(SFMLWindow);
 	agenda::Instance()->init(SFMLWindow);
-	commandfield.init(SFMLWindow);
+	commandfield::Instance()->init(SFMLWindow);
 	searchbar::Instance()->init(SFMLWindow);
 
 	view = 1;		// 1 = agenda, 0 = calendar
@@ -112,7 +112,7 @@ void SFMLManager::eventHandler(void){
 		case sf::Event::MouseButtonPressed:
 			if (event.mouseButton.button == sf::Mouse::Left){
 				buttonHandler();
-				commandfield.eventHandler(event, SFMLWindow->mapPixelToCoords(sf::Mouse::getPosition(*SFMLWindow), viewTop));
+				commandfield::Instance()->eventHandler(event, SFMLWindow->mapPixelToCoords(sf::Mouse::getPosition(*SFMLWindow), viewTop));
 				searchbar::Instance()->eventHandler(event, SFMLWindow->mapPixelToCoords(sf::Mouse::getPosition(*SFMLWindow), viewTop));
 				// to cover one small bug in sfml(click on the window to make it foreground window)
 				if (SFMLWindow->mapPixelToCoords(sf::Mouse::getPosition(*SFMLWindow), viewTop).x > 0 &&
@@ -161,7 +161,7 @@ void SFMLManager::eventHandler(void){
 			}
 		case sf::Event::KeyReleased:
 		case sf::Event::TextEntered:
-			commandfield.eventHandler(event, SFMLWindow->mapPixelToCoords(sf::Mouse::getPosition(*SFMLWindow), viewTop));
+			commandfield::Instance()->eventHandler(event, SFMLWindow->mapPixelToCoords(sf::Mouse::getPosition(*SFMLWindow), viewTop));
 			searchbar::Instance()->eventHandler(event, SFMLWindow->mapPixelToCoords(sf::Mouse::getPosition(*SFMLWindow), viewTop));
 			break;
 
@@ -169,7 +169,7 @@ void SFMLManager::eventHandler(void){
 			// update the view to the new size of the window
 			positionUpdate();
 			agenda::Instance()->resizedUpdate();
-			commandfield.resizedUpdate();
+			commandfield::Instance()->resizedUpdate();
 			searchbar::Instance()->resizedUpdate();
 			break;
 
@@ -191,7 +191,7 @@ void SFMLManager::windowRender(void){
 	//drawUnfinishedTasks();	//draw right hand side unfinished tasks reminder
 
 	SFMLWindow->setView(viewTop);
-	commandfield.draw();
+	commandfield::Instance()->draw();
 	searchbar::Instance()->draw();
 
 	SFMLWindow->display();

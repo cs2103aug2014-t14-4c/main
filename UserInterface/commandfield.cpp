@@ -3,6 +3,15 @@
 #include "commandfield.h"
 #include "agenda.h"
 #include "calendar.h"
+#include "searchbar.h"
+
+commandfield* commandfield::m_pInstance = NULL;
+
+commandfield* commandfield::Instance(){
+	if (!m_pInstance)   // Only allow one instance of class to be generated.
+		m_pInstance = new commandfield;
+	return m_pInstance;
+}
 
 commandfield::commandfield(){
 	font.loadFromFile("NotoSansHant-Black.otf");
@@ -11,10 +20,6 @@ commandfield::commandfield(){
 	rectangle.setFillColor(CMD_INACTIVE_COLOUR);
 	b_LCtrl = false;
 	b_Enable = false;
-}
-
-
-commandfield::~commandfield(){
 }
 
 void commandfield::init(sf::RenderWindow* window){
@@ -166,6 +171,7 @@ void commandfield::setActive(bool active){
 	if (active){
 		b_Enable = true;
 		rectangle.setFillColor(CMD_ACTIVE_COLOUR);
+		searchbar::Instance()->setActive(false);
 	}
 	else{
 		b_Enable = false;

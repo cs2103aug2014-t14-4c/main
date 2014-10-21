@@ -1,6 +1,7 @@
 #include "searchbar.h"
 #include "agenda.h"
 #include "calendar.h"
+#include "commandfield.h"
 
 searchbar* searchbar::m_pInstance = NULL;
 
@@ -141,6 +142,7 @@ void searchbar::setActive(bool active){
 	if (active){
 		b_Enable = true;
 		rectangle.setFillColor(SEARCH_ACTIVE_COLOUR);
+		commandfield::Instance()->setActive(false);
 	}
 	else{
 		b_Enable = false;
