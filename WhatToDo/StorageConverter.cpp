@@ -20,7 +20,6 @@ StorageConverter::StorageConverter(void){
 
 vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 
-	
 	//will convert individual task attributes to strings
 	//note: order of conversion important for the developer, not for the user
 	//clear initial content
@@ -28,30 +27,20 @@ vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 	//ensures that the taskStringAttribute is empty
 	assert(taskStringAttributes.empty());
 	
-	string taskStartDatetime =  convertTaskPtimeToString(taskToConvert.getTaskStartTime());
-	string taskEndDatetime =convertTaskPtimeToString(taskToConvert.getTaskEndTime());
+	//string parameters after conversion
+	string taskStartDatetime = convertTaskPtimeToString(taskToConvert.getTaskStartTime());
+	string taskEndDatetime = convertTaskPtimeToString(taskToConvert.getTaskEndTime());
 	string taskDeadline = convertTaskPtimeToString(taskToConvert.getTaskDeadline());
-	string taskName = taskToConvert.getTaskName(); 
+	string taskName = convertTaskNameToString(taskToConvert);
 	string taskTags = convertTaskTagVectorToString(taskToConvert.getTaskTags());
 	string taskIsDone = convertTaskBoolToString(taskToConvert.getTaskIsDone());
-	//for each task, convert each attribute of a task into a string
 	
-	//1. get start datetime
+	//storing each string in a vector
 	taskStringAttributes.push_back(TITLE_TASKSTARTDATETIME + taskStartDatetime);
-
-	//2. get end datetime
 	taskStringAttributes.push_back(TITLE_TASKENDDATETIME + taskEndDatetime); 
-
-	//3. get task deadline 
 	taskStringAttributes.push_back(TITLE_TASKDEADLINE + taskDeadline);
-
-	//4. get taskName
 	taskStringAttributes.push_back(TITLE_TASKNAME + taskName);
-
-	//5. get task tags
 	taskStringAttributes.push_back(TITLE_TASKTAGS + taskTags);
-	
-	//6. getIsdone
 	taskStringAttributes.push_back(TITLE_TASKISDONE + taskIsDone); 
 
 	//finally write the whole vector of string into file
@@ -110,8 +99,7 @@ string StorageConverter::convertTaskBoolToString(bool boolToConvert){
 
 //convert ptime to string
 string StorageConverter::convertTaskPtimeToString(ptime myDatetime){
-	string convertedPtimeString; 
-	convertedPtimeString = to_iso_string(myDatetime); 
+	string convertedPtimeString = to_iso_string(myDatetime); 
 	return convertedPtimeString;
 }
 
@@ -136,8 +124,13 @@ string StorageConverter::convertTaskTagVectorToString(vector<string> taskTags){
 	return tagString;
 }
 
+string StorageConverter::convertTaskNameToString(Task taskToConvert){
+	taskName = taskToConvert.getTaskName();
+	return taskName; 
+}
+
 //convert taskTagstring to vector<string>
-vector<string> StorageConverter::taskTagStringToVectorConverter(string tagString){
+vector<string> StorageConverter::convertTaskTagStringToVector(string tagString){
 	//pass in the string to a iss object
 	//read individual substr delimited by whitespace
 	//push into the tagVector
@@ -195,7 +188,7 @@ void StorageConverter::convertStringDeadlineToTask(){
 
 void StorageConverter::convertStringTasktagToTask(){
 	
-	vector<string> taskTagVector = taskTagStringToVectorConverter(taskTags);
+	vector<string> taskTagVector = convertTaskTagStringToVector(taskTags);
 	convertedTask.setTaskTags(taskTagVector);
 
 	return; 

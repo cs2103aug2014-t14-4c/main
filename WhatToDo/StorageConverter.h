@@ -9,6 +9,7 @@ using namespace std;
 
 class StorageConverter{
 	private:
+		//attributes for StorageConverter
 		Task convertedTask; 
 		vector<string> taskStringAttributes;
 		string taskDatetimeString; 
@@ -29,22 +30,21 @@ class StorageConverter{
 
 		//primary conversion functions
 		vector<string> convertTaskToString(Task taskToConvert);
+		Task convertStringToTask(vector<string> stringToConvert);
 
 		//subfunctions for conversion from task to string
 		string convertTaskPtimeToString(ptime myDatetime);
 		string convertTaskPtimeDurationToString(time_duration myDuration);
 		string convertTaskBoolToString(bool boolToConvert);
 		string convertTaskTagVectorToString(vector<string> taskTags);
-
-		//primary conversion function
-		Task convertStringToTask(vector<string> stringToConvert);
+		string convertTaskNameToString(Task taskToConvert);
 		
 		//secondary functions for conversion from string to task
-		vector<string> taskTagStringToVectorConverter(string tagString);
 		void convertStringIsdoneToTask();
 		void convertStringStartDatetimeToTask();
 		void convertStringEndDatetimeToTask();
 		void convertStringDeadlineToTask();
 		void convertStringTasktagToTask();
+		vector<string> convertTaskTagStringToVector(string tagString);
 }; 
 
