@@ -3,12 +3,12 @@
 #include <iostream>
 using namespace std;
 
-StorageDatabase::StorageDatabase(){
-	fileName = "integrate2.txt";
-}
 int StorageDatabase::START=0;
 int StorageDatabase::NO_OF_ATTRIBUTES = 6;
 
+StorageDatabase::StorageDatabase(){
+	fileName = "integrate2.txt";
+}
 
 //pass in a vector<vector<string>> where each vector<string> is a task in vector<string> form
 void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToWrite){
@@ -19,23 +19,6 @@ void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToW
 	ofstream writeFile;
 	writeFile.open(fileName);
 
-	try{
-		//note that can be created as a function so can test elsewhere in programme
-		if(NO_OF_ATTRIBUTES < 6){
-			throw 1;
-		}
-		if(NO_OF_ATTRIBUTES >6){
-			throw 2;
-		}
-	}catch(int errorCode){
-		if(errorCode == 1){
-			cout << "number of attributes less than 6!!" << endl;
-		}
-		if(errorCode ==2){
-			cout << "number of attributes more than 6!" << endl;
-		}
-	}
-
 	//write individual task attributes
 	while(taskVectorIterator != taskStringVectorToWrite.end()){
 		for(int i = START; i< NO_OF_ATTRIBUTES; i++){
@@ -44,6 +27,8 @@ void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToW
 		writeFile << endl; 
 		taskVectorIterator++;
 	}
+	//need to debug writeFile
+	//writeIndivdualFileToDatabase(taskVectorIterator, writeFile, taskStringVectorToWrite);
 
 	writeFile.close();
 	return;
@@ -55,8 +40,6 @@ void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToW
 //3. push the vector<string> into the vector of vectors
 vector<vector<string>> StorageDatabase::readFromDatabase(){
 
-	vector<vector<string>> stringToRead; 
-	vector<string> individualReadFile;
 	ifstream readFile(fileName);
 	string myText; 
 	
@@ -76,4 +59,16 @@ vector<vector<string>> StorageDatabase::readFromDatabase(){
 	readFile.close();
 
 	return stringToRead; 
+}
+
+//check why ofstream file does not work
+void StorageDatabase::writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, ofstream writeFile, vector<vector<string>> taskStringToWrite){
+	while(fileIterator != taskStringToWrite.end()){
+		for(int i = START; i< NO_OF_ATTRIBUTES; i++){
+			writeFile << (*fileIterator)[i] << endl;
+		}
+		writeFile << endl; 
+		fileIterator++;
+	}
+	return;
 }
