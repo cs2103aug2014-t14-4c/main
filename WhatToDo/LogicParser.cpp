@@ -11,15 +11,8 @@ Command* LogicParser::getCommandFromUserInput(std::string userInput) {
 		if(LogicParser::isEmptyInput(userInput)) {
 			throw std::invalid_argument(EMPTY_STRING);
 		}
-		LogicParserCommandCreator commandCreator;
-
-		Command* command = commandCreator.createCommand(userInput);
-		return command;
-	} catch(const std::invalid_argument& e) {
-		Command* command = new CommandAdd;
-
-		command->setParsedStatus(false);
-		command->setUserMessage(e.what());
+		CommandCreator cmdCreator;
+		Command* command = cmdCreator.createCommand(userInput);
 		return command;
 	} catch(...) {
 		Command* command = new CommandAdd;

@@ -1,160 +1,132 @@
 #include "LogicParserDetailsParser.h"
 
-LogicParserDetailsParser::LogicParserDetailsParser(void) {
-}
-
-LogicParserDetailsParser::LogicParserDetailsParser(std::string parameters) {
+DetailsParser::DetailsParser(std::string parameters) {
 	assert(!parameters.empty());
 
 	_parameters = parameters;
-	_parameterTokens = LogicParserDetailsParser::tokenizeString(parameters);
+	_tokens = DetailsParser::tokenizeString(parameters);
 }
 
-LogicParserDetailsParser::~LogicParserDetailsParser(void) {
+DetailsParser::~DetailsParser(void) {
 }
 
-std::string LogicParserDetailsParser::getStoredString(void) {
-	return _parameters;
-}
-
-std::vector<std::string> LogicParserDetailsParser::getStoredVector(void) {
-	return _parameterTokens;
-}
-
-void LogicParserDetailsParser::addNewTask(Command* command) {
+void DetailsParser::addNewTask(Command* command) {
 	Task* task = new Task;
-	LogicParserDatetimeParser datetimeParser;
+	DatetimeParser datetimeParser;
 
-	LogicParserDetailsParser::addTaskTags(task);
-	_parameters = datetimeParser.addTaskDatetime(command, task, _parameterTokens);
-	LogicParserDetailsParser::addTaskName(task);
+	DetailsParser::addTaskTags(task);
+	_parameters = datetimeParser.addTaskDatetime(command, task, _tokens);
+	DetailsParser::addTaskName(task);
 
 	command->setCurrentTask(*task);
+	delete task;
 }
 
-void LogicParserDetailsParser::deleteExistingTask(Command* command) {
+void DetailsParser::deleteExistingTask(Command* command) {
 	try {
-		if(!LogicParserDetailsParser::hasOnlyIndex()) {
+		if(!DetailsParser::hasOnlyIndex()) {
 			throw std::invalid_argument(USERMESSAGE_INVALID_DELETE);
 		}
-		LogicParserDetailsParser::setTaskIndex(command);
-	}
-	catch(const std::invalid_argument& e) {
+		DetailsParser::setTaskIndex(command);
+	} catch(const std::invalid_argument& e) {
 		command->setParsedStatus(false);
 		command->setUserMessage(e.what());
 	}
 }
 
-void LogicParserDetailsParser::markTaskAsDone(Command* command) {
+void DetailsParser::markTaskAsDone(Command* command) {
 	try {
-		if(!LogicParserDetailsParser::hasOnlyIndex()) {
+		if(!DetailsParser::hasOnlyIndex()) {
 			throw std::invalid_argument(USERMESSAGE_INVALID_DONE);
 		}
-		LogicParserDetailsParser::setTaskIndex(command);
-	}
-	catch(const std::invalid_argument& e) {
+		DetailsParser::setTaskIndex(command);
+	} catch(const std::invalid_argument& e) {
 		command->setParsedStatus(false);
 		command->setUserMessage(e.what());
 	}
 }
 
-void LogicParserDetailsParser::editExistingTask(Command* command) {
+void DetailsParser::editExistingTask(Command* command) {
 	try {
-		if(!LogicParserDetailsParser::hasIndex()) {
+		if(!DetailsParser::hasIndex()) {
 			throw std::invalid_argument(USERMESSAGE_INVALID_EDIT_NO_INDEX);
-		} else if(!LogicParserDetailsParser::hasEditedTask()) {
+		} else if(!DetailsParser::hasEditedTask()) {
 			throw std::invalid_argument(USERMESSAGE_INVALID_EDIT_NO_TASK);
 		}
-		LogicParserDetailsParser::setTaskIndex(command);
-		LogicParserDetailsParser::removeIndex();
-		LogicParserDetailsParser::addNewTask(command);
-	}
-	catch(const std::invalid_argument& e) {
+		DetailsParser::setTaskIndex(command);
+		DetailsParser::removeIndexForEdit();
+		DetailsParser::addNewTask(command);
+	} catch(const std::invalid_argument& e) {
 		command->setParsedStatus(false);
 		command->setUserMessage(e.what());
 	}
 }	
 
-void LogicParserDetailsParser::searchForTask(Command* command) {
-	LogicParserDetailsParser::setSearchKeyword(command);
-}
-
-void LogicParserDetailsParser::setTaskIndex(Command* command) {
-	assert(LogicParserDetailsParser::hasIndex());
-	command->setTaskIndex(std::stoi(_parameterTokens.front()));
-}
-
-void LogicParserDetailsParser::setSearchKeyword(Command* command) {
-	LogicParserDetailsParser::transformParametersToLowercase();
-	LogicParserDetailsParser::separateTagsForSearch();
-
+void DetailsParser::searchForTask(Command* command) {
+	DetailsParser::formatForSearch();
 	assert(!_parameters.empty());
 	command->setSearchKeyword(_parameters);
 }
 
-void LogicParserDetailsParser::addTaskTags(Task* task) {
+void DetailsParser::setTaskIndex(Command* command) {
+	assert(DetailsParser::hasIndex());
+	command->setTaskIndex(std::stoi(_tokens.front()));
+}
+
+void DetailsParser::addTaskTags(Task* task) {
 	std::vector<std::string> taskTags;
 	_parameters.clear();
 
-	for(std::vector<std::string>::const_iterator iter = _parameterTokens.begin(); iter != _parameterTokens.end(); ++iter) {
-		if(LogicParserDetailsParser::isTag(*iter)) {
+	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
+		if(DetailsParser::isTag(*iter)) {
 			taskTags.push_back(*iter);
 		} else {
 			_parameters += *iter + SPACE;
 		}
 	}
-
-	_parameters = LogicParserDetailsParser::trimWhiteSpace(_parameters);
-	_parameterTokens = LogicParserDetailsParser::tokenizeString(_parameters);
+	_parameters = DetailsParser::trimWhiteSpace(_parameters);
+	_tokens = DetailsParser::tokenizeString(_parameters);
 	task->setTaskTags(taskTags);
 }
 
-void LogicParserDetailsParser::addTaskName(Task* task) {
+void DetailsParser::addTaskName(Task* task) {
 	task->setTaskName(_parameters);
 }
 
-bool LogicParserDetailsParser::hasOnlyIndex() {
-	return (LogicParserDetailsParser::isOneWord(_parameters) && 
-		LogicParserDetailsParser::hasIndex());
+bool DetailsParser::hasIndex() {
+	return (DetailsParser::isNumber(_tokens.front()));
 }
 
-bool LogicParserDetailsParser::hasIndex() {
-	return (LogicParserDetailsParser::isNumber(_parameterTokens.front()));
+bool DetailsParser::hasOnlyIndex() {
+	return (DetailsParser::isOneWord(_parameters) 
+		&& DetailsParser::hasIndex());
 }
 
-bool LogicParserDetailsParser::hasEditedTask() {
-	return !LogicParserDetailsParser::isOneWord(_parameters);
+bool DetailsParser::hasEditedTask() {
+	return (!DetailsParser::isOneWord(_parameters));
 }
 
-void LogicParserDetailsParser::removeIndex() {
-	_parameters = LogicParserDetailsParser::getExceptFirstWord(_parameters);
-	_parameterTokens.erase(_parameterTokens.begin());
+bool DetailsParser::isTag(std::string word) {
+	return (word.find_first_of(IDENTIFIER_TAG) == ZERO);
 }
 
-void LogicParserDetailsParser::separateTagsForSearch() {
-	std::string searchTags;
+void DetailsParser::removeIndexForEdit() {
+	_parameters = DetailsParser::getExceptFirstWord(_parameters);
+	_tokens.erase(_tokens.begin());
+}
+
+void DetailsParser::formatForSearch() {
 	std::string searchWords;
-
-	for(auto iter = _parameterTokens.begin(); iter != _parameterTokens.end(); ++iter) {
-		if(LogicParserDetailsParser::isTag(*iter)) {
+	std::string searchTags;
+	_parameters = DetailsParser::transformToLowercase(_parameters);
+	_tokens = DetailsParser::tokenizeString(_parameters);
+	
+	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
+		if(DetailsParser::isTag(*iter)) {
 			searchTags += *iter;
 		} else {
 			searchWords += *iter + SPACE;
 		}
 	}
-
-	_parameters = LogicParserDetailsParser::trimWhiteSpace(searchWords) + searchTags;
-}
-
-bool LogicParserDetailsParser::isTag(std::string word) {
-	return (word.find_first_of(IDENTIFIER_TAG) == FIRST_INDEX);
-}
-
-
-void LogicParserDetailsParser::transformParametersToLowercase() {
-	_parameters = LogicParserDetailsParser::transformToLowercase(_parameters);
-
-	for(auto iter = _parameterTokens.begin(); iter != _parameterTokens.end(); ++iter) {
-		*iter = LogicParserDetailsParser::transformToLowercase(*iter);
-	}
+	_parameters = DetailsParser::trimWhiteSpace(searchWords) + searchTags;
 }
