@@ -1,95 +1,121 @@
 #pragma once
-#include <string>
-#include <sstream>
-#include "Task.h"
 #include "LogicParserStringModifier.h"
 #include "boost\date_time.hpp"
 
-const std::string IDENTIFIER_DATETIME_AT = "-at";
-const std::string IDENTIFIER_DATETIME_ON = "-on";
-const std::string IDENTIFIER_DATETIME_DUE = "-due";
-const std::string IDENTIFIER_DATETIME_BY = "-by";
-const std::string IDENTIFIER_DATETIME_FROM = "-from";
-const std::string IDENTIFIER_DATETIME_TO = "-to";
-
-//Unusable for now.
-/*
-const std::locale formats[] = {
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m%Y %H:%M")), //25042014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m%y %H:%M")), //250414
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m %H:%M")), //2504
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d-%m-%Y %H:%M")), //25-04-2014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d-%m-%y %H:%M")), //25-04-14
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d-%m %H:%M")), //25-04
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d/%m/%Y %H:%M")), //25/04/2014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d/%m/%y %H:%M")), //25/04/14
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d/%m %H:%M")), //25/04
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %B %Y %H:%M")), //25 April 2014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %B %y %H:%M")), //25 April 14
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %B %H:%M")), //25 April
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %b %Y %H:%M")), //25 Apr 2014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %b %y %H:%M")), //25 Apr 14
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %b %H:%M")), //25 Apr
-
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m%Y %H%M")), //25042014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m%y %H%M")), //250414
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m %H%M")), //2504
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d-%m-%Y %H%M")), //25-04-2014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d-%m-%y %H%M")), //25-04-14
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d-%m %H%M")), //25-04
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d/%m/%Y %H%M")), //25/04/2014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d/%m/%y %H%M")), //25/04/14
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d/%m %H%M")), //25/04
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %B %Y %H%M")), //25 April 2014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %B %y %H%M")), //25 April 14
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %B %H%M")), //25 April
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %b %Y %H%M")), //25 Apr 2014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %b %y %H%M")), //25 Apr 14
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %b %H%M")), //25 Apr
+const std::string USERMESSAGE_DATETIME_NOT_PARSED = 
+	"Incorrect date/time input format. Please re-enter your task";
+const std::string DATE_DELIMITERS = 
+	"./-";
+const std::string TIME_DELIMITERS = 
+	".:";
+const std::string TIME_AM = 
+	"am";
+const std::string TIME_PM = 
+	"pm";
+const std::array<std::string, 2> TODAY = 
+	{"today", "tdy"};
+const std::array<std::string, 5> TOMORROW = 
+	{"tomorrow", "tmr", "tml", "tmw", "tmrw"};
+const std::string IDENTIFIER_THIS =
+	"this";
+const std::string IDENTIFIER_NEXT =
+	"next";
+const std::array<std::string, 7> WEEKDAYS_SHORT = 
+	{"mon", "tue", "wed", "thu", "fri", "sat", "sun"};
+const std::array<std::string, 7> WEEKDAYS_LONG = 
+	{"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"};
+const std::array<std::string, 3> IDENTIFIER_START = 
+	{"at", "on", "from",};
+const std::array<std::string, 1> IDENTIFIER_END = 
+	{"to"};
+const std::array<std::string, 3> IDENTIFIER_DEADLINE = 
+	{"by", "due", "before"};
+const std::array<std::string, 12> MONTHS_LONG = 
+	{"january", "february", "march", "april", "may", "june",
+	"july", "august", "september", "october", "november", "december"};
+const std::array<std::string, 12> MONTHS_SHORT = 
+	{"jan", "feb", "mar", "apr", "may", "jun",
+	"jul", "aug", "sep", "oct", "nov", "dec"};
 
 
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m%Y")), //25042014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m%y")), //250414
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d%m")), //2504
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d-%m-%Y")), //25-04-2014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d-%m-%y")), //25-04-14
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d-%m")), //25-04
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d/%m/%Y")), //25/04/2014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d/%m/%y")), //25/04/14
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d/%m")), //25/04
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %B %Y")), //25 April 2014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %B %y")), //25 April 14
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %B")), //25 April
-
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %b %Y")), //25 Apr 2014
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %b %y")), //25 Apr 14
-	std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%d %b")), //25 Apr
-};
-const size_t formats_n = sizeof(formats)/sizeof(formats[0]);
-*/
-
-class LogicParserDateTimeParser {
+class LogicParserDatetimeParser :public LogicParserStringModifier {
 public:
-	LogicParserDateTimeParser(void);
-	void addTaskDateTime(Task* task, std::string& parameters);
+	LogicParserDatetimeParser(void);
+	~LogicParserDatetimeParser(void);
+	std::string addTaskDatetime(Command* command, Task* task, std::vector<std::string> parameters);
 
-private:
-	enum DateTimeType {
-		START, END, DEADLINE, INVALID
-	};
+//private:
+	boost::gregorian::date _startDate;
+	boost::gregorian::date _endDate;
+	boost::gregorian::date _deadlineDate;
+	boost::posix_time::time_duration _startTime;
+	boost::posix_time::time_duration _endTime;
+	boost::posix_time::time_duration _deadlineTime;
+	boost::posix_time::ptime _startDatetime;
+	boost::posix_time::ptime _endDatetime;
+	boost::posix_time::ptime _deadlineDatetime;
+	
+	boost::gregorian::date _currentDate;
+	std::vector<std::string> _parameters;
 
-	DateTimeType determineDateTimeType(std::string word);
+	void setParameters(std::vector<std::string> parameters);
+	std::string convertParametersToString(void);
+	void setFoundDatetime(Task* task);
+	void eraseWord(std::vector<std::string>::iterator& iter);
+	std::vector<std::string>::iterator nextWord(std::vector<std::string>::iterator iter);
+
+	void addStartDatetime(void);
+	bool hasStartDatetime(void);
+	bool isStartIdentifier(std::string word);
+	bool addStartWithIdentifier(std::vector<std::string>::iterator iter);
+	void addStartWithoutIdentifier();
+	void combineStartTimeDate();
+
+	void addEndDatetime(void);
+	bool hasEndDatetime(void);
+	bool isEndIdentifier(std::string word);
+	bool addEndWithIdentifier(std::vector<std::string>::iterator iter);
+	void combineEndTimeDate();
+
+	void addDeadlineDatetime(void);
+	bool hasDeadlineDatetime(void);
+	bool isDeadlineIdentifier(std::string word);
+	bool addDeadlineWithIdentifier(std::vector<std::string>::iterator iter);
+	void combineDeadlineTimeDate();
+
+	bool isATime(std::vector<std::string>::iterator iter);
+	bool isAmPmTime(std::string word);
+	bool is12HourTime(int time);
+	bool isAm(std::string word);
+	bool isPm(std::string word);
+	bool is24HourTime(std::string word);
+	std::string removeTimeDelimiters(std::string word);
+
+	bool isADate(std::vector<std::string>::iterator iter);
+	bool is3ParameterDate(std::vector<std::string>::iterator iter);
+	bool is2ParameterDate(std::vector<std::string>::iterator iter);
+	bool isDateAndMonth(std::vector<std::string>::iterator iter);
+	bool isThisNextWeek(std::vector<std::string>::iterator iter);
+	bool is1ParameterDate(std::vector<std::string>::iterator iter);
+	bool isToday(std::string date);
+	bool isTomorrow(std::string date);
+	bool isNumericalDate(std::string date);
+	bool isDate(int date);
+	bool isMonth(std::string month);
+	bool isMonth(int month);
+	bool isYear(int year);
+	bool isThis(std::string word);
+	bool isNext(std::string word);
+	bool isWeekday(std::string word);
+	std::string removeDateDelimiters(std::string word);
+
+	boost::posix_time::time_duration parseTime(std::vector<std::string>::iterator iter);
+	boost::gregorian::date parseDate(std::vector<std::string>::iterator iter);
+	boost::gregorian::date parse3ParameterDate(std::vector<std::string>::iterator iter);
+	boost::gregorian::date parse2ParameterDate(std::vector<std::string>::iterator iter);
+	boost::gregorian::date parse1ParameterDate(std::vector<std::string>::iterator iter);
+	int parseMonth(std::string month);
+	boost::gregorian::date findThisWeekday(std::string day);
+	boost::gregorian::date findNextWeekday(std::string day);
 };
 

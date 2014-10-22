@@ -1,26 +1,35 @@
 #pragma once
+#include <sstream>
 #include <string>
+#include <vector>
 #include <algorithm>
+#include <assert.h>
+#include <exception>
+#include "Command.h"
+
+const std::string SPACE = " ";
+const std::string EMPTY_STRING = "";
+const std::string delimiters = " \f\n\r\t\v";
 
 class LogicParserStringModifier {
 public:
 	LogicParserStringModifier(void);
+	~LogicParserStringModifier(void);
 
-	//Returns the first word in a string
-	std::string getFirstWord(std::string text, const std::string delimiters = " \f\n\r\t\v");
-	//Returns the string with the first word omitted
-	std::string getStringExceptFirstWord(std::string text, const std::string delimiters = " \f\n\r\t\v");
-	//Converts a string to lowercase
+	std::string getFirstWord(std::string text);
+	std::string getStringExceptFirstWord(std::string text);
+
 	std::string transformToLowercase(std::string text);
-	//Checks if a given string consists of only one word
-	bool isOneWord(std::string text, const std::string delimiters = " \f\n\r\t\v");
-	//Checks if a given string consists of only digits
+	std::vector<std::string> tokenizeString(std::string text);
+	std::string convertTokenVectorToString(std::vector<std::string> text);
+
+	bool isOneWord(std::string text);
 	bool isNumber(std::string text);
-	//Trims the whitespace around a given string
+
 	std::string trimWhiteSpace(std::string text);
-	//Trims the whitespace on the left of a given string
-	std::string trimLeft(std::string text, const std::string delimiters = " \f\n\r\t\v");
-	//Trims the whitespace on the right of a given string
-	std::string trimRight(std::string text, const std::string delimiters = " \f\n\r\t\v");
+
+private:
+	std::string trimLeft(std::string text);
+	std::string trimRight(std::string text);
 };
 

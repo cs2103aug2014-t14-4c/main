@@ -1,12 +1,15 @@
 #pragma once
 #include "LogicParserCommandCreator.h"
-#include "Command.h"
+
+const std::string USERMESSAGE_EMPTY_INPUT = "User input is empty";
 
 class LogicParser {
-	public:
-		//Constructor
-		LogicParser(void);
-		//Interface to the parser.
-		Command* getCommandFromUserInput(std::string userInput);
+public:
+	LogicParser(void);
+	~LogicParser(void);
+
+	Command* getCommandFromUserInput(std::string userInput);
+private:
+	bool isEmptyInput(std::string userInput);
 };
 
