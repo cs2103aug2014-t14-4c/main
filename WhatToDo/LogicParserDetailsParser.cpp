@@ -127,7 +127,7 @@ bool LogicParserDetailsParser::hasEditedTask() {
 }
 
 void LogicParserDetailsParser::removeIndex() {
-	_parameters = LogicParserDetailsParser::getStringExceptFirstWord(_parameters);
+	_parameters = LogicParserDetailsParser::getExceptFirstWord(_parameters);
 	_parameterTokens.erase(_parameterTokens.begin());
 }
 

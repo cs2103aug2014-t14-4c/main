@@ -14,7 +14,7 @@ const std::string USERMESSAGE_INVALID_EDIT_NO_INDEX =
 const std::string USERMESSAGE_INVALID_EDIT_NO_TASK = 
 	"No edited task found. Please type /edit <index> <edited task>";
 
-class LogicParserDetailsParser :public LogicParserStringModifier {
+class LogicParserDetailsParser :public StringModifier {
 public:
 	LogicParserDetailsParser(void);
 	LogicParserDetailsParser(std::string parameters);

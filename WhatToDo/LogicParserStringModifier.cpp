@@ -1,31 +1,66 @@
 #include "LogicParserStringModifier.h"
 
-LogicParserStringModifier::LogicParserStringModifier(void) {
+StringModifier::StringModifier(void) {
 }
 
-LogicParserStringModifier::~LogicParserStringModifier(void) {
+StringModifier::~StringModifier(void) {
 }
 
-std::string LogicParserStringModifier::getFirstWord(std::string text) {
+bool StringModifier::isOneWord(std::string text) {
+	try {
+		if(text.empty()) {
+			throw std::invalid_argument(EMPTY_STRING);
+		}
+		text = StringModifier::trimWhiteSpace(text);
+		return (text.find_first_of(WHITESPACE_DELIMITERS) == std::string::npos);
+	} catch(...) {
+		return false;
+	}
+}
+
+bool StringModifier::isNumber(std::string text) {
+	try {
+		if(text.empty()) {
+			throw std::invalid_argument(EMPTY_STRING);
+		}
+		text = StringModifier::trimWhiteSpace(text);
+		return std::all_of(text.begin(), text.end(), isdigit);
+	} catch(...) {
+		return false;
+	}
+}
+
+std::string StringModifier::getFirstWord(std::string text) {
 	assert(!text.empty());
-	text = LogicParserStringModifier::trimWhiteSpace(text);
-	return text.substr(0, text.find_first_of(delimiters));
+	text = StringModifier::trimWhiteSpace(text);
+	return text.substr(ZERO, text.find_first_of(WHITESPACE_DELIMITERS));
 }
 
-std::string LogicParserStringModifier::getStringExceptFirstWord(std::string	 text) {
+std::string StringModifier::getExceptFirstWord(std::string text) {
 	assert(!text.empty() && !isOneWord(text));
-	text = LogicParserStringModifier::trimWhiteSpace(text);
-	text = text.substr(text.find_first_of(delimiters));
-	return LogicParserStringModifier::trimWhiteSpace(text);
+	text = StringModifier::trimWhiteSpace(text);
+	text = text.substr(text.find_first_of(WHITESPACE_DELIMITERS));
+	return StringModifier::trimWhiteSpace(text);
 }
 
-std::string LogicParserStringModifier::transformToLowercase(std::string text) {
+std::string StringModifier::trimWhiteSpace(std::string text) {
+	try {
+		if(text.empty()) {
+			throw std::invalid_argument(EMPTY_STRING);
+		}
+		return StringModifier::trimLeft(StringModifier::trimRight(text));
+	} catch(const std::invalid_argument& e) {
+		return e.what();
+	}
+}
+
+std::string StringModifier::transformToLowercase(std::string text) {
 	assert(!text.empty());
 	std::transform(text.begin(), text.end(), text.begin(), tolower);
 	return text;
 }
 
-std::vector<std::string> LogicParserStringModifier::tokenizeString(std::string text) {
+std::vector<std::string> StringModifier::tokenizeString(std::string text) {
 	try {
 		if(text.empty()) {
 			throw std::invalid_argument(EMPTY_STRING);
@@ -46,67 +81,30 @@ std::vector<std::string> LogicParserStringModifier::tokenizeString(std::string t
 	}
 }
 
-std::string LogicParserStringModifier::convertTokenVectorToString(std::vector<std::string> text) {
+std::string StringModifier::detokenizeVector(std::vector<std::string> text) {
 	try {
 		if(text.empty()) {
 			throw std::invalid_argument(EMPTY_STRING);
 		}
 		std::string line;
+
 		for(auto iter = text.begin(); iter != text.end(); ++iter) {
 			line += *iter + SPACE;
 		}
 
-		return LogicParserStringModifier::trimWhiteSpace(line);
+		return StringModifier::trimWhiteSpace(line);
 	}
 	catch(const std::invalid_argument& e) {
 		return e.what();
 	}
 }
 
-bool LogicParserStringModifier::isOneWord(std::string text) {
-	try {
-		if(text.empty()) {
-			throw std::invalid_argument(EMPTY_STRING);
-		}
-	text = LogicParserStringModifier::trimWhiteSpace(text);
-	return (text.find_first_of(delimiters) == std::string::npos);
-	}
-	catch(const std::invalid_argument) {
-		return false;
-	}
-}
-
-bool LogicParserStringModifier::isNumber(std::string text) {
-	try {
-		if(text.empty()) {
-			throw std::invalid_argument(EMPTY_STRING);
-		}
-		text = LogicParserStringModifier::trimWhiteSpace(text);
-		return std::all_of(text.begin(), text.end(), isdigit);
-	}
-	catch(const std::invalid_argument) {
-		return false;
-	}
-}
-
-std::string LogicParserStringModifier::trimWhiteSpace(std::string text) {
-	try {
-		if(text.empty()) {
-			throw std::invalid_argument(EMPTY_STRING);
-		}
-		return LogicParserStringModifier::trimLeft(LogicParserStringModifier::trimRight(text));
-	}
-	catch(const std::invalid_argument& e) {
-		return e.what();
-	}
-}
-
-std::string LogicParserStringModifier::trimLeft(std::string text) {
+std::string StringModifier::trimLeft(std::string text) {
 	assert(!text.empty());
-	return text.substr(text.find_first_not_of(delimiters));
+	return text.substr(text.find_first_not_of(WHITESPACE_DELIMITERS));
 }
 
-std::string LogicParserStringModifier::trimRight(std::string text) {
+std::string StringModifier::trimRight(std::string text) {
 	assert(!text.empty());
-	return text.substr(0, text.find_last_not_of(delimiters) + 1);
+	return text.substr(ZERO, text.find_last_not_of(WHITESPACE_DELIMITERS) + ONE);
 }

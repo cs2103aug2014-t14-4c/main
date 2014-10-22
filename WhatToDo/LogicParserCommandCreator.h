@@ -44,7 +44,7 @@ const std::string USERMESSAGE_INVALID_COMMAND_SEARCH =
 const std::string USERMESSAGE_INVALID_COMMAND_UNDO =
 	"Type /undo to undo the last performed action";
 
-class LogicParserCommandCreator :public LogicParserStringModifier {
+class LogicParserCommandCreator :public StringModifier {
 public:
 	LogicParserCommandCreator(void);
 	~LogicParserCommandCreator(void);

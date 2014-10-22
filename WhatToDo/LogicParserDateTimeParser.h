@@ -38,7 +38,7 @@ const std::array<std::string, 12> MONTHS_SHORT =
 	"jul", "aug", "sep", "oct", "nov", "dec"};
 
 
-class LogicParserDatetimeParser :public LogicParserStringModifier {
+class LogicParserDatetimeParser :public StringModifier {
 public:
 	LogicParserDatetimeParser(void);
 	~LogicParserDatetimeParser(void);

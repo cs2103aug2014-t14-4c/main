@@ -45,7 +45,7 @@ std::string LogicParserCommandCreator::getUserCommand(void) {
 }
 
 std::string LogicParserCommandCreator::getParameters(void) {
-	return LogicParserCommandCreator::getStringExceptFirstWord(_userInput);
+	return LogicParserCommandCreator::getExceptFirstWord(_userInput);
 }
 
 bool LogicParserCommandCreator::isClearCommand(void) {

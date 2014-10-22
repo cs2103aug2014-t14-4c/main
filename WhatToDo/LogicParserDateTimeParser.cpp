@@ -13,7 +13,7 @@ LogicParserDatetimeParser::~LogicParserDatetimeParser(void) {
 std::string LogicParserDatetimeParser::addTaskDatetime(Command* command, Task* task, std::vector<std::string> parameters) {
 	try{
 		LogicParserDatetimeParser::setParameters(parameters);
-		//LogicParserDatetimeParser::addDeadlineDatetime();	
+		LogicParserDatetimeParser::addDeadlineDatetime();	
 		LogicParserDatetimeParser::addStartDatetime();
 		if(LogicParserDatetimeParser::hasStartDatetime()) {
 			LogicParserDatetimeParser::addEndDatetime();
@@ -38,7 +38,7 @@ void LogicParserDatetimeParser::setParameters(std::vector<std::string> parameter
 }
 
 std::string LogicParserDatetimeParser::convertParametersToString() {
-	return LogicParserDatetimeParser::convertTokenVectorToString(_parameters);
+	return LogicParserDatetimeParser::detokenizeVector(_parameters);
 }
 
 void LogicParserDatetimeParser::setFoundDatetime(Task* task) {
