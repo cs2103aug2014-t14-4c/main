@@ -677,12 +677,80 @@ void LogicParserDatetimeParser::combineEndTimeDate() {
 	if(!_endDate.is_not_a_date() && !_endTime.is_not_a_date_time()) {
 		boost::posix_time::ptime tempDatetime(_endDate, _endTime);
 		_endDatetime = tempDatetime;
-	} else if(_startTime.is_not_a_date_time()) {
+	} else if(_endTime.is_not_a_date_time()) {
 		boost::posix_time::time_duration oneSecond(boost::posix_time::seconds(1));
 		boost::posix_time::ptime tempDatetime(_endDate, oneSecond);
 		_endDatetime = tempDatetime;
-	} else if(_startDate.is_not_a_date()) {
+	} else if(_endDate.is_not_a_date()) {
 		boost::posix_time::ptime tempDatetime(_startDate, _endTime);
 		_endDatetime = tempDatetime;
+	}
+}
+
+void LogicParserDatetimeParser::addDeadlineDatetime(void) {
+	try {
+		for(auto iter = _parameters.begin(); iter != _parameters.end(); ++iter) {
+			if(LogicParserDatetimeParser::isDeadlineIdentifier(*iter)) {
+				if(LogicParserDatetimeParser::addDeadlineWithIdentifier(LogicParserDatetimeParser::nextWord(iter))) {
+					LogicParserDatetimeParser::eraseWord(iter);
+				}
+			}
+		} 
+		LogicParserDatetimeParser::combineDeadlineTimeDate();
+	}
+	catch(const std::out_of_range& e) {
+		throw e;
+	}
+}
+
+
+bool LogicParserDatetimeParser::isDeadlineIdentifier(std::string word) {
+	for(auto iter = IDENTIFIER_DEADLINE.begin(); iter != IDENTIFIER_DEADLINE.end(); ++iter) {
+		if(LogicParserDatetimeParser::transformToLowercase(word) == *iter) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool LogicParserDatetimeParser::addDeadlineWithIdentifier(std::vector<std::string>::iterator iter) {
+	try {
+		if(iter == _parameters.end()) {
+			throw std::invalid_argument("Vector out of range");
+		} 
+		if(LogicParserDatetimeParser::isATime(iter)) {
+			if(LogicParserDatetimeParser::isADate(LogicParserDatetimeParser::nextWord(iter))) {
+				_deadlineDate = LogicParserDatetimeParser::parseDate(LogicParserDatetimeParser::nextWord(iter));
+			}
+			_deadlineTime = LogicParserDatetimeParser::parseTime(iter);
+			return true;
+		} else if(LogicParserDatetimeParser::isADate(iter)) {
+			if(LogicParserDatetimeParser::isATime(LogicParserDatetimeParser::nextWord(iter))) {
+				_deadlineTime = LogicParserDatetimeParser::parseTime(LogicParserDatetimeParser::nextWord(iter));
+			}
+			_deadlineDate = LogicParserDatetimeParser::parseDate(iter);
+			return true;
+		}
+		return false;
+	}
+	catch(const std::invalid_argument) {
+		return false;
+	}
+	catch(const std::out_of_range& e) {
+		throw e;
+	}
+}
+
+void LogicParserDatetimeParser::combineDeadlineTimeDate() {
+	if(!_deadlineDate.is_not_a_date() && !_deadlineTime.is_not_a_date_time()) {
+		boost::posix_time::ptime tempDatetime(_deadlineDate, _deadlineTime);
+		_deadlineDatetime = tempDatetime;
+	} else if(_deadlineTime.is_not_a_date_time()) {
+		boost::posix_time::time_duration oneSecond(boost::posix_time::seconds(1));
+		boost::posix_time::ptime tempDatetime(_deadlineDate, oneSecond);
+		_deadlineDatetime = tempDatetime;
+	} else if(_deadlineDate.is_not_a_date()) {
+		boost::posix_time::ptime tempDatetime(_currentDate, _deadlineTime);
+		_deadlineDatetime = tempDatetime;
 	}
 }
