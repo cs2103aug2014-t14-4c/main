@@ -19,12 +19,21 @@ class StorageExecutor{
 		Task myIndividualTask; 
 		vector<vector<string>> convertedTaskStringStorage; 
 		vector<string> individualConvertedTask;
-	public:
+		vector<Task> myConvertedTask;
+		vector<Task> taskToStore;
+	
+public:
 		StorageExecutor(void);
+		
+		//primary functions
 		State loadFromStorage();
 		void saveToStorage(State stateToSave);
+		
+		//supporting functions
+		void processVectorToTaskConversion(vector<vector<string>>::iterator vectorStringIterator);
+		State processTaskAddition(vector<Task>::iterator taskIterator);
+		void StorageExecutor::convertAllTaskToString(vector<Task>::iterator taskIterator);
 
-		//HELLLLO haha hahaha storageExecutor
 };
 
 
