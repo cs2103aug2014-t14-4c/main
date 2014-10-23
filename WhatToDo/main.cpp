@@ -1,123 +1,112 @@
-#include <iostream>
+#include "State.h"
+#include "StorageConverter.h"
+#include "StorageDatabase.h"
+#include "StorageExecutor.h"
+#include "Task.h"
 #include <vector>
 #include <string>
-#include "CommandAdd.h"
-#include "CommandDelete.h"
-#include "CommandEdit.h"
-#include "CommandDone.h"
-#include "CommandSearch.h"
-#include "CommandClear.h"
-#include "CommandUndo.h"
-#include "CommandRedo.h"
-#include "LogicData.h"
-#include "State.h"
-#include "Task.h"
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/gregorian_calendar.hpp>
 
 using namespace std;
-using namespace boost::posix_time;
-using namespace boost::gregorian;
 
-void printtask(Task mytask) {
-	ptime start = mytask.getTaskStartTime();
-	ptime end = mytask.getTaskEndTime();
-	ptime deadline = mytask.getTaskDeadline();
-	time_duration duration = mytask.getTaskDuration();
-	string name = mytask.getTaskName();
-	int index = mytask.getTaskIndex();
-	int tasktype = mytask.getTaskType();
-	bool isdone = mytask.getTaskIsDone();
-	cout << "Name: " << name << endl;
-	cout << "StartTime: " << to_simple_string(start) << endl;
-	cout << "EndTime: " << to_simple_string(end) << endl;
-	cout << "Deadline: " << to_simple_string(deadline) << endl;
-	cout << "Duration: " << to_simple_string(duration) << endl;
-	cout << "Index: " << index << endl;
-	cout << "Type: " << tasktype << endl;
-	cout << "Done?: " << isdone << endl;
-	cout << endl;
-	return;
-}
+int main(){
 
-void printstate(State mystate) {
-	vector<Task> all = mystate.getAllTasks();
-	int i;
-	for (i=0; unsigned(i)<all.size(); i++) {
-		printtask(all[i]);
-	}
-	cout << mystate.getUserMessage() << endl << endl;
-	return;
-}
 
-int main() {
+		vector<string> testVector; 
+		vector<string> expectedVector; 
+		Task expectedTask;
+		Task convertedTask;
 
-	//ptime(date(2000, 10, 10), hours(1));
 
-	Command* abc = new CommandAdd;
-	Task taskone;
-	taskone.setTaskName("taskone");
-	taskone.setTaskStartTime(ptime(date(2014, 10, 5), hours(5)));
-	taskone.setTaskEndTime(ptime(date(2014, 10, 5), hours(7)));
-	taskone.setTaskDeadline(ptime(date(2014, 10, 6)));
-	Task tasktwo;
-	tasktwo.setTaskName("tasktwo");
-	tasktwo.setTaskStartTime(ptime(date(2014, 10, 5), hours(20)));
-	tasktwo.setTaskEndTime(ptime(date(2014, 10, 5), hours(22)));
-	//tasktwo.setTaskDeadline(ptime(date(2014, 10, 6)));
-	State mystate;
-	mystate.addTask(taskone);
-	mystate.addTask(tasktwo);
-	printstate(mystate);
-	LogicData::fakeinitiate(mystate);
+		expectedVector.clear();
+		Task taskObj;
+		Task taskObj2;
+		StorageConverter storageConverterObj;
 
-	Task taskthree;
-	taskthree.setTaskName("taskthree");
-	taskthree.setTaskStartTime(ptime(date(2014, 10, 6), hours(10)));
-	taskthree.setTaskEndTime(ptime(date(2014, 10, 6), hours(11)));
-	taskthree.setTaskDeadline(ptime(date(2014, 10, 5)));
-	abc->setCurrentTask(taskthree);
-	abc->execute();
+		ptime taskStartTime(date(2002,Jan,10), time_duration(1,2,3));
+		ptime taskEndTime(date(2003,Jan,10), time_duration(1,2,3));
+		ptime taskDeadline(date(2004,Jan,10), time_duration(1,2,3));
+		string taskName = "fuckyou";
+		string taskDetails = "we gg celebrate birthday";
+		vector<string> taskTags;
+		taskTags.push_back("#fuckyou");
+		taskTags.push_back("#fuckme");
+		taskTags.push_back("#fuckitall");
 
-	Task taskfour;
-	taskfour.setTaskName("taskfour");
-	taskfour.setTaskDeadline(ptime(date(2014, 10, 10)));
-	vector<string> lalatags;
-	lalatags.push_back("oa");
-	lalatags.push_back("iab");
-	taskfour.setTaskTags(lalatags);
-	Command* bcd = new CommandEdit;
-	bcd->setTaskIndex(1);
-	bcd->setCurrentTask(taskfour);
-	bcd->execute();
+		taskObj.setTaskStartTime(taskStartTime);
+		taskObj.setTaskEndTime(taskEndTime);
+		taskObj.setTaskDeadline(taskDeadline);
+		taskObj.setTaskName(taskName);
+		//taskObj.setTaskDetails(taskDetails); // Not used for now
+		taskObj.setTaskTags(taskTags);
+		taskObj.setTaskIsDone();
 
-	Command* doo = new CommandDone;
-	doo->setTaskIndex(0);
-	doo->execute();
+		taskObj2.setTaskStartTime(taskStartTime);
+		taskObj2.setTaskEndTime(taskEndTime);
+		taskObj2.setTaskName(taskName);
+		taskObj2.setTaskDeadline(taskDeadline);
+		taskObj2.setTaskTags(taskTags);
+		//taskObj2.setTaskIsDone();
 
-	Command* ss = new CommandSearch;
-	ss->setSearchKeyword("task#o#i");
-	ss->execute();
+		//1. getTaskType
+		//string taskType = "1";
+		//expectedVector.push_back(taskType);
+			
+		//2. get start datetime 
+		string startDatetime = "20020110T010203";
+		expectedVector.push_back(startDatetime);
 
-	Command* ooi = new CommandClear;
-	ooi->execute();
+		//3. get end datetime
+		string endDatetime = "20030110T010203";
+		expectedVector.push_back(endDatetime); 
 
-	Command* backk = new CommandUndo;
-	backk->execute();
-	backk->execute();
-	backk->execute();
-	backk->execute();
+		//4. get task deadline 
+		string taskDuration = "20040110T010203";
+		expectedVector.push_back(taskDuration);
 
-	Command* ahead = new CommandRedo;
-	ahead->execute();
+		//5. get taskName
+		string taskTestName = "fuckyou";
+		expectedVector.push_back(taskTestName);
 
-	vector<Command*> something = LogicData::getCommandHistory();
+		////6. get task details
+		//string taskTestDetails ="we gg celebrate birthday\n";
+		//expectedVector.push_back(taskTestDetails);
+	
+		//6. get task tags
+		string taskTagString = "#fuckyou #fuckme #fuckitall ";
+		expectedVector.push_back(taskTagString);
 
-	mystate = LogicData::getViewState();
-	printstate(mystate);
-	cout << something.size() << " " << LogicData::getCurrentCommandHistoryIndex() << endl;
+		//7. getIsDone
+		string getIsDone = "1";
+		expectedVector.push_back(getIsDone);
+			
+		State myState;
+		myState.addTask(taskObj);
+		myState.addTask(taskObj2);
+		StorageExecutor myExecutor; 
+		myExecutor.saveToStorage(myState);
+		
 
-	int i;
-	cin >> i;
+		vector<vector<string>> testVectorString;
+		StorageDatabase myDatabase;
+		testVectorString = myDatabase.readFromDatabase(); 
+
+		vector<vector<string>>::iterator myIte = testVectorString.begin();
+		while(myIte!=testVectorString.end()){
+			for(int i =0; i<6; i++){
+				cout << (*myIte)[i] << endl;
+			}
+			myIte++;
+		}
+
+		State myState2; 
+		cout << "im getting the content of myState2 " << endl;
+		myState2 = myExecutor.loadFromStorage();
+		
+		//myExecutor.saveToStorage(myState2);
+
+		cout << " END " << endl;
+
+		getchar();
+
 	return 0;
 }

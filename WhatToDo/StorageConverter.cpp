@@ -168,20 +168,20 @@ void StorageConverter::convertStringStartDatetimeToTask(){
 
 void StorageConverter::convertStringEndDatetimeToTask(){
 	if (taskDatetimeString == NOT_A_DATETIME){
-		convertedTask.setTaskStartTime(not_a_date_time); 
+		convertedTask.setTaskEndTime(not_a_date_time); 
 	} else {
-		ptime taskStartTime(from_iso_string(taskDatetimeString));
-		convertedTask.setTaskStartTime(taskStartTime);
+		ptime taskEndTime(from_iso_string(taskDatetimeString));
+		convertedTask.setTaskEndTime(taskEndTime);
 	}
 	return;
 }
 
 void StorageConverter::convertStringDeadlineToTask(){
 	if (taskDatetimeString == NOT_A_DATETIME){
-		convertedTask.setTaskStartTime(not_a_date_time); 
+		convertedTask.setTaskDeadline(not_a_date_time); 
 	} else {
-		ptime taskStartTime(from_iso_string(taskDatetimeString));
-		convertedTask.setTaskStartTime(taskStartTime);
+		ptime taskDeadline(from_iso_string(taskDatetimeString));
+		convertedTask.setTaskDeadline(taskDeadline);
 	}
 	return;
 }

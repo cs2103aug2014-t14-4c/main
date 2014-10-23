@@ -63,7 +63,8 @@ State StorageExecutor::processTaskAddition(vector<Task>::iterator taskIterator){
 
 void StorageExecutor::convertAllTaskToString(vector<Task>::iterator taskIterator){
 
-		while(taskIterator!=taskToStore.end()){
+	convertedTaskStringStorage.clear();
+	while(taskIterator!=taskToStore.end()){
 		individualConvertedTask = myStorageConverter.convertTaskToString(*taskIterator);
 		//store the converted string into a vector of strings
 		convertedTaskStringStorage.push_back(individualConvertedTask);
