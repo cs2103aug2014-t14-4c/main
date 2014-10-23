@@ -1,9 +1,6 @@
 #ifndef TASK_H
 #define TASK_H
 
-//1) isDone;
-//2) LogicData;
-
 #include <iostream>
 #include <vector>
 #include <string>
