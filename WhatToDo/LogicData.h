@@ -8,6 +8,8 @@
 
 class Command;
 
+//currentcommandhistoryindex --> Need to check where it should be initialised and how.
+
 class LogicData{
 
 	private:
@@ -24,12 +26,13 @@ class LogicData{
 		//setters
 		static void setCurrentState(State stateToSet);
 		static void setViewState(State stateToSet);
-
+		
 		//getters
 		static State getCurrentState();
 		static State getViewState();
 
 		//operations
+		static void resetCommandHistory();
 		static vector<Command*> getCommandHistory();
 		static void addCommandToHistory(Command* commandToAdd);
 		static int getCurrentCommandHistoryIndex();

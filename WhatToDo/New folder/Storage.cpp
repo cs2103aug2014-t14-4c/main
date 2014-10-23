@@ -45,7 +45,10 @@ void Storage::setUI(Ui::AnotherGUIClass ui) {
 	return;
 }
 
-void Storage::commandLineInput() {
+void Storage::commandLineInput(QObject* parent) {
+	
+	if (parent == _ui.searchbox) return;
+	
 	QString currentText = _ui.commandbox->toPlainText();
 	_ui.commandbox->setPlainText(QString::fromStdString(""));
 	string userinput = currentText.toStdString();
@@ -117,91 +120,6 @@ void Storage::setindex(int index) {
 void Storage::setlist(vector<Task> hello) {
 	_hello = hello;
 }
-
-/*
-void Storage::commandLineInput() {
-	QString stringToAdd = _ui.commandbox->toPlainText();
-	_ui.commandbox->setPlainText(QString::fromStdString(""));
-	string userinput = stringToAdd.toStdString();
-	
-	if (userinput == "") {
-		return;
-	}
-
-	istringstream inputstring(userinput);
-	string command;
-	inputstring >> command;
-
-	if (command == "add") {
-		string therest;
-		getline(inputstring, therest);
-		commandAdd(therest);
-	}
-	else if (command == "delete") {
-		int index;
-		inputstring >> index;
-		commandDelete(index);
-	}
-	else if (command == "clear") {
-		commandClear();
-	}
-	else if (command == "edit") {
-		int index;
-		string therest;
-		inputstring >> index;
-		getline(inputstring, therest);
-		commandEdit(index, therest);
-	}
-	else if (command == "search") {
-		commandSearch();
-	}
-	else if (command == "refresh") {
-		commandRefresh();
-	}
-	else {
-		commandAdd(userinput);
-	}
-
-	emit dataChanged(_listOfTasks);
-	return;
-}
-
-void Storage::commandAdd(string toAdd) {
-	_listOfTasks.push_back(toAdd);
-	return;
-}
-
-void Storage::commandDelete(int index) {
-	_listOfTasks.erase(_listOfTasks.begin()+index-1);
-	return;
-}
-
-void Storage::commandClear() {
-	_listOfTasks.clear();
-	return;
-}
-
-void Storage::commandEdit(int index, string toAdd) {
-	_listOfTasks[index-1] = toAdd;
-	return;
-}
-
-void Storage::commandSearch() {
-	return;
-}
-
-void Storage::commandRefresh() {
-	return;
-}
-
-void Storage::commandUndo() {
-	return;
-}
-
-void Storage::commandRedo() {
-	return;
-}
-*/
 
 void Storage::toggleCalandarview() {
 	_ui.displaycalendar->setVisible(true);

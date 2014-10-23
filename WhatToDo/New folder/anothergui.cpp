@@ -2,7 +2,7 @@
 using namespace std;
 
 int AnotherGUI::_size;
-
+ 
 AnotherGUI::AnotherGUI(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -10,23 +10,38 @@ AnotherGUI::AnotherGUI(QWidget *parent)
 	ui.setupUi(this);
 	this->setFixedSize(956, 681);
 	ui.displaycalendar->setVisible(false);
-
+	ui.userfeedback->setVisible(false);
+	ui.userfeedback->setAttribute(Qt::WA_TranslucentBackground);
+	ui.userfeedback->setStyleSheet("background:transparent;");
 	_myKeyPressEater = new KeyPressEater();
 	ui.commandbox->installEventFilter(_myKeyPressEater);
+	ui.searchbox->installEventFilter(_myKeyPressEater);
+	
+	
+	QStringList wordList;
+	wordList << "muaks one two three four five six seven eight" << "muaksssss ichi ni san shi go roku shichi hatchi kyu joo" << "tooootooo tatata tudotu" << "zeta";
+	QCompleter *completer = new QCompleter(wordList);
+	ui.commandbox->setCompleter(completer);
+
+	/*
+	QString s = "hallo to you";
+	ui.comboBox->addItem(s);
+	s = "moshimosi to you";
+	ui.comboBox->addItem(s);
+	*/
 
 	_myStorage = new Storage();
 	_myStorage->setUI(ui);
 
 	connectAllSlots();
 	
+	State atfirst = LogicExecutor::getNewState("/load");
+	updateView(atfirst);
+
 	//ptime x(date(2014,10,7), hours(2));
 	//string everything = changeDateToString(x);
-	ui.displaybox->setHtml(QString::fromStdString(""));
+	//ui.displaybox->setHtml(QString::fromStdString(""));
 	//string html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\"><html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; }</style></head><body style=\" font-family:'Calibri'; font-size:11pt; font-weight:400; font-style:normal;\"><p style=\" margin-top:25px; margin-bottom:0px; margin-left:2px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Mon, 6 Oct 2014 </span></p><p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:20%;\"><br /></p><ol style=\"margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;\"><li style=\" margin-top:0px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"> <span style=\" font-weight:600; color:#ff0000;\">[DUE]</span> Finish last round of revision for IE2110 (write the summary cheat sheet to bring in) and PC1432 (redo the two papers asap)</li><li style=\" margin-top:0px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Try out new things for the fake GUI!</li><li style=\" margin-top:0px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Are we meeting today? &gt;.&lt;</li><p style=\" margin-top:25px; margin-bottom:0px; margin-left:2px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Wed, 8 Oct 2014 </span></p><p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:20%;\"><br /></p><li style=\" margin-top:0px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"> <span style=\" font-weight:600; color:#ff0000;\">[DUE]</span> Do some writeup on IE2101 midterm deliverables</li><li style=\" margin-top:0px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"> <span style=\" font-weight:600; color:#ff0000;\">[DUE]</span> Attempt to compile CS2103 maybe after PC1431</li><li style=\" margin-top:0px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Watch anime</li><li style=\" margin-top:0px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Play piano</li><li style=\" margin-top:0px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"> <span style=\" font-weight:600; color:#0000ff;\">[7pm]</span> Have dinner with blah blah blah</li><li style=\" margin-top:0px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"> <span style=\" font-weight:600; color:#0000ff;\">[7pm - 8pm]</span> Watch TV</li><p style=\" margin-top:25px; margin-bottom:0px; margin-left:2px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Thurs, 9 Oct 2014 </span></p><p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:20%;\"><br /></p><li style=\" margin-top:0px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Screw the CS2103 demo!</li></ol></body></html>";
-	
-	State somestate = LogicExecutor::getNewState("/load");
-	updateView(somestate);
-
 }
 
 AnotherGUI::~AnotherGUI()
@@ -46,7 +61,8 @@ void AnotherGUI::connectAllSlots() {
 	connect(declarativeMain, SIGNAL(buttonClick()), _myStorage, SLOT(toggleCalandarview()));
 	declarativeMain = ui.buttonEnter->rootObject();
 	connect(declarativeMain, SIGNAL(buttonClick()), _myStorage, SLOT(commandLineInput()));
-	connect(_myKeyPressEater, SIGNAL(enterPressed()), _myStorage, SLOT(commandLineInput()));
+	declarativeMain = ui.userfeedback->rootObject();
+	connect(_myKeyPressEater, SIGNAL(enterPressed(QObject*)), _myStorage, SLOT(commandLineInput(QObject*)));
 	//connect(ui.commandbox, SIGNAL(cursorPositionChanged()), this, SLOT(setSuggestionList()));
 	connect(ui.searchbox, SIGNAL(textChanged()), _myStorage, SLOT(searchInput()));
 	//connect(ui.commandbox, SIGNAL(textChanged()), _myStorage, SLOT(commandLineInput()));
@@ -54,9 +70,23 @@ void AnotherGUI::connectAllSlots() {
 	return;
 }
 
+
 void AnotherGUI::updateView(State latestState) {
+	QObject* anobject = ui.userfeedback->rootObject();
+	ui.userfeedback->setVisible(false);
+	anobject->setProperty("animateopacity", false);
+	anobject->setProperty("imageopacity", 1.00);
 	string html = convertStateToHtml(latestState);
 	ui.displaybox->setHtml(QString::fromStdString(html));
+	
+	if (latestState.getUserMessage() != "") {
+		ui.userfeedback->setVisible(true);
+		string aa = latestState.getUserMessage();
+		anobject->setProperty("usermessage", QString::fromStdString(aa));
+		anobject->setProperty("animateopacity", true);
+		anobject->setProperty("imageopacity", 0.00);
+	}
+	
 	return;
 }
 
@@ -184,6 +214,8 @@ string AnotherGUI::convertStateToHtml(State inputState) {
 	string posttask = "</li>";
 	string postol = "</ol></body></html>";
 	string thedue = " <span style=\" font-weight:600; color:#ff0000;\">[DUE]</span> ";
+	string pretag = " <span style=\" font-weight:600; color:#b86f2f;\">";
+	string posttag = "</span>";
 	string total = beginone + preol;
 	
 	bool gotfloating = floatingg.size() != 0;
@@ -193,7 +225,13 @@ string AnotherGUI::convertStateToHtml(State inputState) {
 	if (gotfloating) {
 		total += firstpredate + "Floating Tasks!" + firstpostdate;
 		for (i=0; unsigned(i)<floatingg.size(); i++) {
-			total += pretask + floatingg[i].getTaskName() + posttask;
+			string alltags = "";
+			vector<string> allstringtags = floatingg[i].getTaskTags();
+			int k;
+			for (k=0; unsigned(k)<allstringtags.size(); k++) {
+				alltags += pretag + allstringtags[k] + posttag;
+			}
+			total += pretask + floatingg[i].getTaskName() + alltags + posttask;
 		}
 	}
 
@@ -212,10 +250,22 @@ string AnotherGUI::convertStateToHtml(State inputState) {
 				string showtime = "";
 				if (watashino[i].getTaskType() == 1) {
 					showtime = getShowTime(watashino[i].getTaskStartTime(), watashino[i].getTaskEndTime());
-					total += pretask + showtime + watashino[i].getTaskName() + posttask;
+					string alltags = "";
+					vector<string> allstringtags = watashino[i].getTaskTags();
+					int k;
+					for (k=0; unsigned(k)<allstringtags.size(); k++) {
+						alltags += pretag + allstringtags[k] + posttag;
+					}
+					total += pretask + showtime + watashino[i].getTaskName() + alltags + posttask;
 				}	
 				else if (watashino[i].getTaskType() == 2) {
-					total += pretask + thedue + showtime + watashino[i].getTaskName() + posttask;
+					string alltags = "";
+					vector<string> allstringtags = watashino[i].getTaskTags();
+					int k;
+					for (k=0; unsigned(k)<allstringtags.size(); k++) {
+						alltags += pretag + allstringtags[k] + posttag;
+					}
+					total += pretask + thedue + showtime + watashino[i].getTaskName() + alltags + posttask;
 				}
 			}
 			else {
@@ -223,10 +273,22 @@ string AnotherGUI::convertStateToHtml(State inputState) {
 				string showtime = "";
 				if (watashino[i].getTaskType() == 1) {
 					showtime = getShowTime(watashino[i].getTaskStartTime(), watashino[i].getTaskEndTime());
-					total += pretask + showtime + watashino[i].getTaskName() + posttask;
+					string alltags = "";
+					vector<string> allstringtags = watashino[i].getTaskTags();
+					int k;
+					for (k=0; unsigned(k)<allstringtags.size(); k++) {
+						alltags += pretag + allstringtags[k] + posttag;
+					}
+					total += pretask + showtime + watashino[i].getTaskName() + alltags + posttask;
 				}	
 				else if (watashino[i].getTaskType() == 2) {
-					total += pretask + thedue + showtime + watashino[i].getTaskName() + posttask;
+					string alltags = "";
+					vector<string> allstringtags = watashino[i].getTaskTags();
+					int k;
+					for (k=0; unsigned(k)<allstringtags.size(); k++) {
+						alltags += pretag + allstringtags[k] + posttag;
+					}
+					total += pretask + thedue + showtime + watashino[i].getTaskName() + alltags + posttask;
 				}
 			}
 			currentptime = alltasktimes[i];

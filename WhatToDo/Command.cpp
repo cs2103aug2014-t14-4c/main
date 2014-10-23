@@ -90,7 +90,7 @@ void Command::setUserMessage(string userMessageToSet) {
 
 bool Command::checkIsParsedCorrectly() {
 	if (!_isParsedCorrectly) {
-		throw ERROR_MSG_NOT_PARSED_CORRECTLY;
+		throw _userMessage;
 		_isParsedCorrectly = false;
 	}
 	sprintf_s(buffer, LOGGING_MSG_CHECK_IS_PARSED_CORRECTLY.c_str(), _userMessage.c_str());

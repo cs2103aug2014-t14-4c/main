@@ -12,10 +12,10 @@ CommandDone::CommandDone(void) {
 void CommandDone::execute() {
 	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_DONE.c_str());
 	log(buffer);
-	assert(_commandTaskIndex >= 0);
 	
 	try {
 		checkIsParsedCorrectly();
+		assert(_commandTaskIndex >= 0);
 		retrieveExistingCurrentState();
 		performDoneOperation();
 		addThisCommandToHistory(this);

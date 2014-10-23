@@ -8,7 +8,6 @@ string StorageConverter::TITLE_TASKTAGS = "Task Tags: ";
 string StorageConverter::TITLE_TASKISDONE = "Task isDone Status: ";
 
 string StorageConverter::NOT_A_DATETIME = "not-a-date-time"; 
-
 //some are commented out as they are not implemented at this moment
 
 StorageConverter::StorageConverter(void){

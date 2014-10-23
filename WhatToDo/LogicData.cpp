@@ -57,6 +57,11 @@ void LogicData::loadInitialSettings(){
 	_viewState = initialState;
 }
 
+void LogicData::resetCommandHistory() {
+	_commandHistory.clear();
+	return;
+}
+
 void LogicData::setCommandHistoryIndex(int indexToSet) {
 	_currentCommandHistoryIndex = indexToSet;
 }
