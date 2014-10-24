@@ -6,105 +6,92 @@ StringModifier::StringModifier(void) {
 StringModifier::~StringModifier(void) {
 }
 
-bool StringModifier::isOneWord(std::string text) {
-	try {
-		if(text.empty()) {
-			throw std::invalid_argument(EMPTY_STRING);
-		}
-		text = StringModifier::trimWhiteSpace(text);
-		return (text.find_first_of(WHITESPACE_DELIMITERS) == std::string::npos);
-	} catch(...) {
+bool StringModifier::isOneWord(string text) {
+	if(text.empty()) {
 		return false;
 	}
+	text = StringModifier::trimWhiteSpace(text);
+	return (text.find_first_of(WHITESPACE_CHAR) == string::npos);
 }
 
-bool StringModifier::isNumber(std::string text) {
-	try {
-		if(text.empty()) {
-			throw std::invalid_argument(EMPTY_STRING);
-		}
-		text = StringModifier::trimWhiteSpace(text);
-		return std::all_of(text.begin(), text.end(), isdigit);
-	} catch(...) {
+bool StringModifier::isNumber(string text) {
+	if(text.empty()) {
 		return false;
 	}
+	text = StringModifier::trimWhiteSpace(text);
+	return all_of(text.begin(), text.end(), isdigit);
 }
 
-std::string StringModifier::getFirstWord(std::string text) {
+string StringModifier::getFirstWord(string text) {
 	assert(!text.empty());
 	text = StringModifier::trimWhiteSpace(text);
-	return text.substr(ZERO, text.find_first_of(WHITESPACE_DELIMITERS));
+	return text.substr(Zero, text.find_first_of(WHITESPACE_CHAR));
 }
 
-std::string StringModifier::getExceptFirstWord(std::string text) {
-	assert(!text.empty() && !isOneWord(text));
+string StringModifier::getExceptFirstWord(string text) {
+	assert(!text.empty());
+	if(StringModifier::isOneWord(text)) {
+		return EMPTY_STRING;
+	}
 	text = StringModifier::trimWhiteSpace(text);
-	text = text.substr(text.find_first_of(WHITESPACE_DELIMITERS));
+	text = text.substr(text.find_first_of(WHITESPACE_CHAR));
 	return StringModifier::trimWhiteSpace(text);
 }
 
-std::string StringModifier::trimWhiteSpace(std::string text) {
-	try {
-		if(text.empty()) {
-			throw std::invalid_argument(EMPTY_STRING);
-		}
-		return StringModifier::trimLeft(StringModifier::trimRight(text));
-	} catch(const std::invalid_argument& e) {
-		return e.what();
+string StringModifier::trimWhiteSpace(string text) {
+	if(text.empty()) {
+		return EMPTY_STRING;
 	}
+	return StringModifier::trimLeft(StringModifier::trimRight(text));
 }
 
-std::string StringModifier::transformToLowercase(std::string text) {
-	assert(!text.empty());
-	std::transform(text.begin(), text.end(), text.begin(), tolower);
+string StringModifier::transformToLowercase(string text) {
+	if(text.empty()) {
+		return EMPTY_STRING;
+	}
+	transform(text.begin(), text.end(), text.begin(), tolower);
 	return text;
 }
 
-std::vector<std::string> StringModifier::tokenizeString(std::string text) {
+vector<string> StringModifier::tokenizeString(string text) {
 	try {
 		if(text.empty()) {
-			throw std::invalid_argument(EMPTY_STRING);
+			throw invalid_argument(EMPTY_STRING);
 		}
-		std::istringstream iss(text);
-		std::string currentWord;
-		std::vector<std::string> tokens;
+		istringstream iss(text);
+		string currentWord;
+		vector<string> tokens;
 
 		while(iss >> currentWord) {
 			tokens.push_back(currentWord);
 		}
-
 		return tokens;
 	}
-	catch(const std::invalid_argument) {
-		std::vector<std::string> emptyVector;
+	catch(const invalid_argument) {
+		vector<string> emptyVector;
 		return emptyVector;
 	}
 }
 
-std::string StringModifier::detokenizeVector(std::vector<std::string> text) {
-	try {
-		if(text.empty()) {
-			throw std::invalid_argument(EMPTY_STRING);
-		}
-		std::string line;
-
-		for(auto iter = text.begin(); iter != text.end(); ++iter) {
+string StringModifier::detokenizeVector(vector<string> text) {
+	if(text.empty()) {
+		return EMPTY_STRING;
+	}
+	string line;
+	for(auto iter = text.begin(); iter != text.end(); ++iter) {
+		if(!(*iter).empty()) {
 			line += *iter + SPACE;
 		}
-
-		return StringModifier::trimWhiteSpace(line);
 	}
-	catch(const std::invalid_argument& e) {
-		return e.what();
-	}
+	return StringModifier::trimWhiteSpace(line);
 }
 
-std::string StringModifier::trimLeft(std::string text) {
+string StringModifier::trimLeft(string text) {
 	assert(!text.empty());
-	return text.substr(text.find_first_not_of(WHITESPACE_DELIMITERS));
+	return text.substr(text.find_first_not_of(WHITESPACE_CHAR));
 }
 
-std::string StringModifier::trimRight(std::string text) {
+string StringModifier::trimRight(string text) {
 	assert(!text.empty());
-	return text.substr(ZERO, text.find_last_not_of(WHITESPACE_DELIMITERS) + ONE);
+	return text.substr(Zero, text.find_last_not_of(WHITESPACE_CHAR) + One);
 }

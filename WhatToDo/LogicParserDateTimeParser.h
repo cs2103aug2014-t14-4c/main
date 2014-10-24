@@ -2,119 +2,194 @@
 #include "boost\date_time.hpp"
 #include "LogicParserStringModifier.h"
 
+namespace pt = boost::posix_time;
+namespace gr = boost::gregorian;
+using namespace std;
 
-const std::string DATE_DELIMITERS = "./-";
-const std::string TIME_DELIMITERS = ".:";
+const int NUMLEN_3 = 100;
+const int NUMLEN_5 = 10000;
+const int NUMLEN_7 = 1000000;
 
-const std::string IDENTIFIER_AM = "am";
-const std::string IDENTIFIER_PM = "pm";
-const std::string IDENTIFIER_THIS = "this";
-const std::string IDENTIFIER_NEXT = "next";
-const std::array<std::string, 2> IDENTIFIER_TODAY = 
+const int STRLEN_24H_TIME = 4;
+const int STRLEN_DDMM = 4;
+const int STRLEN_DDMMYY = 6;
+const int STRLEN_DDMMYYYY = 8;
+const int CURRENT_MILLENIUM = 2000;
+
+const int VALID_MIN_HOUR_12 = 1;
+const int VALID_MAX_HOUR_12 = 12;
+const int VALID_MIN_HOUR_24 = 0;
+const int VALID_MAX_HOUR_24 = 23;
+const int VALID_MIN_MINUTE = 0;
+const int VALID_MAX_MINUTE = 59;
+
+const int VALID_MIN_DAY = 1;
+const int VALID_MAX_DAY = 31;
+const int VALID_MIN_MONTH = 1;
+const int VALID_MAX_MONTH = 12;
+const int VALID_MIN_YEAR_YY = 0;
+const int VALID_MAX_YEAR_YY = 99;
+const int VALID_MIN_YEAR_YYYY = 1970;
+const int VALID_MAX_YEAR_YYYY = 2100;
+const int VALID_MAX_WEEKDAY = 7;
+
+const string TIME_DELIMITERS = ".:";
+const string TIME_AM = "am";
+const string TIME_PM = "pm";
+
+const string DATE_DELIMITERS = "./-";
+const string DATE_THIS = "this";
+const string DATE_NEXT = "next";
+const array<string, 2> DATE_TODAY = 
 	{"today", "tdy"};
-const std::array<std::string, 5> IDENTIFIER_TOMORROW = 
+const array<string, 5> DATE_TOMORROW = 
 	{"tomorrow", "tmr", "tml", "tmw", "tmrw"};
-const std::array<std::string, 3> IDENTIFIER_START = 
+const array<string, 3> DATE_START = 
 	{"at", "on", "from"};
-const std::array<std::string, 5> IDENTIFIER_END = 
+const array<string, 5> DATE_END = 
 	{"to", "till", "til", "until", "-"};
-const std::array<std::string, 3> IDENTIFIER_DEADLINE = 
+const array<string, 3> DATE_DEADLINE = 
 	{"by", "due", "before"};
 
-const std::array<std::string, 7> WEEKDAYS_SHORT = 
+const array<string, 7> WEEKDAYS_SHORT = 
 	{"sun", "mon", "tue", "wed", "thu", "fri", "sat",};
-const std::array<std::string, 7> WEEKDAYS_LONG = 
+const array<string, 7> WEEKDAYS_LONG = 
 	{"sunday", "monday", "tuesday", "wednesday",
 	"thursday", "friday", "saturday"};
-const std::array<std::string, 12> MONTHS_SHORT = 
+const array<string, 12> MONTHS_SHORT = 
 	{"jan", "feb", "mar", "apr", "may", "jun",
 	"jul", "aug", "sep", "oct", "nov", "dec"};
-const std::array<std::string, 12> MONTHS_LONG = 
+const array<string, 12> MONTHS_LONG = 
 	{"january", "february", "march", "april", "may", "june",
 	"july", "august", "september", "october", "november", "december"};
 
-const std::string USERMESSAGE_DATETIME_NOT_PARSED = 
-	"Incorrect date/time input format. Use DDMMYYYY and HHMM for best result.";
+const string USERMESSAGE_DATETIME_NOT_PARSED = 
+	"Incorrect date/time input format."
+	" Please use DDMMYYYY and HHMM for the best results.";
+const string EXCEPTION_VECTOR_OOR = 
+	"Vector out of range";
 
 class DatetimeParser : public StringModifier {
 public:
 	DatetimeParser(void);
 	~DatetimeParser(void);
 
-	std::string addTaskDatetime(Command* command, Task* task, std::vector<std::string> parameters);
+	void addTaskDatetime(Task* task, string& parameters);
 
-//private:
-	boost::gregorian::date _startDate;
-	boost::gregorian::date _endDate;
-	boost::gregorian::date _deadlineDate;
-	boost::posix_time::time_duration _startTime;
-	boost::posix_time::time_duration _endTime;
-	boost::posix_time::time_duration _deadlineTime;
-	boost::posix_time::ptime _startDatetime;
-	boost::posix_time::ptime _endDatetime;
-	boost::posix_time::ptime _deadlineDatetime;
+private:
+	vector<string> _parameters;
+	gr::date _currentDate;
+	gr::date _startDate;
+	gr::date _endDate;
+	gr::date _deadlineDate;
+	pt::time_duration _startTime;
+	pt::time_duration _endTime;
+	pt::time_duration _deadlineTime;
+	pt::ptime _startDatetime;
+	pt::ptime _endDatetime;
+	pt::ptime _deadlineDatetime;
 	
-	boost::gregorian::date _currentDate;
-	std::vector<std::string> _parameters;
-
-	void setParameters(std::vector<std::string> parameters);
-	std::string convertParametersToString(void);
+	void setParameters(string parameters);
+	string getParameters(void);
 	void setFoundDatetime(Task* task);
-	void eraseWord(std::vector<std::string>::iterator& iter);
-	std::vector<std::string>::iterator nextWord(std::vector<std::string>::iterator iter);
+	void eraseWord(vector<string>::iterator& iter);
 
+	//StartDatetime
 	void addStartDatetime(void);
 	bool hasStartDatetime(void);
-	bool isStartIdentifier(std::string word);
-	bool addStartWithIdentifier(std::vector<std::string>::iterator iter);
-	void addStartWithoutIdentifier();
-	void combineStartTimeDate();
+	bool hasStartDate(void);
+	bool hasStartTime(void);
+	void addStartWithIdentifier(void);
+	void addStartDate(vector<string>::iterator iter);
+	void addStartTime(vector<string>::iterator iter);
+	void addStartWithoutIdentifier(void);
+	bool isStartIdentifier(string word);
+	void combineStartDatetime(void);
 
+	//EndDatetime
 	void addEndDatetime(void);
 	bool hasEndDatetime(void);
-	bool isEndIdentifier(std::string word);
-	bool addEndWithIdentifier(std::vector<std::string>::iterator iter);
-	void combineEndTimeDate();
+	bool hasEndDate(void);
+	bool hasEndTime(void);
+	void addEndWithIdentifier(void);
+	void addEndDate(vector<string>::iterator iter);
+	void addEndTime(vector<string>::iterator iter);
+	bool isEndIdentifier(string word);
+	void combineEndDatetime(void);
 
+	//DeadlineDatetime
 	void addDeadlineDatetime(void);
 	bool hasDeadlineDatetime(void);
-	bool isDeadlineIdentifier(std::string word);
-	bool addDeadlineWithIdentifier(std::vector<std::string>::iterator iter);
-	void combineDeadlineTimeDate();
+	bool hasDeadlineDate(void);
+	bool hasDeadlineTime(void);
+	void addDeadlineWithIdentifier(void);
+	void addDeadlineDate(vector<string>::iterator iter);
+	void addDeadlineTime(vector<string>::iterator iter);
+	bool isDeadlineIdentifier(string word);
+	void combineDeadlineDatetime(void);
 
-	bool isATime(std::vector<std::string>::iterator iter);
-	bool isAmPmTime(std::string word);
-	bool is12HourTime(int time);
-	bool isAm(std::string word);
-	bool isPm(std::string word);
-	bool is24HourTime(std::string word);
-	std::string removeTimeDelimiters(std::string word);
+	//Time Parsing Functions
+	bool isATime(vector<string>::iterator iter);
+	pt::time_duration parseTime(vector<string>::iterator iter);
 
-	bool isADate(std::vector<std::string>::iterator iter);
-	bool is3ParameterDate(std::vector<std::string>::iterator iter);
-	bool is2ParameterDate(std::vector<std::string>::iterator iter);
-	bool isDateAndMonth(std::vector<std::string>::iterator iter);
-	bool isThisNextWeek(std::vector<std::string>::iterator iter);
-	bool is1ParameterDate(std::vector<std::string>::iterator iter);
-	bool isToday(std::string date);
-	bool isTomorrow(std::string date);
-	bool isNumericalDate(std::string date);
-	bool isDate(int date);
-	bool isMonth(std::string month);
+	bool isMilitaryTime(string word);
+	bool isAmPmTime(string word);
+
+	bool is24HourTime(int number);
+	bool is12HourTime(int number);
+	bool isAm(string word);
+	bool isPm(string word);
+
+	void parseMilitaryTime(string word, int& hours, int& minutes);
+	void parseAmPmTime(string word, int& hours, int& minutes);
+
+	void removeTimeDelimiters(string& word);
+
+	//Date Parsing Functions
+	bool isADate(vector<string>::iterator iter);
+	gr::date parseDate(vector<string>::iterator iter);
+
+	bool is3WordDate(vector<string>::iterator iter);
+	bool is2WordDate(vector<string>::iterator iter);
+	bool is1WordDate(vector<string>::iterator iter);
+
+	bool isDayMonthYear(vector<string>::iterator iter);
+	bool isDayMonth(vector<string>::iterator iter);
+	bool isThisNextWeekday(vector<string>::iterator iter);
+	bool isToday(string date);
+	bool isTomorrow(string date);
+	bool isWeekday(string date);
+	bool isNumericalDate(string date);
+
+	bool isDDMM(string date);
+	bool isDDMMYY(string date);
+	bool isDDMMYYYY(string date);
+	bool isThis(string word);
+	bool isNext(string word);
+	bool isDay(int day);
+	bool isMonth(string month);
 	bool isMonth(int month);
 	bool isYear(int year);
-	bool isThis(std::string word);
-	bool isNext(std::string word);
-	bool isWeekday(std::string word);
-	std::string removeDateDelimiters(std::string word);
 
-	boost::posix_time::time_duration parseTime(std::vector<std::string>::iterator iter);
-	boost::gregorian::date parseDate(std::vector<std::string>::iterator iter);
-	boost::gregorian::date parse3ParameterDate(std::vector<std::string>::iterator iter);
-	boost::gregorian::date parse2ParameterDate(std::vector<std::string>::iterator iter);
-	boost::gregorian::date parse1ParameterDate(std::vector<std::string>::iterator iter);
-	int parseMonth(std::string month);
-	boost::gregorian::date findThisWeekday(std::string day);
-	boost::gregorian::date findNextWeekday(std::string day);
+	gr::date parse3WordDate(vector<string>::iterator iter);
+	gr::date parse2WordDate(vector<string>::iterator iter);
+	gr::date parse1WordDate(vector<string>::iterator iter);
+
+	gr::date parseDayMonthYear(vector<string>::iterator iter);
+	gr::date parseDayMonth(vector<string>::iterator iter);
+	gr::date parseThisWeekday(string weekday);
+	gr::date parseNextWeekday(string weekday);
+	gr::date parseToday(void);
+	gr::date parseTomorrow(void);
+	gr::date parseComingWeekday(string weekday);
+	gr::date parseNumericalDate(string date);
+	gr::date parseDDMM(int date);
+	gr::date parseDDMMYY(int date);
+	gr::date parseDDMMYYYY(int date);
+	
+	int parseDay(string day);
+	int parseMonth(string month);
+	int parseYear(string year);
+
+	void removeDateDelimiters(string& word);
 };
-

@@ -30,40 +30,48 @@
 #include "LogicParserStringModifier.h"
 #include "LogicParserDatetimeParser.h"
 
-const std::string IDENTIFIER_TAG = "#";
+using namespace std;
 
-const std::string USERMESSAGE_INVALID_DELETE = 
+const string IDENTIFIER_TAG = "#";
+
+const string USERMESSAGE_NO_TASK_NAME =
+	"No task name specified";
+const string USERMESSAGE_INVALID_DELETE = 
 	"Type /delete <index> to delete the task at <index>.";
-const std::string USERMESSAGE_INVALID_DONE = 
+const string USERMESSAGE_INVALID_DONE = 
 	"Type /done <index> to mark the task at <index> as done.";
-const std::string USERMESSAGE_INVALID_EDIT_NO_INDEX = 
+const string USERMESSAGE_INVALID_EDIT_NO_INDEX = 
 	"No index found. Type /edit <index> <edited task> to edit a task.";
-const std::string USERMESSAGE_INVALID_EDIT_NO_TASK = 
+const string USERMESSAGE_INVALID_EDIT_NO_TASK = 
 	"No edited task found. Type /edit <index> <edited task> to edit a task.";
 
 class DetailsParser : public StringModifier {
 public:
-	DetailsParser(std::string parameters);
+	DetailsParser(string parameters);
 	~DetailsParser(void);
 
 	//Command pointer will have its _currentTask set with parameters as
 	//specified by the user input.
 	void addNewTask(Command* command);
+
 	//Command pointer will have its _commandTaskIndex set to the index given.
 	void deleteExistingTask(Command* command);
+
 	//Command pointer will have its _commandTaskIndex set to the index given.
 	void markTaskAsDone(Command* command);
+
 	//Command pointer will have its _commandTaskIndex set to the index given  
 	//and _currentTask set with parameters as specified by the user input.
 	void editExistingTask(Command* command);
+
 	//Command pointer will have its _searchKeyword set with parameters as
 	//specified by the user input and formatted in accordance with the 
-	//CommandSearch documentation.
+	//CommandSearch requirements.
 	void searchForTask(Command* command);
 
 private:
-	std::string _parameters;
-	std::vector<std::string> _tokens;
+	string _parameters;
+	vector<string> _tokens;
 
 	void setTaskIndex(Command* command);
 	void addTaskTags(Task* task);
@@ -72,7 +80,7 @@ private:
 	bool hasIndex(void);
 	bool hasOnlyIndex(void);
 	bool hasEditedTask(void);
-	bool isTag(std::string word);
+	bool isTag(string word);
 
 	void removeIndexForEdit(void);	
 	void formatForSearch(void);

@@ -20,13 +20,15 @@
 #pragma once
 #include "LogicParserCommandCreator.h"
 
+using namespace std;
+
 class LogicParser {
 public:
 	LogicParser(void);
 	~LogicParser(void);
 
-	Command* getCommandFromUserInput(std::string userInput);
+	Command* getCommandFromUserInput(string userInput);
 
 private:
-	bool isEmptyInput(std::string userInput);
+	bool isEmptyInput(string userInput);
 };
