@@ -229,9 +229,10 @@ void agenda::createTimedTaskBlock(int index, ptime startTime, ptime endTime, str
 	taskInfo.text_vtr.push_back(number);
 
 	sf::Text display_name;
-	display_name.setString("[fixed time]" + name);
+	string display_time = to_string(startTime.time_of_day().hours()) + ":" + to_string(startTime.time_of_day().minutes()) + " to " + to_string(endTime.time_of_day().hours()) + ":" + to_string(endTime.time_of_day().minutes());
+	display_name.setString("[" + display_time + "]" + name);
 	display_name.setFont(font);
-	display_name.setColor(sf::Color::White);
+	display_name.setColor(sf::Color(0, 0, 200, 255));
 	display_name.setCharacterSize(30);
 	display_name.setPosition(sf::Vector2f(40.f + 30 * (to_string(task_index).length()), (taskInfo.index + 1) * 40 + 5));
 	taskInfo.text_vtr.push_back(display_name);
@@ -331,3 +332,18 @@ void agenda::resizedUpdate(){
 string agenda::returnRealIndex(int index){
 	return to_string(allTask[index].getTaskIndex());
 }
+
+vector<Task> agenda::returnAllTasks() {
+	return allTask;
+}
+
+int agenda::clickingOn(sf::Vector2f mouse, sf::View currentView){
+	//mouse.y = mouse.y + currentView.getCenter().y - currentView.getSize().y / 2 - 60;
+	mouse.y = mouse.y + currentView.getCenter().y - currentView.getSize().y/2 - 60;
+	for (int i = 0; i < tasksBlocks.size(); i++){
+		if (tasksBlocks[i].rectangle.getGlobalBounds().contains(mouse)){
+			return stoi(returnRealIndex(tasksBlocks[i].index-1));
+		}
+	}
+	return -1;
+} 

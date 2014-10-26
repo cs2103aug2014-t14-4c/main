@@ -39,6 +39,8 @@ public:
 	void resizedUpdate();	//when window resize, this will recalculate the lines positions
 	void setTransparency(int);
 	string returnRealIndex(int);
+	vector<Task> returnAllTasks();
+	int clickingOn(sf::Vector2f mouse, sf::View currentView);
 private:
 	static agenda* m_pInstance;
 	sf::RenderWindow* SFMLWindow;
