@@ -8,6 +8,7 @@
 
 #define TITLE_COLOUR sf::Color(0, 0, 0, 100)
 #define ELEMENT_COLOUR sf::Color(0, 0, 0, 50)
+using namespace std;
 
 struct taskInfoElement{
 	vector<sf::Text> text_vtr;
@@ -41,6 +42,7 @@ public:
 	string returnRealIndex(int);
 	vector<Task> returnAllTasks();
 	int clickingOn(sf::Vector2f mouse, sf::View currentView);
+
 private:
 	static agenda* m_pInstance;
 	sf::RenderWindow* SFMLWindow;
@@ -52,8 +54,8 @@ private:
 	void createFloatingTaskTitle();
 	void createFloatingTaskBlock(int, string);
 	void createDateTitle(ptime);
-	void createDueTaskBlock(int, string);
-	void createTimedTaskBlock(int, ptime, ptime, string);
+	void createDueTaskBlock(int, string, string);
+	void createTimedTaskBlock(int, string, string);
 
 	void createAgendaView();
 	void taskSortByTime(void);
@@ -65,4 +67,8 @@ private:
 	//for final display
 	vector<taskInfoElement> tasksBlocks;
 	int task_index;
+
+	string getTaskDisplayInfo(Task myTask);
+	string getDisplayTime(ptime myTime);
+
 };
