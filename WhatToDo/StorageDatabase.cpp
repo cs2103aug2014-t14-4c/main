@@ -1,6 +1,7 @@
 #include "StorageDatabase.h"
 #include <fstream>
 #include <iostream>
+
 using namespace std;
 
 int StorageDatabase::START=0;
@@ -15,20 +16,11 @@ void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToW
 	
 	vector<vector<string>>::iterator taskVectorIterator = taskStringVectorToWrite.begin(); 
 	assert(&taskVectorIterator != NULL);
-	
+
 	ofstream writeFile;
 	writeFile.open(fileName);
 
-	//write individual task attributes
-	while(taskVectorIterator != taskStringVectorToWrite.end()){
-		for(int i = START; i< NO_OF_ATTRIBUTES; i++){
-			writeFile << (*taskVectorIterator)[i] << endl;
-		}
-		writeFile << endl; 
-		taskVectorIterator++;
-	}
-	//need to debug writeFile
-	//writeIndivdualFileToDatabase(taskVectorIterator, writeFile, taskStringVectorToWrite);
+	writeIndivdualFileToDatabase(taskVectorIterator, writeFile, taskStringVectorToWrite);
 
 	writeFile.close();
 	return;
@@ -42,8 +34,14 @@ vector<vector<string>> StorageDatabase::readFromDatabase(){
 
 	ifstream readFile(fileName);
 	string myText; 
-	
-	//if peek != end of file, it will getline to read in the indvidual strings
+
+	readIndividualFileFromDatabase(readFile, myText);
+	readFile.close();
+
+	return stringToRead; 
+}
+
+void StorageDatabase::readIndividualFileFromDatabase(ifstream &readFile, string myText){
 	while(readFile.peek()!=EOF){
 		for(int i = START; i<NO_OF_ATTRIBUTES; i++){
 			getline(readFile,myText);
@@ -56,13 +54,12 @@ vector<vector<string>> StorageDatabase::readFromDatabase(){
 		individualReadFile.clear();
 		assert(individualReadFile.empty());
 	}
-	readFile.close();
-
-	return stringToRead; 
+	return;
 }
 
 //check why ofstream file does not work
-void StorageDatabase::writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, ofstream writeFile, vector<vector<string>> taskStringToWrite){
+void StorageDatabase::writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, ofstream& writeFile, vector<vector<string>> taskStringToWrite){
+	fileIterator = taskStringToWrite.begin();
 	while(fileIterator != taskStringToWrite.end()){
 		for(int i = START; i< NO_OF_ATTRIBUTES; i++){
 			writeFile << (*fileIterator)[i] << endl;
