@@ -25,7 +25,7 @@ class Storage : public QWidget {
 		void setlist(vector<Task> hello);
 
 	public slots:
-		void commandLineInput();
+		void commandLineInput(QObject* parent = NULL);
 		void toggleCalandarview();
 		void toggleAgendaview();
 		void searchInput();

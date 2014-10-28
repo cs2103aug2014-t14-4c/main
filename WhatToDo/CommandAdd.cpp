@@ -3,7 +3,6 @@
 // These are the static variables that cannot be initialized in header file
 
 string CommandAdd::LOGGING_MSG_EXECUTE_COMMAND_ADD = "\nCommand Add Initiated:\n";
-string CommandAdd::LOGGING_MSG_IS_ENTERED_DATETIMES_VALID = "Function called: checkIsCommandValid(): isEnteredDateTimesValid: %s\n";
 string CommandAdd::LOGGING_MSG_IS_ORDER_DATETIMES_VALD = "Function called: checkIsCommandValid(): isOrderOfDateTimesValid: %s\n";
 string CommandAdd::LOGGING_MSG_IS_INPUT_TIME_ALR_OCCUPIED = "Function called: checkIsCommandValid(): isInputTimeAlreadyOccupied: %s\n";
 string CommandAdd::LOGGING_MSG_IS_COMMAND_VALID = "Function called: checkIsCommandValid(): _isCommandValid: %s\n";
@@ -23,10 +22,10 @@ CommandAdd::CommandAdd(void)
 void CommandAdd::execute() {
 	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_ADD.c_str());
 	log(buffer);
-	assert(_currentTask != NULL);
 	
 	try {
 		checkIsParsedCorrectly();
+		assert(_currentTask != NULL);
 		retrieveExistingCurrentState();
 		checkIsCommandValid();
 		performAddOperation();
@@ -45,14 +44,11 @@ void CommandAdd::execute() {
 }
 
 bool CommandAdd::checkIsCommandValid() {
-	bool isEnteredDateTimesValid = checkIfEnteredDateTimesValid();
 	bool isOrderOfDateTimesValid = checkIfOrderOfDateTimesValid();
 	bool isInputTimeAlreadyOccupied = checkIsInputTimeNotOccupied();
-	bool isCommandValid = isEnteredDateTimesValid && isOrderOfDateTimesValid && isInputTimeAlreadyOccupied;
+	bool isCommandValid = isOrderOfDateTimesValid && isInputTimeAlreadyOccupied;
 	_isCommandValid = isCommandValid;
 	
-	sprintf_s(buffer, LOGGING_MSG_IS_ENTERED_DATETIMES_VALID.c_str(), to_string(isEnteredDateTimesValid).c_str());
-	log(buffer);
 	sprintf_s(buffer, LOGGING_MSG_IS_ORDER_DATETIMES_VALD.c_str(), to_string(isOrderOfDateTimesValid).c_str());
 	log(buffer);
 	sprintf_s(buffer, LOGGING_MSG_IS_INPUT_TIME_ALR_OCCUPIED.c_str(), to_string(isInputTimeAlreadyOccupied).c_str());
@@ -63,32 +59,6 @@ bool CommandAdd::checkIsCommandValid() {
 	return isCommandValid;
 }
 
-bool CommandAdd::checkIfEnteredDateTimesValid() {
-	int currentTaskType = _currentTask->getTaskType();
-	bool isStartDateTimeValid = true;
-	bool isEndDateTimeValid = true;
-	bool isDeadlineDateTimeValid = true;
-
-	if (currentTaskType == Task::FIXEDTIME) {
-		isStartDateTimeValid = checkIsDateTimeValid(_currentTask->getTaskStartTime());
-		isEndDateTimeValid = checkIsDateTimeValid(_currentTask->getTaskEndTime());
-	}
-	else if (currentTaskType == Task::DEADLINE) {
-		isDeadlineDateTimeValid = checkIsDateTimeValid(_currentTask->getTaskDeadline());
-	}
-
-	bool isEnteredDateTimesValid = isStartDateTimeValid && isEndDateTimeValid && isDeadlineDateTimeValid;
-	return isEnteredDateTimesValid;
-}
-
-bool CommandAdd::checkIsDateTimeValid(ptime dateTimeToCheck) {
-	bool isDateTimeValid =(dateTimeToCheck != not_a_date_time);
-	if (!isDateTimeValid) {
-		throw ERROR_MSG_DATETIME_INVALID;
-	}	
-	return isDateTimeValid;
-}
-	
 bool CommandAdd::checkIfOrderOfDateTimesValid() {
 	int currentTaskType = _currentTask->getTaskType();
 	bool isOrderOfDateTimesValid = true;
@@ -113,7 +83,6 @@ bool CommandAdd::checkIsDeadlineAfterCurrentTime() {
 	}
 	return isStartAfterCurrentTime;
 }
-
 
 bool CommandAdd::checkIsStartAfterCurrentTime() {
 	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask->getTaskStartTime();

@@ -10,13 +10,13 @@ CommandEdit::CommandEdit(void) {
 }
 
 void CommandEdit::execute() {
-	assert(_currentTask != NULL);
-	assert(_commandTaskIndex >= 0);
 	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_EDIT.c_str());
 	log(buffer);
 	
 	try {
 		checkIsParsedCorrectly();
+		assert(_currentTask != NULL);
+		assert(_commandTaskIndex >= 0);
 		retrieveExistingCurrentState();
 		checkIsCommandValid();
 		deleteExistingTask();

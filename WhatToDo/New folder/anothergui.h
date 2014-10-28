@@ -1,6 +1,6 @@
 #ifndef ANOTHERGUI_H
 #define ANOTHERGUI_H
-
+ 
 #include <QtWidgets/QMainWindow>
 #include <QGraphicsObject>
 #include <QListView>

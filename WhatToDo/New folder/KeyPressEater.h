@@ -13,6 +13,6 @@ class KeyPressEater : public QObject {
 		bool eventFilter(QObject *obj, QEvent *event);
 
 	signals:
-		void enterPressed();
+		void enterPressed(QObject *obj);
 
 };

@@ -19,11 +19,9 @@ class CommandAdd: public Command {
 		bool checkIsCommandValid();
 		void performAddOperation();
 
-		bool checkIfEnteredDateTimesValid();
 		bool checkIfOrderOfDateTimesValid();
 		bool checkIsInputTimeNotOccupied();
 
-		bool checkIsDateTimeValid(ptime dateTimeToCheck);
 		bool checkIsDeadlineAfterCurrentTime();
 		bool checkIsStartAfterCurrentTime();
 		bool checkIsEndAfterStart();
@@ -31,7 +29,6 @@ class CommandAdd: public Command {
 		// All Static Constants And Variables
 
 		static string LOGGING_MSG_EXECUTE_COMMAND_ADD;
-		static string LOGGING_MSG_IS_ENTERED_DATETIMES_VALID;
 		static string LOGGING_MSG_IS_ORDER_DATETIMES_VALD;
 		static string LOGGING_MSG_IS_INPUT_TIME_ALR_OCCUPIED;
 		static string LOGGING_MSG_IS_COMMAND_VALID;

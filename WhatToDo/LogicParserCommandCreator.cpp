@@ -6,7 +6,7 @@ CommandCreator::CommandCreator(void) {
 CommandCreator::~CommandCreator(void) {
 }
 
-Command* CommandCreator::createCommand(std::string userInput) {
+Command* CommandCreator::createCommand(string userInput) {
 	assert(!userInput.empty());
 
 	CommandCreator::setUserInput(userInput);
@@ -34,26 +34,26 @@ Command* CommandCreator::createCommand(std::string userInput) {
 	return command;
 }
 
-void CommandCreator::setUserInput(std::string userInput) {
+void CommandCreator::setUserInput(string userInput) {
 	_userInput = userInput;
 	_userCommand = CommandCreator::getUserCommand();
 }
 
-std::string CommandCreator::getUserCommand(void) {
-	return CommandCreator::transformToLowercase(
-		CommandCreator::getFirstWord(_userInput));
+string CommandCreator::getUserCommand(void) {
+	return StringModifier::transformToLowercase(
+		StringModifier::getFirstWord(_userInput));
 }
 
-std::string CommandCreator::getParameters(void) {
-	return CommandCreator::getExceptFirstWord(_userInput);
+string CommandCreator::getParameters(void) {
+	return StringModifier::getExceptFirstWord(_userInput);
 }
 
 bool CommandCreator::hasParameters(void) {
-	return !CommandCreator::isOneWord(_userInput);
+	return !StringModifier::isOneWord(_userInput);
 }
 
 bool CommandCreator::hasNoParameters(void) {
-	return CommandCreator::isOneWord(_userInput);
+	return StringModifier::isOneWord(_userInput);
 }
 
 bool CommandCreator::isClearCommand(void) {

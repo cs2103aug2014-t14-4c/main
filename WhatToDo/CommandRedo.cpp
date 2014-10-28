@@ -16,11 +16,11 @@ void CommandRedo::execute() {
 	log(buffer);
 	retrieveCommandHistory();
 	retrieveCommandHistoryIndex();
-	assert(_currentCommandHistoryIndex >= 0);
-	assert(_currentCommandHistoryIndex <= _commandHistory.size());
 	
 	try {
 		checkIsParsedCorrectly();
+		assert(_currentCommandHistoryIndex >= 0);
+		assert(_currentCommandHistoryIndex <= _commandHistory.size());
 		checkIsCommandValid();
 		resetLogicDataSettings();
 		runAllRelevantCommandsAgain();

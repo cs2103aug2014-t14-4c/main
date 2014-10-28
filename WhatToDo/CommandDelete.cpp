@@ -12,10 +12,10 @@ CommandDelete::CommandDelete(void) {
 void CommandDelete::execute() {
 	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_DELETE.c_str());
 	log(buffer);
-	assert(_commandTaskIndex >= 0);
 	
 	try {
 		checkIsParsedCorrectly();
+		assert(_commandTaskIndex >= 0);
 		retrieveExistingCurrentState();
 		performDeleteOperation();
 		addThisCommandToHistory(this);

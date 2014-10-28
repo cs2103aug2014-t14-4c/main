@@ -1,6 +1,95 @@
 #include "agenda.h"
 agenda* agenda::m_pInstance = NULL;
 
+int getTaskDetailedType(Task myTask);
+
+enum taskDetailedType { TASK_FLOATING = 1, TASK_DEADLINE_TIME, TASK_DEADLINE_ALLDAY, TASK_FIXED_TIME, TASK_FIXED_START, TASK_FIXED_ALLDAY };
+
+int getTaskDetailedType(Task myTask) {
+	if (myTask.getTaskType() == FLOATING) {
+		return TASK_FLOATING;
+	}
+	else if (myTask.getTaskType() == DEADLINE) {
+		if (myTask.getTaskDeadline().time_of_day().seconds() == 1) {
+			return TASK_DEADLINE_ALLDAY;
+		}
+		else {
+			return TASK_DEADLINE_TIME;
+		}
+	}
+	else if (myTask.getTaskType() == FIXEDTIME) {
+		if (myTask.getTaskEndTime() != not_a_date_time) {
+			return TASK_FIXED_TIME;
+		}
+		else if (myTask.getTaskEndTime().time_of_day().seconds() == 1) {
+			return TASK_FIXED_ALLDAY;
+		}
+		else {
+			return TASK_FIXED_START;
+		}
+	}
+}
+
+bool taskCompare(Task i, Task j){
+
+	if (i.getTaskType() == FLOATING) {
+		return true;
+	}
+	if (j.getTaskType() == FLOATING) {
+		return false;
+	}
+
+	ptime iTime;
+	ptime jTime;
+
+	if (i.getTaskType() == DEADLINE) {
+		iTime = i.getTaskDeadline();
+	}
+	else {
+		iTime = i.getTaskStartTime();
+	}
+
+	if (j.getTaskType() == DEADLINE) {
+		jTime = j.getTaskDeadline();
+	}
+	else {
+		jTime = j.getTaskStartTime();
+	}
+
+	if (iTime.date() < jTime.date()) {
+		return true;
+	}
+	else if (iTime.date() > jTime.date()) {
+		return false;
+	}
+	else {
+		if (getTaskDetailedType(i) == TASK_FIXED_ALLDAY) {
+			return true;
+		}
+		if (getTaskDetailedType(j) == TASK_FIXED_ALLDAY) {
+			return false;
+		}
+		if (getTaskDetailedType(i) == TASK_DEADLINE_ALLDAY) {
+			return true;
+		}
+		if (getTaskDetailedType(j) == TASK_DEADLINE_ALLDAY) {
+			return false;
+		}
+
+		if (iTime < jTime) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+}
+
+void agenda::taskSortByTime(void){
+	std::sort(allTask.begin(), allTask.end(), taskCompare);
+}
+
+
 string day_of_week_to_string(int day){
 	if (day == 0) {
 		return "Mon";
@@ -182,7 +271,8 @@ void agenda::createDateTitle(ptime date){
 
 	tasksBlocks.push_back(taskInfo);
 }
-void agenda::createDueTaskBlock(int index, string name){
+
+void agenda::createDueTaskBlock(int index, string displayInfo, string name){
 	taskInfoElement taskInfo;
 	taskInfo.index = tasksBlocks.size();
 
@@ -193,21 +283,22 @@ void agenda::createDueTaskBlock(int index, string name){
 	number.setCharacterSize(30);
 	number.setPosition(sf::Vector2f(40.f, (taskInfo.index + 1) * 40 + 5));
 	taskInfo.text_vtr.push_back(number);
-
+	/*
 	sf::Text display_due;
-	display_due.setString("[DUE]");
+	display_due.setString(displayInfo);
 	display_due.setFont(font);
 	display_due.setColor(sf::Color(100,0,0,255));
 	display_due.setCharacterSize(30);
 	display_due.setPosition(sf::Vector2f(40.f + 30 * (to_string(task_index).length()), (taskInfo.index + 1) * 40 + 5));
 	taskInfo.text_vtr.push_back(display_due);
+	*/
 
 	sf::Text display_name;
-	display_name.setString(name);
+	display_name.setString(displayInfo + name);
 	display_name.setFont(font);
 	display_name.setColor(sf::Color::White);
 	display_name.setCharacterSize(30);
-	display_name.setPosition(sf::Vector2f(40.f + 30 * (to_string(task_index).length()) + 90, (taskInfo.index + 1) * 40 + 5));
+	display_name.setPosition(sf::Vector2f(40.f + 30 * (to_string(task_index).length()), (taskInfo.index + 1) * 40 + 5)); //sf::Vector2f(40.f + 30 * (to_string(task_index).length()) + 90, (taskInfo.index + 1) * 40 + 5));
 	taskInfo.text_vtr.push_back(display_name);
 
 	taskInfo.rectangle.setFillColor(ELEMENT_COLOUR);
@@ -216,7 +307,8 @@ void agenda::createDueTaskBlock(int index, string name){
 
 	tasksBlocks.push_back(taskInfo);
 }
-void agenda::createTimedTaskBlock(int index, ptime startTime, ptime endTime, string name){
+
+void agenda::createTimedTaskBlock(int index, string displayInfo, string name){
 	taskInfoElement taskInfo;
 	taskInfo.index = tasksBlocks.size();
 
@@ -229,7 +321,7 @@ void agenda::createTimedTaskBlock(int index, ptime startTime, ptime endTime, str
 	taskInfo.text_vtr.push_back(number);
 
 	sf::Text display_name;
-	display_name.setString("[fixed time]" + name);
+	display_name.setString(displayInfo + name);
 	display_name.setFont(font);
 	display_name.setColor(sf::Color::White);
 	display_name.setCharacterSize(30);
@@ -243,43 +335,9 @@ void agenda::createTimedTaskBlock(int index, ptime startTime, ptime endTime, str
 	tasksBlocks.push_back(taskInfo);
 }
 
-bool taskCompare(Task i, Task j){
-
-	if (i.getTaskType() == FIXEDTIME && j.getTaskType() == FIXEDTIME){
-		return (i.getTaskStartTime() < j.getTaskStartTime());
-	}
-	if (i.getTaskType() == FIXEDTIME && j.getTaskType() == DEADLINE){
-		return (i.getTaskStartTime() < j.getTaskDeadline());
-	}
-	if (i.getTaskType() == FIXEDTIME && j.getTaskType() == FLOATING){
-		return false;
-	}
-	if (i.getTaskType() == DEADLINE && j.getTaskType() == FIXEDTIME){
-		return (i.getTaskDeadline() < j.getTaskStartTime());
-	}
-	if (i.getTaskType() == DEADLINE && j.getTaskType() == DEADLINE){
-		return (i.getTaskDeadline() < j.getTaskDeadline());
-	}
-	if (i.getTaskType() == DEADLINE && j.getTaskType() == FLOATING){
-		return false;
-	}
-	if (i.getTaskType() == FLOATING && j.getTaskType() == FIXEDTIME){
-		return true;
-	}
-	if (i.getTaskType() == FLOATING && j.getTaskType() == DEADLINE){
-		return true;
-	}
-	if (i.getTaskType() == FLOATING && j.getTaskType() == FLOATING){
-		return true;
-	}
-}
-
-void agenda::taskSortByTime(void){
-	std::sort(allTask.begin(), allTask.end(), taskCompare);
-}
-
 void agenda::createAgendaView(){
 	date last_date;
+	string taskDisplayInfo;
 	bool first_floating = true;
 	bool floating_exist = false;
 	task_index = 1;
@@ -304,7 +362,8 @@ void agenda::createAgendaView(){
 				createDateTitle(allTask[i].getTaskDeadline());
 				last_date = allTask[i].getTaskDeadline().date();
 			}
-			createDueTaskBlock(i + 1, allTask[i].getTaskName());
+			taskDisplayInfo = getTaskDisplayInfo(allTask[i]);
+			createDueTaskBlock(i + 1, taskDisplayInfo, allTask[i].getTaskName());
 		}
 		else if (allTask[i].getTaskType() == FIXEDTIME){
 			if (last_date != allTask[i].getTaskStartTime().date()){
@@ -312,7 +371,8 @@ void agenda::createAgendaView(){
 				createDateTitle(allTask[i].getTaskStartTime());
 				last_date = allTask[i].getTaskStartTime().date();
 			}
-			createTimedTaskBlock(i + 1, allTask[i].getTaskStartTime(), allTask[i].getTaskEndTime(), allTask[i].getTaskName());
+			taskDisplayInfo = getTaskDisplayInfo(allTask[i]);
+			createTimedTaskBlock(i + 1, taskDisplayInfo, allTask[i].getTaskName());
 		}
 		task_index++;
 	}
@@ -330,4 +390,68 @@ void agenda::resizedUpdate(){
 
 string agenda::returnRealIndex(int index){
 	return to_string(allTask[index].getTaskIndex());
+}
+
+vector<Task> agenda::returnAllTasks() {
+	return allTask;
+}
+
+int agenda::clickingOn(sf::Vector2f mouse, sf::View currentView){
+	//mouse.y = mouse.y + currentView.getCenter().y - currentView.getSize().y / 2 - 60;
+	mouse.y = mouse.y + currentView.getCenter().y - currentView.getSize().y/2 - 60;
+	for (int i = 0; i < tasksBlocks.size(); i++){
+		if (tasksBlocks[i].rectangle.getGlobalBounds().contains(mouse)){
+			return stoi(returnRealIndex(tasksBlocks[i].index-1));
+		}
+	}
+	return -1;
+} 
+
+string agenda::getTaskDisplayInfo(Task myTask) {
+	string taskDisplayInfo = "";
+	if (getTaskDetailedType(myTask) == TASK_DEADLINE_ALLDAY) {
+		taskDisplayInfo = "[DUE] ";
+	}
+	else if (getTaskDetailedType(myTask) == TASK_DEADLINE_TIME) {
+		taskDisplayInfo = "[DUE @ " + getDisplayTime(myTask.getTaskDeadline()) + "] ";
+	}
+	else if (getTaskDetailedType(myTask) == TASK_FIXED_ALLDAY) {
+		taskDisplayInfo = "[All Day] ";
+	}
+	else if (getTaskDetailedType(myTask) == TASK_FIXED_START) {
+		taskDisplayInfo = "[" + getDisplayTime(myTask.getTaskStartTime()) + "] ";
+	}
+	else if (getTaskDetailedType(myTask) == TASK_FIXED_TIME) {
+		if (myTask.getTaskStartTime().date() == myTask.getTaskEndTime().date()) {
+			taskDisplayInfo = "[" + getDisplayTime(myTask.getTaskStartTime()) + " - " + getDisplayTime(myTask.getTaskEndTime()) + "] ";
+		}
+		else {
+			taskDisplayInfo = "[" + getDisplayTime(myTask.getTaskStartTime()) + " - " + to_simple_string(myTask.getTaskEndTime().date()) + "]";
+		}
+	}
+	return taskDisplayInfo;
+}
+
+string agenda::getDisplayTime(ptime myTime) {
+	string hours = "";
+	string minutes = "";
+	string displayTime = "";
+
+	if (myTime.time_of_day().hours() < 10) {
+		hours = "0" + to_string(myTime.time_of_day().hours());
+	}
+	else {
+		hours = to_string(myTime.time_of_day().hours());
+	}
+
+	if (myTime.time_of_day().minutes() < 10) {
+		minutes = "0" + to_string(myTime.time_of_day().minutes());
+	}
+	else {
+		minutes = to_string(myTime.time_of_day().minutes());
+	}
+
+	displayTime = hours + ":" + minutes;
+
+	return displayTime;
 }

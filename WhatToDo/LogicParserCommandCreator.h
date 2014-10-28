@@ -35,30 +35,40 @@
 #include "CommandUndo.h"
 #include "LogicParserDetailsParser.h"
 
-const std::array<std::string, 2> COMMANDS_CLEAR = {"/clear", "/c"};
-const std::array<std::string, 3> COMMANDS_DELETE = {"/delete", "/del", "/d"};
-const std::array<std::string, 3> COMMANDS_DONE = {"/done, /ok, /k"};
-const std::array<std::string, 2> COMMANDS_EDIT = {"/edit", "/e"};
-const std::array<std::string, 1> COMMANDS_LOAD = {"/load"};
-const std::array<std::string, 2> COMMANDS_REDO = {"/redo", "/r"};
-const std::array<std::string, 3> COMMANDS_SEARCH = {"/search", "/find", "/s"};
-const std::array<std::string, 2> COMMANDS_UNDO = {"/undo", "/u"};
+using namespace std;
 
-const std::string USERMESSAGE_INVALID_COMMAND_CLEAR = 
+const array<string, 2> COMMANDS_CLEAR = 
+	{"/clear", "/c"};
+const array<string, 2> COMMANDS_DELETE = 
+	{"/delete", "/d"};
+const array<string, 2> COMMANDS_DONE = 
+	{"/done, /k"};
+const array<string, 2> COMMANDS_EDIT = 
+	{"/edit", "/e"};
+const array<string, 1> COMMANDS_LOAD = 
+	{"/load"};
+const array<string, 2> COMMANDS_REDO = 
+	{"/redo", "/r"};
+const array<string, 2> COMMANDS_SEARCH = 
+	{"/search", "/s"};
+const array<string, 2> COMMANDS_UNDO = 
+	{"/undo", "/u"};
+
+const string USERMESSAGE_INVALID_COMMAND_CLEAR = 
 	"Type /clear to clear the search results.";
-const std::string USERMESSAGE_INVALID_COMMAND_DELETE =
+const string USERMESSAGE_INVALID_COMMAND_DELETE =
 	"Type /delete <index> to delete the task at <index>.";
-const std::string USERMESSAGE_INVALID_COMMAND_DONE =
+const string USERMESSAGE_INVALID_COMMAND_DONE =
 	"Type /done <index> to mark the task at <index> as done.";
-const std::string USERMESSAGE_INVALID_COMMAND_EDIT =
+const string USERMESSAGE_INVALID_COMMAND_EDIT =
 	"Type /edit <index> <edited task> to edit the task at <index>.";
-const std::string USERMESSAGE_INVALID_COMMAND_LOAD = 
+const string USERMESSAGE_INVALID_COMMAND_LOAD = 
 	"/load is a system command and should not be used.";
-const std::string USERMESSAGE_INVALID_COMMAND_REDO =
+const string USERMESSAGE_INVALID_COMMAND_REDO =
 	"Type /redo to redo the last undone action.";
-const std::string USERMESSAGE_INVALID_COMMAND_SEARCH =
+const string USERMESSAGE_INVALID_COMMAND_SEARCH =
 	"Type /search <keyword> to search for the keyword in your tasks.";
-const std::string USERMESSAGE_INVALID_COMMAND_UNDO =
+const string USERMESSAGE_INVALID_COMMAND_UNDO =
 	"Type /undo to undo the last performed action.";
 
 class CommandCreator : public StringModifier {
@@ -66,15 +76,15 @@ public:
 	CommandCreator(void);
 	~CommandCreator(void);
 
-	Command* createCommand(std::string userInput);
+	Command* createCommand(string userInput);
 
 private:
-	std::string _userInput;
-	std::string _userCommand;
-	void setUserInput(std::string userInput);
+	string _userInput;
+	string _userCommand;
+	void setUserInput(string userInput);
 
-	std::string getUserCommand(void);
-	std::string getParameters(void);
+	string getUserCommand(void);
+	string getParameters(void);
 	bool hasParameters(void);
 	bool hasNoParameters(void);
 
