@@ -8,8 +8,6 @@
 
 class Command;
 
-//currentcommandhistoryindex --> Need to check where it should be initialised and how.
-
 class LogicData{
 
 	private:

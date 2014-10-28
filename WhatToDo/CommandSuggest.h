@@ -1,6 +1,11 @@
 #pragma once
 
 #include "Command.h"
+//1) Identify keywords like 'hour', 'day' , 'month', 'year', 'tomorrow'
+//2) Break string into 2 strings.
+//3) First suggestion original string
+//4) Second suggestion 
+
 
 using namespace std;
 

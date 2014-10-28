@@ -15,7 +15,6 @@ void State::addTask(Task taskToAdd){
 	_entireListOfTasks.push_back(taskToAdd);
 }
 
-//Need to consider if task to delete cannot be found --> Throw exception/error?
 void State::deleteTask(int taskIndexToDelete){
 	for(unsigned int i=0; i< _entireListOfTasks.size();i++){
 		if(_entireListOfTasks[i].getTaskIndex() == taskIndexToDelete){

@@ -1,6 +1,5 @@
 #include "LogicData.h"
 
-
 State LogicData::_currentState;
 State LogicData::_viewState;
 State LogicData::_initialState;
