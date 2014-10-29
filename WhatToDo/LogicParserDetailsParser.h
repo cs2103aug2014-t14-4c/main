@@ -3,8 +3,8 @@
 //subclasses which require them, specifically {CommandAdd, CommandDelete, 
 //CommandDone, CommandEdit, CommandSearch}. It firstly checks the validity
 //of the parameters supplied. In particular, it ensures that
-//1) Only an index parameter is given for {CommandDelete, CommandDone}.
-//2) An index followed by a string parameter is given for {CommandEdit}.
+//1) Only an integer parameter is given for {CommandDelete, CommandDone}.
+//2) An integer followed by a string parameter is given for {CommandEdit}.
 //
 //DetailsParser further ensures that all details are formatted and placed
 //in their respective fields. Tasks created for {CommandAdd, CommandEdit} are
@@ -16,12 +16,7 @@
 //Sample usage: Initialize with parameters, call relevant function with
 //				Command pointer.
 //	DetailsParser details(parameters);
-//
 //	details.addNewTask((CommandAdd*) add);
-//	|| details.deleteExistingTask((CommandDelete*) delete);
-//	|| details.markTaskAsDone((CommandDone*) done);
-//	|| details.editExistingTask((CommandEdit*) edit);
-//	|| details.searchForTask((CommandSearch*) search);
 //
 //@Shu Chang A0110655N
 //****************************************************************************
@@ -35,7 +30,7 @@ using namespace std;
 const string IDENTIFIER_TAG = "#";
 
 const string USERMESSAGE_NO_TASK_NAME =
-	"No task name specified";
+	"You cannot add a task without a task name!";
 const string USERMESSAGE_INVALID_DELETE = 
 	"Type /delete <index> to delete the task at <index>.";
 const string USERMESSAGE_INVALID_DONE = 

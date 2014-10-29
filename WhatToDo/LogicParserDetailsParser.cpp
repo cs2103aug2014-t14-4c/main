@@ -20,7 +20,10 @@ void DetailsParser::addNewTask(Command* command) {
 
 		command->setCurrentTask(*task);
 		delete task;
-	} catch(const exception& e) {
+	} catch(const invalid_argument& e) {
+		command->setUserMessage(e.what());
+		command->setParsedStatus(false);
+	} catch(const out_of_range& e) {
 		command->setUserMessage(e.what());
 		command->setParsedStatus(false);
 	}
@@ -76,6 +79,7 @@ void DetailsParser::searchForTask(Command* command) {
 }
 
 void DetailsParser::setTaskIndex(Command* command) {
+	assert(DetailsParser::hasIndex());
 	command->setTaskIndex(stoi(_tokens.front()));
 }
 

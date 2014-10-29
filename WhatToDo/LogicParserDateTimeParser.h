@@ -1,3 +1,51 @@
+//****************************************************************************
+//DatetimeParser is responsible for the parsing of date and/or time tokens in
+//the user input, if any. It takes in a Task pointer and a string reference to
+//the parameters that is to be parsed.
+//
+//If any of the start/end/deadline datetimes are found, the tokens describing 
+//the datetimes will be removed from the parameters. The end result is a task
+//which contains the relevant datetimes and a parameter that should only have
+//the task name remaining. Note that DatetimeParser removes or changes
+//whitespace character(s) between tokens in the original parameter to a single
+//space in the result.
+//
+//DatetimeParser works sequentially. As such, if there is more than one 
+//particular datetime specified for a single field (eg, task by friday 5pm 
+//due 14 dec 2014), only the first datetime will be read. Subsequent datetimes
+//will be added to the name of the task.
+//
+//DatetimeParser currently supports the following formats for input:
+//Date - 
+//1) Day Month Year - 15 Nov|November 14|2014
+//2) Day Month - 15 Nov|November (Sets the year as the current year)
+//3) This Weekday - this fri|friday (Sets the date as the friday this week,
+//									 regardless of the day today.)
+//4) Next Weekday - next thur (Sets the date as the thursday this week, 
+//							   regardless of the day today.)
+//5) DDMM - 0103 (Can be delimited by ".", "/", or "-", eg 01/03. Sets the
+//				  year as the current year.)
+//6) DDMMYY - 010314 (As above, can be delimited by ".", "/", or "-".)
+//7) DDMMYYYY  -01032014 (As above, can be delimited by ".", "/", or "-".)
+//8) Weekday - fri|friday (Sets the date as the nearest friday, not counting
+//						   today.)
+//9) Special - today|tomorrow
+//
+//Time - 
+//1) 12 Hours - 12pm, 1245AM (Can be delimited by "." or ":", eg 12:00a.m.)
+//2) 24 Hours - 0845, 2359 (As above, can be delimited by "." or ":", eg 23.59)
+//
+//All above input formats are case insensitive.
+//DatetimeParser inherits string modification functions from StringModifier.
+//
+//Sample usage:
+//	DatetimeParser datetime;
+//	Task* task = new task;
+//	string parameters = "parameters are inside here";
+//	datetime.addTaskDatetime(task, parameters);
+//
+//@Shu Chang A0110655N
+//****************************************************************************
 #pragma once
 #include "boost\date_time.hpp"
 #include "LogicParserStringModifier.h"
@@ -14,7 +62,6 @@ const int STRLEN_24H_TIME = 4;
 const int STRLEN_DDMM = 4;
 const int STRLEN_DDMMYY = 6;
 const int STRLEN_DDMMYYYY = 8;
-const int CURRENT_MILLENIUM = 2000;
 
 const int VALID_MIN_HOUR_12 = 1;
 const int VALID_MAX_HOUR_12 = 12;
@@ -30,8 +77,9 @@ const int VALID_MAX_MONTH = 12;
 const int VALID_MIN_YEAR_YY = 0;
 const int VALID_MAX_YEAR_YY = 99;
 const int VALID_MIN_YEAR_YYYY = 1970;
-const int VALID_MAX_YEAR_YYYY = 2100;
+const int VALID_MAX_YEAR_YYYY = 9999;
 const int VALID_MAX_WEEKDAY = 7;
+const int CURRENT_MILLENIUM = 2000;
 
 const string TIME_DELIMITERS = ".:";
 const string TIME_AM = "am";
@@ -64,10 +112,8 @@ const array<string, 12> MONTHS_LONG =
 	"july", "august", "september", "october", "november", "december"};
 
 const string USERMESSAGE_DATETIME_NOT_PARSED = 
-	"Incorrect date/time input format."
-	" Please use DDMMYYYY and HHMM for the best results.";
-const string EXCEPTION_VECTOR_OOR = 
-	"Vector out of range";
+	"Incorrect date/time input format, please check your date input."
+	" Use DDMMYYYY and HHMM for the best results.";
 
 class DatetimeParser : public StringModifier {
 public:
@@ -94,14 +140,19 @@ private:
 	void setFoundDatetime(Task* task);
 	void eraseWord(vector<string>::iterator& iter);
 
+	void addDate(vector<string>::iterator iter, 
+		gr::date& date, 
+		pt::time_duration& time);
+	void addTime(vector<string>::iterator iter, 
+		gr::date& date, 
+		pt::time_duration& time);
+
 	//StartDatetime
 	void addStartDatetime(void);
 	bool hasStartDatetime(void);
 	bool hasStartDate(void);
 	bool hasStartTime(void);
 	void addStartWithIdentifier(void);
-	void addStartDate(vector<string>::iterator iter);
-	void addStartTime(vector<string>::iterator iter);
 	void addStartWithoutIdentifier(void);
 	bool isStartIdentifier(string word);
 	void combineStartDatetime(void);
@@ -112,8 +163,6 @@ private:
 	bool hasEndDate(void);
 	bool hasEndTime(void);
 	void addEndWithIdentifier(void);
-	void addEndDate(vector<string>::iterator iter);
-	void addEndTime(vector<string>::iterator iter);
 	bool isEndIdentifier(string word);
 	void combineEndDatetime(void);
 
@@ -123,12 +172,10 @@ private:
 	bool hasDeadlineDate(void);
 	bool hasDeadlineTime(void);
 	void addDeadlineWithIdentifier(void);
-	void addDeadlineDate(vector<string>::iterator iter);
-	void addDeadlineTime(vector<string>::iterator iter);
 	bool isDeadlineIdentifier(string word);
 	void combineDeadlineDatetime(void);
 
-	//Time Parsing Functions
+	//Time Parsing FunctionsS
 	bool isATime(vector<string>::iterator iter);
 	pt::time_duration parseTime(vector<string>::iterator iter);
 
