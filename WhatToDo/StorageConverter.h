@@ -4,18 +4,18 @@
 #include <vector>
 #include <sstream>
 #include "Task.h"
+#include <exception>
 
 using namespace std;
 
 class StorageConverter{
 	private:
 		//attributes for StorageConverter
-		Task convertedTask; 
 		vector<string> taskStringAttributes;
-		string taskDatetimeString; 
-		string taskName;
-		string taskTags;
-		string taskIsDone; 
+		string _taskDatetimeString; 
+		string _taskName;
+		string _taskTags;
+		string _taskIsDone; 
 
 	public:
 		static string TITLE_TASKSTARTDATETIME;
@@ -39,12 +39,12 @@ class StorageConverter{
 		string convertTaskTagVectorToString(vector<string> taskTags);
 		string convertTaskNameToString(Task taskToConvert);
 		
-		//secondary functions for conversion from string to task
-		void convertStringIsdoneToTask();
-		void convertStringStartDatetimeToTask();
-		void convertStringEndDatetimeToTask();
-		void convertStringDeadlineToTask();
-		void convertStringTasktagToTask();
+		//subfunctions for conversion from string to task
+		void convertStringIsdoneToTask(Task& convertedTask);
+		void convertStringStartDatetimeToTask(Task& convertedTask);
+		void convertStringEndDatetimeToTask(Task& convertedTask);
+		void convertStringDeadlineToTask(Task& convertedTask);
+		void convertStringTasktagToTask(Task& convertedTask);
 		vector<string> convertTaskTagStringToVector(string tagString);
 }; 
 

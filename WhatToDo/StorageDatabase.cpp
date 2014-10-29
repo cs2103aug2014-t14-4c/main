@@ -16,10 +16,11 @@ void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToW
 	
 	vector<vector<string>>::iterator taskVectorIterator = taskStringVectorToWrite.begin(); 
 	assert(&taskVectorIterator != NULL);
-
 	ofstream writeFile;
-	writeFile.open(fileName);
 
+	writeFile.open(fileName);
+	assert(fileName == "integrate2.txt");
+	
 	writeIndivdualFileToDatabase(taskVectorIterator, writeFile, taskStringVectorToWrite);
 
 	writeFile.close();
@@ -33,9 +34,15 @@ void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToW
 vector<vector<string>> StorageDatabase::readFromDatabase(){
 
 	ifstream readFile(fileName);
+	assert(fileName == "integrate2.txt");
 	string myText; 
-
-	readIndividualFileFromDatabase(readFile, myText);
+	try {
+		readIndividualFileFromDatabase(readFile, myText);
+	}
+	catch(string error){
+		cout << "WTF" << endl;
+		//do some shit;	
+	}
 	readFile.close();
 
 	return stringToRead; 
@@ -44,8 +51,10 @@ vector<vector<string>> StorageDatabase::readFromDatabase(){
 void StorageDatabase::readIndividualFileFromDatabase(ifstream &readFile, string myText){
 	while(readFile.peek()!=EOF){
 		for(int i = START; i<NO_OF_ATTRIBUTES; i++){
-			getline(readFile,myText);
-			individualReadFile.push_back(myText);
+				if (!getline(readFile,myText)) {
+					throw string("hahaha");
+				}
+				individualReadFile.push_back(myText);
 		}
 		//read newline character
 		getline(readFile,myText);
@@ -59,6 +68,7 @@ void StorageDatabase::readIndividualFileFromDatabase(ifstream &readFile, string 
 
 //check why ofstream file does not work
 void StorageDatabase::writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, ofstream& writeFile, vector<vector<string>> taskStringToWrite){
+	
 	fileIterator = taskStringToWrite.begin();
 	while(fileIterator != taskStringToWrite.end()){
 		for(int i = START; i< NO_OF_ATTRIBUTES; i++){

@@ -28,6 +28,8 @@ State StorageExecutor::loadFromStorage(){
 
 void StorageExecutor::saveToStorage(State stateToSave){
 	//first get all task for a given State and returns a vector of Tasks
+	assert(&stateToSave!=NULL);
+	
 	taskToStore = stateToSave.getAllTasks(); 
 
 	assert(&taskToStore != NULL);

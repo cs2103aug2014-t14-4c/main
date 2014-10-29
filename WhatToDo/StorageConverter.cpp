@@ -1,5 +1,6 @@
 #include "StorageConverter.h"
 
+
 string StorageConverter::TITLE_TASKSTARTDATETIME = "Start Datetime: ";
 string StorageConverter::TITLE_TASKENDDATETIME = "End Datetime: ";
 string StorageConverter::TITLE_TASKDEADLINE = "Task Deadline: ";
@@ -8,13 +9,14 @@ string StorageConverter::TITLE_TASKTAGS = "Task Tags: ";
 string StorageConverter::TITLE_TASKISDONE = "Task isDone Status: ";
 
 string StorageConverter::NOT_A_DATETIME = "not-a-date-time"; 
+
 //some are commented out as they are not implemented at this moment
 
 StorageConverter::StorageConverter(void){
-	taskDatetimeString = ""; 
-	taskName = "";
-	taskTags = "";
-	taskIsDone = ""; 
+	_taskDatetimeString = ""; 
+	_taskName = "";
+	_taskTags = "";
+	_taskIsDone = ""; 
 }
 
 vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
@@ -46,7 +48,8 @@ vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 	return taskStringAttributes; 
 }
 
-Task StorageConverter::convertStringToTask(vector<string> stringToConvert){
+Task StorageConverter::convertStringToTask(vector<string> stringToConvert) {
+	Task convertedTask; 
 
 	vector<string>::iterator taskAttributeIterator = stringToConvert.begin(); 
 	assert(&taskAttributeIterator != NULL); 
@@ -56,43 +59,47 @@ Task StorageConverter::convertStringToTask(vector<string> stringToConvert){
 	//use task setter methods to "Create" the task
 
 	//1. convert startime
-	taskDatetimeString = (*taskAttributeIterator).substr(TITLE_TASKSTARTDATETIME.size());
-	assert(taskDatetimeString.size()==15);
-	convertStringStartDatetimeToTask();
+	_taskDatetimeString = (*taskAttributeIterator).substr(TITLE_TASKSTARTDATETIME.size());
+	//assert(_taskDatetimeString.size()==15);
+	convertStringStartDatetimeToTask(convertedTask);
 	taskAttributeIterator++; 
 
 	//2. convert endtime
-	taskDatetimeString = (*taskAttributeIterator).substr(TITLE_TASKENDDATETIME.size());
-	convertStringEndDatetimeToTask();
+	_taskDatetimeString = (*taskAttributeIterator).substr(TITLE_TASKENDDATETIME.size());
+	convertStringEndDatetimeToTask(convertedTask);
 	taskAttributeIterator++; 
 
 	//3. convert task deadline
-	taskDatetimeString = (*taskAttributeIterator).substr(TITLE_TASKDEADLINE.size());
-	convertStringDeadlineToTask(); 
+	_taskDatetimeString = (*taskAttributeIterator).substr(TITLE_TASKDEADLINE.size());
+	convertStringDeadlineToTask(convertedTask); 
 	taskAttributeIterator++; 
 
 	//4. convert task name
-	taskName = (*taskAttributeIterator).substr(TITLE_TASKNAME.size());
-	convertedTask.setTaskName(taskName);
+	_taskName = (*taskAttributeIterator).substr(TITLE_TASKNAME.size());
+	convertedTask.setTaskName(_taskName);
 	taskAttributeIterator++; 
 
 	//5. convert task tags 
-	taskTags = (*taskAttributeIterator).substr(TITLE_TASKTAGS.size());
-	convertStringTasktagToTask();
+	_taskTags = (*taskAttributeIterator).substr(TITLE_TASKTAGS.size());
+	convertStringTasktagToTask(convertedTask);
 	taskAttributeIterator++; 
 	
 	//6. convert isDone, isDone initialized false, thus only call if it's true
-	taskIsDone = (*taskAttributeIterator).substr(TITLE_TASKISDONE.size());
-	convertStringIsdoneToTask();
+	
+	_taskIsDone = (*taskAttributeIterator).substr(TITLE_TASKISDONE.size());
+	convertStringIsdoneToTask(convertedTask);
 
 	//return the converted individual task
 	return convertedTask;
+
 }
 
 //convert boolean to string 
 string StorageConverter::convertTaskBoolToString(bool boolToConvert){
 	stringstream converter; 
 	converter << boolToConvert;
+	
+
 	return converter.str();
 }
 
@@ -124,8 +131,8 @@ string StorageConverter::convertTaskTagVectorToString(vector<string> taskTags){
 }
 
 string StorageConverter::convertTaskNameToString(Task taskToConvert){
-	taskName = taskToConvert.getTaskName();
-	return taskName; 
+	_taskName = taskToConvert.getTaskName();
+	return _taskName; 
 }
 
 //convert taskTagstring to vector<string>
@@ -145,49 +152,66 @@ vector<string> StorageConverter::convertTaskTagStringToVector(string tagString){
 }
 
 //convert string to bool 
-void StorageConverter::convertStringIsdoneToTask(){
+void StorageConverter::convertStringIsdoneToTask(Task& convertedTask){
 	//converting string to boolean
-	if(taskIsDone=="1"){
+	if(_taskIsDone=="1"){
 		convertedTask.setTaskIsDone();
+	}else if(_taskIsDone=="0"){
+		
+	}else{
 	}
-	else if(taskIsDone=="0"){
-	}
+
 	return;
 }
 
-void StorageConverter::convertStringStartDatetimeToTask(){
-	if (taskDatetimeString == NOT_A_DATETIME){
+void StorageConverter::convertStringStartDatetimeToTask(Task& convertedTask){
+
+	try{
+		if (_taskDatetimeString == NOT_A_DATETIME){
+			convertedTask.setTaskStartTime(not_a_date_time); 
+		} else {
+			ptime taskStartTime(from_iso_string(_taskDatetimeString));
+			convertedTask.setTaskStartTime(taskStartTime);
+		}
+	}
+	catch(...){
 		convertedTask.setTaskStartTime(not_a_date_time); 
-	} else {
-		ptime taskStartTime(from_iso_string(taskDatetimeString));
-		convertedTask.setTaskStartTime(taskStartTime);
 	}
 	return; 
 }
 
-void StorageConverter::convertStringEndDatetimeToTask(){
-	if (taskDatetimeString == NOT_A_DATETIME){
-		convertedTask.setTaskEndTime(not_a_date_time); 
-	} else {
-		ptime taskEndTime(from_iso_string(taskDatetimeString));
-		convertedTask.setTaskEndTime(taskEndTime);
+void StorageConverter::convertStringEndDatetimeToTask(Task& convertedTask){
+	try{
+		if (_taskDatetimeString == NOT_A_DATETIME){
+			convertedTask.setTaskEndTime(not_a_date_time); 
+		} else {
+			ptime taskEndTime(from_iso_string(_taskDatetimeString));
+			convertedTask.setTaskEndTime(taskEndTime);
+		}
+	}
+	catch(...){
+		convertedTask.setTaskEndTime(not_a_date_time);
 	}
 	return;
 }
 
-void StorageConverter::convertStringDeadlineToTask(){
-	if (taskDatetimeString == NOT_A_DATETIME){
-		convertedTask.setTaskDeadline(not_a_date_time); 
-	} else {
-		ptime taskDeadline(from_iso_string(taskDatetimeString));
-		convertedTask.setTaskDeadline(taskDeadline);
+void StorageConverter::convertStringDeadlineToTask(Task& convertedTask){
+	try{
+		if (_taskDatetimeString == NOT_A_DATETIME){
+			convertedTask.setTaskDeadline(not_a_date_time); 
+		} else {
+			ptime taskDeadline(from_iso_string(_taskDatetimeString));
+			convertedTask.setTaskDeadline(taskDeadline);
+		}
+	} catch(...){
+		convertedTask.setTaskDeadline(not_a_date_time);
 	}
 	return;
 }
 
-void StorageConverter::convertStringTasktagToTask(){
+void StorageConverter::convertStringTasktagToTask(Task& convertedTask){
 	
-	vector<string> taskTagVector = convertTaskTagStringToVector(taskTags);
+	vector<string> taskTagVector = convertTaskTagStringToVector(_taskTags);
 	convertedTask.setTaskTags(taskTagVector);
 
 	return; 
