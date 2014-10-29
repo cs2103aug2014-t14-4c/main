@@ -50,9 +50,9 @@
 #include "boost\date_time.hpp"
 #include "LogicParserStringModifier.h"
 
-namespace pt = boost::posix_time;
-namespace gr = boost::gregorian;
 using namespace std;
+using namespace boost::posix_time;
+using namespace boost::gregorian;
 
 const int NUMLEN_3 = 100;
 const int NUMLEN_5 = 10000;
@@ -124,16 +124,16 @@ public:
 
 private:
 	vector<string> _parameters;
-	gr::date _currentDate;
-	gr::date _startDate;
-	gr::date _endDate;
-	gr::date _deadlineDate;
-	pt::time_duration _startTime;
-	pt::time_duration _endTime;
-	pt::time_duration _deadlineTime;
-	pt::ptime _startDatetime;
-	pt::ptime _endDatetime;
-	pt::ptime _deadlineDatetime;
+	date _currentDate;
+	date _startDate;
+	date _endDate;
+	date _deadlineDate;
+	time_duration _startTime;
+	time_duration _endTime;
+	time_duration _deadlineTime;
+	ptime _startDatetime;
+	ptime _endDatetime;
+	ptime _deadlineDatetime;
 	
 	void setParameters(string parameters);
 	string getParameters(void);
@@ -141,11 +141,11 @@ private:
 	void eraseWord(vector<string>::iterator& iter);
 
 	void addDate(vector<string>::iterator iter, 
-		gr::date& date, 
-		pt::time_duration& time);
+				 date& date, 
+				 time_duration& time);
 	void addTime(vector<string>::iterator iter, 
-		gr::date& date, 
-		pt::time_duration& time);
+				 date& date, 
+				 time_duration& time);
 
 	//StartDatetime
 	void addStartDatetime(void);
@@ -177,7 +177,7 @@ private:
 
 	//Time Parsing FunctionsS
 	bool isATime(vector<string>::iterator iter);
-	pt::time_duration parseTime(vector<string>::iterator iter);
+	time_duration parseTime(vector<string>::iterator iter);
 
 	bool isMilitaryTime(string word);
 	bool isAmPmTime(string word);
@@ -194,7 +194,7 @@ private:
 
 	//Date Parsing Functions
 	bool isADate(vector<string>::iterator iter);
-	gr::date parseDate(vector<string>::iterator iter);
+	date parseDate(vector<string>::iterator iter);
 
 	bool is3WordDate(vector<string>::iterator iter);
 	bool is2WordDate(vector<string>::iterator iter);
@@ -218,21 +218,21 @@ private:
 	bool isMonth(int month);
 	bool isYear(int year);
 
-	gr::date parse3WordDate(vector<string>::iterator iter);
-	gr::date parse2WordDate(vector<string>::iterator iter);
-	gr::date parse1WordDate(vector<string>::iterator iter);
+	date parse3WordDate(vector<string>::iterator iter);
+	date parse2WordDate(vector<string>::iterator iter);
+	date parse1WordDate(vector<string>::iterator iter);
 
-	gr::date parseDayMonthYear(vector<string>::iterator iter);
-	gr::date parseDayMonth(vector<string>::iterator iter);
-	gr::date parseThisWeekday(string weekday);
-	gr::date parseNextWeekday(string weekday);
-	gr::date parseToday(void);
-	gr::date parseTomorrow(void);
-	gr::date parseComingWeekday(string weekday);
-	gr::date parseNumericalDate(string date);
-	gr::date parseDDMM(int date);
-	gr::date parseDDMMYY(int date);
-	gr::date parseDDMMYYYY(int date);
+	date parseDayMonthYear(vector<string>::iterator iter);
+	date parseDayMonth(vector<string>::iterator iter);
+	date parseThisWeekday(string weekday);
+	date parseNextWeekday(string weekday);
+	date parseToday(void);
+	date parseTomorrow(void);
+	date parseComingWeekday(string weekday);
+	date parseNumericalDate(string date);
+	date parseDDMM(int intDate);
+	date parseDDMMYY(int intDate);
+	date parseDDMMYYYY(int intDate);
 	
 	int parseDay(string day);
 	int parseMonth(string month);

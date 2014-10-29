@@ -1,10 +1,10 @@
 #include "LogicParserDatetimeParser.h"
 
 DatetimeParser::DatetimeParser(void) {
-	_currentDate = gr::day_clock::local_day();
-	_startTime = gr::not_a_date_time;
-	_endTime = gr::not_a_date_time;
-	_deadlineTime = gr::not_a_date_time;
+	_currentDate = day_clock::local_day();
+	_startTime = not_a_date_time;
+	_endTime = not_a_date_time;
+	_deadlineTime = not_a_date_time;
 }
 
 DatetimeParser::~DatetimeParser(void) {
@@ -12,27 +12,27 @@ DatetimeParser::~DatetimeParser(void) {
 
 void DatetimeParser::addTaskDatetime(Task* task, string& parameters) {
 	try{
-		DatetimeParser::setParameters(parameters);
+		setParameters(parameters);
 
-		DatetimeParser::addDeadlineDatetime();	
-		DatetimeParser::addStartDatetime();
-		if(DatetimeParser::hasStartDatetime()) {
-			DatetimeParser::addEndDatetime();
+		addDeadlineDatetime();	
+		addStartDatetime();
+		if(hasStartDatetime()) {
+			addEndDatetime();
 		}
 
-		DatetimeParser::setFoundDatetime(task);
-		parameters = DatetimeParser::getParameters();
+		setFoundDatetime(task);
+		parameters = getParameters();
 	} catch(const out_of_range&) {
 		throw;
 	}
 }
 
 void DatetimeParser::setParameters(string parameters) {
-	_parameters = StringModifier::tokenizeString(parameters);
+	_parameters = tokenizeString(parameters);
 }
 
 string DatetimeParser::getParameters() {
-	return StringModifier::detokenizeVector(_parameters);
+	return detokenizeVector(_parameters);
 }
 
 void DatetimeParser::setFoundDatetime(Task* task) {
@@ -46,34 +46,34 @@ void DatetimeParser::eraseWord(vector<string>::iterator& iter) {
 }
 
 void DatetimeParser::addDate(vector<string>::iterator iter, 
-							 gr::date& date, 
-							 pt::time_duration& time) {
+							 date& date, 
+							 time_duration& time) {
 	try {
-		if(DatetimeParser::is3WordDate(iter)) {
-			if(DatetimeParser::isATime(iter + Three)) {
-				time = DatetimeParser::parseTime(iter + Three);
+		if(is3WordDate(iter)) {
+			if(isATime(iter + Three)) {
+				time = parseTime(iter + Three);
 			}
-		} else if(DatetimeParser::is2WordDate(iter)) {
-			if(DatetimeParser::isATime(iter + Two)) {
-				time = DatetimeParser::parseTime(iter + Two);
+		} else if(is2WordDate(iter)) {
+			if(isATime(iter + Two)) {
+				time = parseTime(iter + Two);
 			}
-		} else if(DatetimeParser::isATime(iter + One)) {
-				time = DatetimeParser::parseTime(iter + One);
+		} else if(isATime(iter + One)) {
+				time = parseTime(iter + One);
 		}
-		date = DatetimeParser::parseDate(iter);
+		date = parseDate(iter);
 	} catch(const out_of_range&) {
 		throw;
 	}
 }
 
 void DatetimeParser::addTime(vector<string>::iterator iter, 
-							 gr::date& date, 
-							 pt::time_duration& time) {
+							 date& date, 
+							 time_duration& time) {
 	try {
-		if(DatetimeParser::isADate(iter + One)) {
-			date = DatetimeParser::parseDate(iter + One);
+		if(isADate(iter + One)) {
+			date = parseDate(iter + One);
 		}
-		time = DatetimeParser::parseTime(iter);
+		time = parseTime(iter);
 	} catch(const out_of_range&) {
 		throw;
 	}
@@ -82,12 +82,11 @@ void DatetimeParser::addTime(vector<string>::iterator iter,
 //Start
 void DatetimeParser::addStartDatetime(void) {
 	try {
-		DatetimeParser::addStartWithIdentifier(); 
-		if(!DatetimeParser::hasStartDate() 
-				|| !DatetimeParser::hasStartTime()) {
-			DatetimeParser::addStartWithoutIdentifier();
+		addStartWithIdentifier(); 
+		if(!hasStartDate() || !hasStartTime()) {
+			addStartWithoutIdentifier();
 		}
-		DatetimeParser::combineStartDatetime();
+		combineStartDatetime();
 	} catch(const out_of_range&) {
 		throw;
 	}
@@ -110,20 +109,12 @@ void DatetimeParser::addStartWithIdentifier(void) {
 		for(auto iter = _parameters.begin(); 
 				iter != _parameters.end(); 
 				++iter) {
-
-			if(DatetimeParser::isStartIdentifier(*iter) 
-					&& DatetimeParser::isATime(iter + One)) {
-				DatetimeParser::addTime(iter + One, 
-										_startDate, 
-										_startTime);
-				DatetimeParser::eraseWord(iter);
-
-			} else if(DatetimeParser::isStartIdentifier(*iter)
-					&& DatetimeParser::isADate(iter + One)) {
-				DatetimeParser::addDate(iter + One, 
-										_startDate, 
-										_startTime);
-				DatetimeParser::eraseWord(iter);
+			if(isStartIdentifier(*iter) && isATime(iter + One)) {
+				addTime(iter + One, _startDate, _startTime);
+				eraseWord(iter);
+			} else if(isStartIdentifier(*iter) && isADate(iter + One)) {
+				addDate(iter + One, _startDate, _startTime);
+				eraseWord(iter);
 			}
 		}
 	} catch(const out_of_range&) {
@@ -136,14 +127,10 @@ void DatetimeParser::addStartWithoutIdentifier(void) {
 		for(auto iter = _parameters.begin(); 
 				iter != _parameters.end(); 
 				++iter) {
-
-			if(!DatetimeParser::hasStartTime() 
-					&& DatetimeParser::isATime(iter)) {
-				_startTime = DatetimeParser::parseTime(iter);
-
-			} else if(!DatetimeParser::hasStartDate()
-					&& DatetimeParser::isADate(iter)) {
-				_startDate = DatetimeParser::parseDate(iter);
+			if(!hasStartTime() && isATime(iter)) {
+				_startTime = parseTime(iter);
+			} else if(!hasStartDate() && isADate(iter)) {
+				_startDate = parseDate(iter);
 			}
 		}
 	} catch(const out_of_range&) {
@@ -155,7 +142,7 @@ bool DatetimeParser::isStartIdentifier(string word) {
 	for(auto iter = DATE_START.begin(); 
 			iter != DATE_START.end(); 
 			++iter) {
-		if(StringModifier::transformToLowercase(word) == *iter) {
+		if(transformToLowercase(word) == *iter) {
 			return true;
 		}
 	}
@@ -163,21 +150,21 @@ bool DatetimeParser::isStartIdentifier(string word) {
 }
 
 void DatetimeParser::combineStartDatetime(void) {
-	if(!DatetimeParser::hasStartTime()) {
-		pt::time_duration allDay(pt::seconds(1));
+	if(!hasStartTime()) {
+		time_duration allDay = seconds(One);
 		_startTime = allDay;
-	} else if(!DatetimeParser::hasStartDate()) {
+	} else if(!hasStartDate()) {
 		_startDate = _currentDate;
 	}
-	pt::ptime startDatetime(_startDate, _startTime);
+	ptime startDatetime(_startDate, _startTime);
 	_startDatetime = startDatetime;
 }
 
 //End
 void DatetimeParser::addEndDatetime(void) {
 	try {
-		DatetimeParser::addEndWithIdentifier(); 
-		DatetimeParser::combineEndDatetime();
+		addEndWithIdentifier(); 
+		combineEndDatetime();
 	} catch(const out_of_range&) {
 		throw;
 	}
@@ -200,20 +187,12 @@ void DatetimeParser::addEndWithIdentifier(void) {
 		for(auto iter = _parameters.begin(); 
 				iter != _parameters.end(); 
 				++iter) {
-
-			if(DatetimeParser::isEndIdentifier(*iter) 
-					&& DatetimeParser::isATime(iter + One)) {
-				DatetimeParser::addTime(iter + One, 
-										_endDate, 
-										_endTime);
-				DatetimeParser::eraseWord(iter);
-
-			} else if(DatetimeParser::isEndIdentifier(*iter)
-					&& DatetimeParser::isADate(iter + One)) {
-				DatetimeParser::addDate(iter + One, 
-										_endDate, 
-										_endTime);
-				DatetimeParser::eraseWord(iter);
+			if(isEndIdentifier(*iter) && isATime(iter + One)) {
+				addTime(iter + One, _endDate, _endTime);
+				eraseWord(iter);
+			} else if(isEndIdentifier(*iter) && isADate(iter + One)) {
+				addDate(iter + One, _endDate, _endTime);
+				eraseWord(iter);
 			}
 		}
 	} catch(const out_of_range&) {
@@ -225,7 +204,7 @@ bool DatetimeParser::isEndIdentifier(string word) {
 	for(auto iter = DATE_END.begin(); 
 			iter != DATE_END.end(); 
 			++iter) {
-		if(StringModifier::transformToLowercase(word) == *iter) {
+		if(transformToLowercase(word) == *iter) {
 			return true;
 		}
 	}
@@ -233,21 +212,21 @@ bool DatetimeParser::isEndIdentifier(string word) {
 }
 
 void DatetimeParser::combineEndDatetime(void) {
-	if(!DatetimeParser::hasEndTime()) {
-		pt::time_duration allDay(pt::seconds(1));
+	if(!hasEndTime()) {
+		time_duration allDay = seconds(One);
 		_endTime = allDay;
-	} else if(!DatetimeParser::hasEndDate()) {
+	} else if(!hasEndDate()) {
 		_endDate = _startDate;
 	}
-	pt::ptime endDatetime(_endDate, _endTime);
+	ptime endDatetime(_endDate, _endTime);
 	_endDatetime = endDatetime;
 }
 
 //Deadline
 void DatetimeParser::addDeadlineDatetime(void) {
 	try {
-		DatetimeParser::addDeadlineWithIdentifier(); 
-		DatetimeParser::combineDeadlineDatetime();
+		addDeadlineWithIdentifier(); 
+		combineDeadlineDatetime();
 	} catch(const out_of_range&) {
 		throw;
 	}
@@ -270,20 +249,12 @@ void DatetimeParser::addDeadlineWithIdentifier(void) {
 		for(auto iter = _parameters.begin(); 
 				iter != _parameters.end(); 
 				++iter) {
-
-			if(DatetimeParser::isDeadlineIdentifier(*iter) 
-					&& DatetimeParser::isATime(iter + One)) {
-				DatetimeParser::addTime(iter + One, 
-										_deadlineDate, 
-										_deadlineTime);
-				DatetimeParser::eraseWord(iter);
-
-			} else if(DatetimeParser::isDeadlineIdentifier(*iter)
-					&& DatetimeParser::isADate(iter + One)) {
-				DatetimeParser::addDate(iter + One, 
-										_deadlineDate, 
-										_deadlineTime);
-				DatetimeParser::eraseWord(iter);
+			if(isDeadlineIdentifier(*iter) && isATime(iter + One)) {
+				addTime(iter + One, _deadlineDate, _deadlineTime);
+				eraseWord(iter);
+			} else if(isDeadlineIdentifier(*iter) && isADate(iter + One)) {
+				addDate(iter + One, _deadlineDate, _deadlineTime);
+				eraseWord(iter);
 			}
 		}
 	} catch(const out_of_range&) {
@@ -295,7 +266,7 @@ bool DatetimeParser::isDeadlineIdentifier(string word) {
 	for(auto iter = DATE_DEADLINE.begin(); 
 			iter != DATE_DEADLINE.end(); 
 			++iter) {
-		if(StringModifier::transformToLowercase(word) == *iter) {
+		if(transformToLowercase(word) == *iter) {
 			return true;
 		}
 	}
@@ -303,13 +274,13 @@ bool DatetimeParser::isDeadlineIdentifier(string word) {
 }
 
 void DatetimeParser::combineDeadlineDatetime(void) {
-	if(!DatetimeParser::hasDeadlineTime()) {
-		pt::time_duration allDay(pt::seconds(1));
+	if(!hasDeadlineTime()) {
+		time_duration allDay = seconds(One);
 		_deadlineTime = allDay;
-	} else if(!DatetimeParser::hasDeadlineDate()) {
+	} else if(!hasDeadlineDate()) {
 		_deadlineDate = _currentDate;
 	}
-	pt::ptime deadlineDatetime(_deadlineDate, _deadlineTime);
+	ptime deadlineDatetime(_deadlineDate, _deadlineTime);
 	_deadlineDatetime = deadlineDatetime;
 }
 
@@ -318,47 +289,45 @@ bool DatetimeParser::isATime(vector<string>::iterator iter) {
 	if(iter == _parameters.end()) {
 		return false;
 	}
-	return (DatetimeParser::isAmPmTime(*iter) 
-		|| DatetimeParser::isMilitaryTime(*iter));
+	return (isAmPmTime(*iter) || isMilitaryTime(*iter));
 }
 
-pt::time_duration DatetimeParser::parseTime(vector<string>::iterator iter) {
+time_duration DatetimeParser::parseTime(vector<string>::iterator iter) {
 	assert(iter != _parameters.end());
-	assert(DatetimeParser::isATime(iter));
+	assert(isATime(iter));
 
-	int hours = Zero;
-	int minutes = Zero;
+	int intHours = Zero;
+	int intMinutes = Zero;
 
-	if(DatetimeParser::isAmPmTime(*iter)) {
-		DatetimeParser::parseAmPmTime(*iter, hours, minutes);
+	if(isAmPmTime(*iter)) {
+		parseAmPmTime(*iter, intHours, intMinutes);
 	} else {
-		DatetimeParser::parseMilitaryTime(*iter, hours, minutes);
+		parseMilitaryTime(*iter, intHours, intMinutes);
 	}
 
-	pt::time_duration timeOfDay = pt::hours(hours) + pt::minutes(minutes);
-	DatetimeParser::eraseWord(iter);
+	time_duration timeOfDay = hours(intHours) + minutes(intMinutes);
+	eraseWord(iter);
 	return timeOfDay;
 }
 
 bool DatetimeParser::isMilitaryTime(string word) {
-	DatetimeParser::removeTimeDelimiters(word);
+	removeTimeDelimiters(word);
 
-	if(!StringModifier::isNumber(word) || word.length() != STRLEN_24H_TIME) {
+	if(!isNumber(word) || word.length() != STRLEN_24H_TIME) {
 		return false;
 	}
-	return DatetimeParser::is24HourTime(stoi(word));
+	return is24HourTime(stoi(word));
 }
 
 bool DatetimeParser::isAmPmTime(string word) {
-	DatetimeParser::removeTimeDelimiters(word);
+	removeTimeDelimiters(word);
 
 	istringstream iss(word);
 	int time;
 	string AMPM;
 
 	iss >> time >> AMPM;
-	return (DatetimeParser::is12HourTime(time) 
-		&& (DatetimeParser::isAm(AMPM) || DatetimeParser::isPm(AMPM)));
+	return (is12HourTime(time) && (isAm(AMPM) || isPm(AMPM)));
 }
 
 bool DatetimeParser::is24HourTime(int number) {
@@ -388,7 +357,7 @@ bool DatetimeParser::isPm(string word) {
 }
 
 void DatetimeParser::parseMilitaryTime(string word, int& hours, int& minutes) {
-	DatetimeParser::removeTimeDelimiters(word);
+	removeTimeDelimiters(word);
 
 	int time = stoi(word);
 	hours = time / NUMLEN_3;
@@ -396,7 +365,7 @@ void DatetimeParser::parseMilitaryTime(string word, int& hours, int& minutes) {
 }
 
 void DatetimeParser::parseAmPmTime(string word, int& hours, int& minutes) {
-	DatetimeParser::removeTimeDelimiters(word);
+	removeTimeDelimiters(word);
 
 	istringstream iss(word);
 	int time;
@@ -410,15 +379,15 @@ void DatetimeParser::parseAmPmTime(string word, int& hours, int& minutes) {
 		minutes = time % NUMLEN_3;
 	}
 
-	if(DatetimeParser::isAm(AMPM) && hours == VALID_MAX_HOUR_12) {
+	if(isAm(AMPM) && hours == VALID_MAX_HOUR_12) {
 		hours = Zero;
-	} else if(DatetimeParser::isPm(AMPM) && hours != VALID_MAX_HOUR_12) {
+	} else if(isPm(AMPM) && hours != VALID_MAX_HOUR_12) {
 		hours += VALID_MAX_HOUR_12;
 	}
 }
 
 void DatetimeParser::removeTimeDelimiters(string& word) {
-	word = StringModifier::transformToLowercase(word);
+	word = transformToLowercase(word);
 	for(auto iter = TIME_DELIMITERS.begin();
 			iter != TIME_DELIMITERS.end();
 			++iter) {
@@ -431,18 +400,16 @@ bool DatetimeParser::isADate(vector<string>::iterator iter) {
 	if(iter == _parameters.end()) {
 		return false;
 	}
-	return (DatetimeParser::is3WordDate(iter) 
-		|| DatetimeParser::is2WordDate(iter)
-		|| DatetimeParser::is1WordDate(iter));
+	return (is3WordDate(iter) || is2WordDate(iter) || is1WordDate(iter));
 }
 
-gr::date DatetimeParser::parseDate(vector<string>::iterator iter) {
+date DatetimeParser::parseDate(vector<string>::iterator iter) {
 	try{
 		assert(iter != _parameters.end());
-		assert(DatetimeParser::isADate(iter));
-		if(DatetimeParser::is3WordDate(iter)) {
+		assert(isADate(iter));
+		if(is3WordDate(iter)) {
 			return parse3WordDate(iter);
-		} else if(DatetimeParser::is2WordDate(iter)) {
+		} else if(is2WordDate(iter)) {
 			return parse2WordDate(iter);
 		} else {
 			return parse1WordDate(iter);
@@ -466,45 +433,41 @@ bool DatetimeParser::is2WordDate(vector<string>::iterator iter) {
 	if((iter + One) == _parameters.end()) {
 		return false;
 	}
-	return (DatetimeParser::isDayMonth(iter) 
-		|| DatetimeParser::isThisNextWeekday(iter));
+	return (isDayMonth(iter) || isThisNextWeekday(iter));
 }
 
 bool DatetimeParser::is1WordDate(vector<string>::iterator iter) {
 	assert(iter != _parameters.end());
-	return (DatetimeParser::isToday(*iter)
-		|| DatetimeParser::isTomorrow(*iter)
-		|| DatetimeParser::isWeekday(*iter)
-		|| DatetimeParser::isNumericalDate(*iter));
+	return (isToday(*iter)
+		|| isTomorrow(*iter)
+		|| isWeekday(*iter)
+		|| isNumericalDate(*iter));
 }
 
 bool DatetimeParser::isDayMonthYear(vector<string>::iterator iter) {
 	assert(iter != _parameters.end());
 	assert((iter + One) != _parameters.end());
 	assert((iter + Two) != _parameters.end());
-	if(!StringModifier::isNumber(*iter)) {
+	if(!isNumber(*iter)) {
 		return false;
-	} else if(!StringModifier::isNumber(*(iter + Two))) {
+	} else if(!isNumber(*(iter + Two))) {
 		return false;
 	}
 	int day = stoi(*iter);
 	string month = *(iter + One);
 	int year = stoi(*(iter + Two));
-	return (DatetimeParser::isDay(day) 
-		&& DatetimeParser::isMonth(month)
-		&& DatetimeParser::isYear(year));
+	return (isDay(day) && isMonth(month) && isYear(year));
 }
 
 bool DatetimeParser::isDayMonth(vector<string>::iterator iter) {
 	assert(iter != _parameters.end());
 	assert((iter + One) != _parameters.end());
-	if(!StringModifier::isNumber(*iter)) {
+	if(!isNumber(*iter)) {
 		return false;
 	}
 	int day = stoi(*iter);
 	string month = *(iter + One);
-	return (DatetimeParser::isDay(day) 
-		&& DatetimeParser::isMonth(month));
+	return (isDay(day) && isMonth(month));
 }
 
 bool DatetimeParser::isThisNextWeekday(vector<string>::iterator iter) {
@@ -512,13 +475,11 @@ bool DatetimeParser::isThisNextWeekday(vector<string>::iterator iter) {
 	assert((iter + One) != _parameters.end());
 	string thisNext = *iter;
 	string weekday = *(iter + One);
-	return (DatetimeParser::isWeekday(weekday)
-		&& (DatetimeParser::isThis(thisNext) 
-		|| DatetimeParser::isNext(thisNext)));
+	return (isWeekday(weekday) && (isThis(thisNext) || isNext(thisNext)));
 }
 
 bool DatetimeParser::isToday(string date) {
-	date = StringModifier::transformToLowercase(date);
+	date = transformToLowercase(date);
 	for(auto iter = DATE_TODAY.begin();
 			iter != DATE_TODAY.end(); 
 			++iter) {
@@ -530,7 +491,7 @@ bool DatetimeParser::isToday(string date) {
 }
 
 bool DatetimeParser::isTomorrow(string date) {
-	date = StringModifier::transformToLowercase(date);
+	date = transformToLowercase(date);
 	for(auto iter = DATE_TOMORROW.begin();
 			iter != DATE_TOMORROW.end(); 
 			++iter) {
@@ -542,7 +503,7 @@ bool DatetimeParser::isTomorrow(string date) {
 }
 
 bool DatetimeParser::isWeekday(string date) {
-	date = StringModifier::transformToLowercase(date);
+	date = transformToLowercase(date);
 	for(int index = Zero; index < VALID_MAX_WEEKDAY; ++index) {
 		if(date == WEEKDAYS_LONG[index] || date == WEEKDAYS_SHORT[index]) {
 			return true;
@@ -552,14 +513,12 @@ bool DatetimeParser::isWeekday(string date) {
 }
 
 bool DatetimeParser::isNumericalDate(string date) {
-	DatetimeParser::removeDateDelimiters(date);
+	removeDateDelimiters(date);
 
-	if(!StringModifier::isNumber(date)) {
+	if(!isNumber(date)) {
 		return false;
 	}
-	return (DatetimeParser::isDDMM(date)
-		|| DatetimeParser::isDDMMYY(date)
-		|| DatetimeParser::isDDMMYYYY(date));
+	return (isDDMM(date) || isDDMMYY(date) || isDDMMYYYY(date));
 }
 
 bool DatetimeParser::isDDMM(string date) {
@@ -569,8 +528,7 @@ bool DatetimeParser::isDDMM(string date) {
 	int numDate = stoi(date);
 	int day = numDate / NUMLEN_3;
 	int month = numDate % NUMLEN_3;
-	return (DatetimeParser::isDay(day) 
-		&& DatetimeParser::isMonth(month));
+	return (isDay(day) && isMonth(month));
 }
 
 bool DatetimeParser::isDDMMYY(string date) {
@@ -581,9 +539,7 @@ bool DatetimeParser::isDDMMYY(string date) {
 	int day = numDate / NUMLEN_5;
 	int month = (numDate / NUMLEN_3) % NUMLEN_3;
 	int year = (numDate % NUMLEN_3) + CURRENT_MILLENIUM;
-	return (DatetimeParser::isDay(day) 
-		&& DatetimeParser::isMonth(month)
-		&& DatetimeParser::isYear(year));
+	return (isDay(day) && isMonth(month) && isYear(year));
 }
 
 bool DatetimeParser::isDDMMYYYY(string date) {
@@ -594,17 +550,15 @@ bool DatetimeParser::isDDMMYYYY(string date) {
 	int day = numDate / NUMLEN_7;
 	int month = (numDate / NUMLEN_5) % NUMLEN_3;
 	int year = numDate % NUMLEN_5;
-	return (DatetimeParser::isDay(day) 
-		&& DatetimeParser::isMonth(month)
-		&& DatetimeParser::isYear(year));
+	return (isDay(day) && isMonth(month) && isYear(year));
 }
 
 bool DatetimeParser::isThis(string word) {
-	return StringModifier::transformToLowercase(word) == DATE_THIS;
+	return transformToLowercase(word) == DATE_THIS;
 }
 
 bool DatetimeParser::isNext(string word) {
-	return StringModifier::transformToLowercase(word) == DATE_NEXT;
+	return transformToLowercase(word) == DATE_NEXT;
 }
 
 bool DatetimeParser::isDay(int day) {
@@ -621,7 +575,7 @@ bool DatetimeParser::isYear(int year) {
 }
 
 bool DatetimeParser::isMonth(string month) {
-	month = StringModifier::transformToLowercase(month);
+	month = transformToLowercase(month);
 	for(int index = Zero; index < VALID_MAX_MONTH; ++index) {
 		if(month == MONTHS_LONG[index] || month == MONTHS_SHORT[index]) {
 			return true;
@@ -630,171 +584,171 @@ bool DatetimeParser::isMonth(string month) {
 	return false;
 }
 
-gr::date DatetimeParser::parse3WordDate(vector<string>::iterator iter) {
+date DatetimeParser::parse3WordDate(vector<string>::iterator iter) {
 	try {
 		assert(iter != _parameters.end());
 		assert((iter + One) != _parameters.end());
 		assert((iter + Two) != _parameters.end());
 
-		gr::date dateFound = parseDayMonthYear(iter);
+		date dateFound = parseDayMonthYear(iter);
 
-		DatetimeParser::eraseWord(iter);
-		DatetimeParser::eraseWord(iter + One);
-		DatetimeParser::eraseWord(iter + Two);
+		eraseWord(iter);
+		eraseWord(iter + One);
+		eraseWord(iter + Two);
 		return dateFound;
 	} catch(const out_of_range&) {
 		throw;
 	}
 }
 
-gr::date DatetimeParser::parse2WordDate(vector<string>::iterator iter) {
+date DatetimeParser::parse2WordDate(vector<string>::iterator iter) {
 	try {
 		assert(iter != _parameters.end());
 		assert((iter + One) != _parameters.end());
-		gr::date dateFound;
 
-		if(DatetimeParser::isDayMonth(iter)) {
-			dateFound = DatetimeParser::parseDayMonth(iter);
-		} else if(DatetimeParser::isThis(*iter)) {
-			dateFound = DatetimeParser::parseThisWeekday(*(iter + One));
+		date dateFound;
+		if(isDayMonth(iter)) {
+			dateFound = parseDayMonth(iter);
+		} else if(isThis(*iter)) {
+			dateFound = parseThisWeekday(*(iter + One));
 		} else {
-			dateFound = DatetimeParser::parseNextWeekday(*(iter + One));
+			dateFound = parseNextWeekday(*(iter + One));
 		}
 
-		DatetimeParser::eraseWord(iter);
-		DatetimeParser::eraseWord(iter + One);
+		eraseWord(iter);
+		eraseWord(iter + One);
 		return dateFound;
 	} catch(const out_of_range&) {
 		throw;
 	}
 }
 
-gr::date DatetimeParser::parse1WordDate(vector<string>::iterator iter) {
+date DatetimeParser::parse1WordDate(vector<string>::iterator iter) {
 	try {
 		assert(iter != _parameters.end());
-		gr::date dateFound;
 
-		if(DatetimeParser::isToday(*iter)) {
-			dateFound = DatetimeParser::parseToday();
-		} else if(DatetimeParser::isTomorrow(*iter)) {
-			dateFound = DatetimeParser::parseTomorrow();
-		} else if(DatetimeParser::isWeekday(*iter)) {
-			dateFound = DatetimeParser::parseComingWeekday(*iter);
+		date dateFound;
+		if(isToday(*iter)) {
+			dateFound = parseToday();
+		} else if(isTomorrow(*iter)) {
+			dateFound = parseTomorrow();
+		} else if(isWeekday(*iter)) {
+			dateFound = parseComingWeekday(*iter);
 		} else {
-			dateFound = DatetimeParser::parseNumericalDate(*iter);
+			dateFound = parseNumericalDate(*iter);
 		}
 
-		DatetimeParser::eraseWord(iter);
+		eraseWord(iter);
 		return dateFound;
 	} catch(const out_of_range&) {
 		throw;
 	}
 }
 
-gr::date DatetimeParser::parseDayMonthYear(vector<string>::iterator iter) {
+date DatetimeParser::parseDayMonthYear(vector<string>::iterator iter) {
 	try {
-		int day = DatetimeParser::parseDay(*iter);
-		int month = DatetimeParser::parseMonth(*(iter + One));
-		int year = DatetimeParser::parseYear(*(iter + Two));
-		gr::date dateFound(year, month, day);
+		int day = parseDay(*iter);
+		int month = parseMonth(*(iter + One));
+		int year = parseYear(*(iter + Two));
+		date dateFound(year, month, day);
 		return dateFound;
 	} catch(const out_of_range&) {
 		throw out_of_range(USERMESSAGE_DATETIME_NOT_PARSED);
 	}
 }
 
-gr::date DatetimeParser::parseDayMonth(vector<string>::iterator iter) {
+date DatetimeParser::parseDayMonth(vector<string>::iterator iter) {
 	try {
-		int day = DatetimeParser::parseDay(*iter);
-		int month = DatetimeParser::parseMonth(*(iter + One));
+		int day = parseDay(*iter);
+		int month = parseMonth(*(iter + One));
 		int year = _currentDate.year();
-		gr::date dateFound(year, month, day);
+		date dateFound(year, month, day);
 		return dateFound;
 	} catch(const out_of_range&) {
 		throw out_of_range(USERMESSAGE_DATETIME_NOT_PARSED);
 	}
 }
 
-gr::date DatetimeParser::parseThisWeekday(string weekday) {
-	weekday = StringModifier::transformToLowercase(weekday);
+date DatetimeParser::parseThisWeekday(string weekday) {
+	weekday = transformToLowercase(weekday);
 	int _currentWeekday = (int)_currentDate.day_of_week();
 		
 	for(int index = Zero; index < VALID_MAX_WEEKDAY; ++index) {
 		if(weekday == WEEKDAYS_LONG[index] 
 				|| weekday == WEEKDAYS_SHORT[index]) {
 			if(index >= _currentWeekday) {
-				return gr::next_weekday(_currentDate, (gr::greg_weekday)index);
+				return next_weekday(_currentDate, (greg_weekday)index);
 			} else {
-				gr::date_duration oneWeek(7);
-				gr::date thisWeekday = 
-					gr::next_weekday(_currentDate, (gr::greg_weekday)index);
-				gr::date dateFound = thisWeekday - oneWeek;
+				date_duration oneWeek(VALID_MAX_WEEKDAY);
+				date thisWeekday = 
+					next_weekday(_currentDate, (greg_weekday)index);
+				date dateFound = thisWeekday - oneWeek;
 				return dateFound;
 			}
 		}
 	}
-	gr::date notFound;
+	date notFound;
 	return notFound;
 }
 
-gr::date DatetimeParser::parseNextWeekday(string weekday) {
-	weekday = StringModifier::transformToLowercase(weekday);
+date DatetimeParser::parseNextWeekday(string weekday) {
+	weekday = transformToLowercase(weekday);
 	int _currentWeekday = (int)_currentDate.day_of_week();
 
 	for(int index = Zero; index < VALID_MAX_WEEKDAY; ++index) {
 		if(weekday == WEEKDAYS_LONG[index] 
 				|| weekday == WEEKDAYS_SHORT[index]) {
 			if(index >= _currentWeekday) {
-				gr::date_duration oneWeek(7);
-				gr::date nextWeekday = 
-					gr::next_weekday(_currentDate, (gr::greg_weekday)index);
-				gr::date dateFound = nextWeekday + oneWeek;
+				date_duration oneWeek(VALID_MAX_WEEKDAY);
+				date nextWeekday = 
+					next_weekday(_currentDate, (greg_weekday)index);
+				date dateFound = nextWeekday + oneWeek;
 				return dateFound;
 			} else {
-				return gr::next_weekday(_currentDate, (gr::greg_weekday)index);
+				return next_weekday(_currentDate, (greg_weekday)index);
 			}
 		}
 	}
-	gr::date notFound;
+	date notFound;
 	return notFound;
 }
 
-gr::date DatetimeParser::parseToday(void) {
+date DatetimeParser::parseToday(void) {
 	return _currentDate;
 }
 
-gr::date DatetimeParser::parseTomorrow(void) {
-	gr::date_duration oneDay(One);
+date DatetimeParser::parseTomorrow(void) {
+	date_duration oneDay(One);
 	return _currentDate + oneDay;
 }
 
-gr::date DatetimeParser::parseComingWeekday(string weekday) {
-	weekday = StringModifier::transformToLowercase(weekday);
+date DatetimeParser::parseComingWeekday(string weekday) {
+	weekday = transformToLowercase(weekday);
 	int _currentWeekday = (int)_currentDate.day_of_week();
 
 	for(int index = Zero; index < VALID_MAX_WEEKDAY; ++index) {
 		if(weekday == WEEKDAYS_LONG[index] 
 				|| weekday == WEEKDAYS_SHORT[index]) {
 			if(index == _currentWeekday) {
-				gr::date_duration oneWeek(7);
+				date_duration oneWeek(VALID_MAX_WEEKDAY);
 				return (_currentDate + oneWeek);
 			} else {
-				return gr::next_weekday(_currentDate, (gr::greg_weekday)index);
+				return next_weekday(_currentDate, (greg_weekday)index);
 			}
 		}
 	}
-	gr::date notFound;
+	date notFound;
 	return notFound;
 }
 
-gr::date DatetimeParser::parseNumericalDate(string date) {
+date DatetimeParser::parseNumericalDate(string date) {
 	try {
-		DatetimeParser::removeDateDelimiters(date);
+		removeDateDelimiters(date);
 
-		assert(StringModifier::isNumber(date));
-		if(DatetimeParser::isDDMM(date)) {
+		assert(isNumber(date));
+		if(isDDMM(date)) {
 			return parseDDMM(stoi(date));
-		} else if(DatetimeParser::isDDMMYY(date)) {
+		} else if(isDDMMYY(date)) {
 			return parseDDMMYY(stoi(date));
 		} else {
 			return parseDDMMYYYY(stoi(date));
@@ -804,39 +758,39 @@ gr::date DatetimeParser::parseNumericalDate(string date) {
 	}
 }
 
-gr::date DatetimeParser::parseDDMM(int date) {
+date DatetimeParser::parseDDMM(int intDate) {
 	try {
-		int day = date / NUMLEN_3;
-		int month = date % NUMLEN_3;
+		int day = intDate / NUMLEN_3;
+		int month = intDate % NUMLEN_3;
 		int year = _currentDate.year();
-		gr::date dateFound(year, month, day);
+		date dateFound(year, month, day);
 		return dateFound;
 	} catch(const out_of_range&) {
 		throw out_of_range(USERMESSAGE_DATETIME_NOT_PARSED);
 	}
 }
 
-gr::date DatetimeParser::parseDDMMYY(int date) {
+date DatetimeParser::parseDDMMYY(int intDate) {
 	try {
-		int day = date / NUMLEN_5;
-		int month = (date / NUMLEN_3) % NUMLEN_3;
-		int year = date % NUMLEN_3;
+		int day = intDate / NUMLEN_5;
+		int month = (intDate / NUMLEN_3) % NUMLEN_3;
+		int year = intDate % NUMLEN_3;
 		if(year <= VALID_MAX_YEAR_YY) {
 			year += CURRENT_MILLENIUM;
 		}
-		gr::date dateFound(year, month, day);
+		date dateFound(year, month, day);
 		return dateFound;
 	} catch(const out_of_range&) {
 		throw out_of_range(USERMESSAGE_DATETIME_NOT_PARSED);
 	}
 }
 
-gr::date DatetimeParser::parseDDMMYYYY(int date) {
+date DatetimeParser::parseDDMMYYYY(int intDate) {
 	try {
-		int day = date / NUMLEN_7;
-		int month = (date / NUMLEN_5) % NUMLEN_3;
-		int year = date % NUMLEN_5;
-		gr::date dateFound(year, month, day);
+		int day = intDate / NUMLEN_7;
+		int month = (intDate / NUMLEN_5) % NUMLEN_3;
+		int year = intDate % NUMLEN_5;
+		date dateFound(year, month, day);
 		return dateFound;
 	} catch(const out_of_range&) {
 		throw out_of_range(USERMESSAGE_DATETIME_NOT_PARSED);
@@ -844,15 +798,15 @@ gr::date DatetimeParser::parseDDMMYYYY(int date) {
 }
 
 int DatetimeParser::parseDay(string day) {
-	assert(StringModifier::isNumber(day));
+	assert(isNumber(day));
 	return stoi(day);
 }
 
 int DatetimeParser::parseMonth(string month) {
-	if(StringModifier::isNumber(month)) {
+	if(isNumber(month)) {
 		return stoi(month);
 	} else {
-		month = StringModifier::transformToLowercase(month);
+		month = transformToLowercase(month);
 		for(int index = Zero; index < VALID_MAX_MONTH; ++index) {
 			if(month == MONTHS_LONG[index] || month == MONTHS_SHORT[index]) {
 				return ++index;
@@ -863,7 +817,7 @@ int DatetimeParser::parseMonth(string month) {
 }
 
 int DatetimeParser::parseYear(string year) {
-	assert(StringModifier::isNumber(year));
+	assert(isNumber(year));
 	int numYear = stoi(year);
 	if(numYear <= VALID_MAX_YEAR_YY) {
 		numYear += CURRENT_MILLENIUM;
@@ -872,7 +826,7 @@ int DatetimeParser::parseYear(string year) {
 }
 
 void DatetimeParser::removeDateDelimiters(string& word) {
-	word = StringModifier::transformToLowercase(word);
+	word = transformToLowercase(word);
 	for(auto iter = DATE_DELIMITERS.begin();
 			iter != DATE_DELIMITERS.end();
 			++iter) {

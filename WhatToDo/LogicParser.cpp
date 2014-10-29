@@ -8,7 +8,7 @@ LogicParser::~LogicParser(void) {
 
 Command* LogicParser::getCommandFromUserInput(string userInput) {
 	try {
-		if(LogicParser::isEmptyInput(userInput)) {
+		if(isEmptyInput(userInput)) {
 			throw invalid_argument(EMPTY_STRING);
 		}
 		CommandCreator cmdCreator;

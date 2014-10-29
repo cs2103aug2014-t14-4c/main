@@ -3,7 +3,7 @@
 DetailsParser::DetailsParser(string parameters) {
 	assert(!parameters.empty());
 	_parameters = parameters;
-	_tokens = StringModifier::tokenizeString(parameters);
+	_tokens = tokenizeString(parameters);
 }
 
 DetailsParser::~DetailsParser(void) {
@@ -14,9 +14,9 @@ void DetailsParser::addNewTask(Command* command) {
 		DatetimeParser datetime;
 		Task* task = new Task;
 	
-		DetailsParser::addTaskTags(task);
+		addTaskTags(task);
 		datetime.addTaskDatetime(task, _parameters);
-		DetailsParser::addTaskName(task);
+		addTaskName(task);
 
 		command->setCurrentTask(*task);
 		delete task;
@@ -31,10 +31,10 @@ void DetailsParser::addNewTask(Command* command) {
 
 void DetailsParser::deleteExistingTask(Command* command) {
 	try {
-		if(!DetailsParser::hasOnlyIndex()) {
+		if(!hasOnlyIndex()) {
 			throw invalid_argument(USERMESSAGE_INVALID_DELETE);
 		}
-		DetailsParser::setTaskIndex(command);
+		setTaskIndex(command);
 	} catch(const invalid_argument& e) {
 		command->setUserMessage(e.what());
 		command->setParsedStatus(false);
@@ -43,10 +43,10 @@ void DetailsParser::deleteExistingTask(Command* command) {
 
 void DetailsParser::markTaskAsDone(Command* command) {
 	try {
-		if(!DetailsParser::hasOnlyIndex()) {
+		if(!hasOnlyIndex()) {
 			throw invalid_argument(USERMESSAGE_INVALID_DONE);
 		}
-		DetailsParser::setTaskIndex(command);
+		setTaskIndex(command);
 	} catch(const invalid_argument& e) {
 		command->setUserMessage(e.what());
 		command->setParsedStatus(false);
@@ -55,14 +55,14 @@ void DetailsParser::markTaskAsDone(Command* command) {
 
 void DetailsParser::editExistingTask(Command* command) {
 	try {
-		if(!DetailsParser::hasIndex()) {
+		if(!hasIndex()) {
 			throw invalid_argument(USERMESSAGE_INVALID_EDIT_NO_INDEX);
-		} else if(!DetailsParser::hasEditedTask()) {
+		} else if(!hasEditedTask()) {
 			throw invalid_argument(USERMESSAGE_INVALID_EDIT_NO_TASK);
 		}
-		DetailsParser::setTaskIndex(command);
-		DetailsParser::removeIndexForEdit();
-		DetailsParser::addNewTask(command);
+		setTaskIndex(command);
+		removeIndexForEdit();
+		addNewTask(command);
 	} catch(const invalid_argument& e) {
 		command->setUserMessage(e.what());
 		command->setParsedStatus(false);
@@ -71,7 +71,7 @@ void DetailsParser::editExistingTask(Command* command) {
 
 void DetailsParser::searchForTask(Command* command) {
 	try {
-		DetailsParser::formatForSearch();
+		formatForSearch();
 		command->setSearchKeyword(_parameters);
 	} catch(const exception&) {
 		command->setParsedStatus(false);
@@ -79,7 +79,7 @@ void DetailsParser::searchForTask(Command* command) {
 }
 
 void DetailsParser::setTaskIndex(Command* command) {
-	assert(DetailsParser::hasIndex());
+	assert(hasIndex());
 	command->setTaskIndex(stoi(_tokens.front()));
 }
 
@@ -88,14 +88,14 @@ void DetailsParser::addTaskTags(Task* task) {
 	_parameters.clear();
 
 	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
-		if(DetailsParser::isTag(*iter)) {
+		if(isTag(*iter)) {
 			taskTags.push_back(*iter);
 		} else {
 			_parameters += *iter + SPACE;
 		}
 	}
-	_parameters = StringModifier::trimWhiteSpace(_parameters);
-	_tokens = StringModifier::tokenizeString(_parameters);
+	_parameters = trimWhiteSpace(_parameters);
+	_tokens = tokenizeString(_parameters);
 	task->setTaskTags(taskTags);
 }
 
@@ -111,16 +111,15 @@ void DetailsParser::addTaskName(Task* task) {
 }
 
 bool DetailsParser::hasIndex() {
-	return StringModifier::isNumber(_tokens.front());
+	return isNumber(_tokens.front());
 }
 
 bool DetailsParser::hasOnlyIndex() {
-	return (StringModifier::isOneWord(_parameters) 
-		&& DetailsParser::hasIndex());
+	return (isOneWord(_parameters) && hasIndex());
 }
 
 bool DetailsParser::hasEditedTask() {
-	return !StringModifier::isOneWord(_parameters);
+	return !isOneWord(_parameters);
 }
 
 bool DetailsParser::isTag(string word) {
@@ -128,22 +127,22 @@ bool DetailsParser::isTag(string word) {
 }
 
 void DetailsParser::removeIndexForEdit() {
-	_parameters = StringModifier::getExceptFirstWord(_parameters);
+	_parameters = getExceptFirstWord(_parameters);
 	_tokens.erase(_tokens.begin());
 }
 
 void DetailsParser::formatForSearch() {
 	string searchWords;
 	string searchTags;
-	_parameters = StringModifier::transformToLowercase(_parameters);
-	_tokens = StringModifier::tokenizeString(_parameters);
+	_parameters = transformToLowercase(_parameters);
+	_tokens = tokenizeString(_parameters);
 	
 	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
-		if(DetailsParser::isTag(*iter)) {
+		if(isTag(*iter)) {
 			searchTags += *iter;
 		} else {
 			searchWords += *iter + SPACE;
 		}
 	}
-	_parameters = StringModifier::trimWhiteSpace(searchWords) + searchTags;
+	_parameters = trimWhiteSpace(searchWords) + searchTags;
 }

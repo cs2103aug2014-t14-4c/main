@@ -10,7 +10,7 @@ bool StringModifier::isOneWord(string text) {
 	if(text.empty()) {
 		return false;
 	}
-	text = StringModifier::trimWhiteSpace(text);
+	text = trimWhiteSpace(text);
 	return (text.find_first_of(WHITESPACE_CHAR) == string::npos);
 }
 
@@ -18,31 +18,31 @@ bool StringModifier::isNumber(string text) {
 	if(text.empty()) {
 		return false;
 	}
-	text = StringModifier::trimWhiteSpace(text);
+	text = trimWhiteSpace(text);
 	return all_of(text.begin(), text.end(), isdigit);
 }
 
 string StringModifier::getFirstWord(string text) {
 	assert(!text.empty());
-	text = StringModifier::trimWhiteSpace(text);
+	text = trimWhiteSpace(text);
 	return text.substr(Zero, text.find_first_of(WHITESPACE_CHAR));
 }
 
 string StringModifier::getExceptFirstWord(string text) {
 	assert(!text.empty());
-	if(StringModifier::isOneWord(text)) {
+	if(isOneWord(text)) {
 		return EMPTY_STRING;
 	}
-	text = StringModifier::trimWhiteSpace(text);
+	text = trimWhiteSpace(text);
 	text = text.substr(text.find_first_of(WHITESPACE_CHAR));
-	return StringModifier::trimWhiteSpace(text);
+	return trimWhiteSpace(text);
 }
 
 string StringModifier::trimWhiteSpace(string text) {
 	if(text.empty()) {
 		return EMPTY_STRING;
 	}
-	return StringModifier::trimLeft(StringModifier::trimRight(text));
+	return trimLeft(trimRight(text));
 }
 
 string StringModifier::transformToLowercase(string text) {
@@ -83,7 +83,7 @@ string StringModifier::detokenizeVector(vector<string> text) {
 			line += *iter + SPACE;
 		}
 	}
-	return StringModifier::trimWhiteSpace(line);
+	return trimWhiteSpace(line);
 }
 
 string StringModifier::trimLeft(string text) {

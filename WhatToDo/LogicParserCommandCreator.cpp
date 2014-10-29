@@ -9,51 +9,50 @@ CommandCreator::~CommandCreator(void) {
 Command* CommandCreator::createCommand(string userInput) {
 	assert(!userInput.empty());
 
-	CommandCreator::setUserInput(userInput);
+	setUserInput(userInput);
 	Command* command = NULL;
 
-	if(CommandCreator::isClearCommand()) {
-		command = CommandCreator::createClearCommand();
-	} else if(CommandCreator::isDeleteCommand()) {
-		command = CommandCreator::createDeleteCommand();	
-	} else if(CommandCreator::isDoneCommand()) {
-		command = CommandCreator::createDoneCommand();
-	} else if(CommandCreator::isEditCommand()) {
-		command = CommandCreator::createEditCommand();
-	} else if(CommandCreator::isLoadCommand()) {
-		command = CommandCreator::createLoadCommand();
-	} else if(CommandCreator::isRedoCommand()) {
-		command = CommandCreator::createRedoCommand();
-	} else if(CommandCreator::isSearchCommand()) {
-		command = CommandCreator::createSearchCommand();
-	} else if(CommandCreator::isUndoCommand()) {
-		command = CommandCreator::createUndoCommand();
+	if(isClearCommand()) {
+		command = createClearCommand();
+	} else if(isDeleteCommand()) {
+		command = createDeleteCommand();	
+	} else if(isDoneCommand()) {
+		command = createDoneCommand();
+	} else if(isEditCommand()) {
+		command = createEditCommand();
+	} else if(isLoadCommand()) {
+		command = createLoadCommand();
+	} else if(isRedoCommand()) {
+		command = createRedoCommand();
+	} else if(isSearchCommand()) {
+		command = createSearchCommand();
+	} else if(isUndoCommand()) {
+		command = createUndoCommand();
 	} else {
-		command = CommandCreator::createAddCommand();
+		command = createAddCommand();
 	}
 	return command;
 }
 
 void CommandCreator::setUserInput(string userInput) {
 	_userInput = userInput;
-	_userCommand = CommandCreator::getUserCommand();
+	_userCommand = getUserCommand();
 }
 
 string CommandCreator::getUserCommand(void) {
-	return StringModifier::transformToLowercase(
-		StringModifier::getFirstWord(_userInput));
+	return transformToLowercase(getFirstWord(_userInput));
 }
 
 string CommandCreator::getParameters(void) {
-	return StringModifier::getExceptFirstWord(_userInput);
+	return getExceptFirstWord(_userInput);
 }
 
 bool CommandCreator::hasParameters(void) {
-	return !StringModifier::isOneWord(_userInput);
+	return !isOneWord(_userInput);
 }
 
 bool CommandCreator::hasNoParameters(void) {
-	return StringModifier::isOneWord(_userInput);
+	return isOneWord(_userInput);
 }
 
 bool CommandCreator::isClearCommand(void) {
@@ -155,7 +154,7 @@ Command* CommandCreator::createAddCommand(void) {
 
 Command* CommandCreator::createClearCommand(void) {
 	Command* clearCommand = new CommandClear;
-	clearCommand->setParsedStatus(CommandCreator::hasNoParameters());
+	clearCommand->setParsedStatus(hasNoParameters());
 
 	if(!clearCommand->getParsedStatus()) {
 		clearCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_CLEAR);
@@ -165,10 +164,10 @@ Command* CommandCreator::createClearCommand(void) {
 
 Command* CommandCreator::createDeleteCommand(void) {
 	Command* deleteCommand = new CommandDelete;
-	deleteCommand->setParsedStatus(CommandCreator::hasParameters());
+	deleteCommand->setParsedStatus(hasParameters());
 
 	if(deleteCommand->getParsedStatus()) {
-		DetailsParser details(CommandCreator::getParameters());
+		DetailsParser details(getParameters());
 		details.deleteExistingTask(deleteCommand);
 	} else {
 		deleteCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_DELETE);
@@ -178,10 +177,10 @@ Command* CommandCreator::createDeleteCommand(void) {
 
 Command* CommandCreator::createDoneCommand(void) {
 	Command* doneCommand = new CommandDone;
-	doneCommand->setParsedStatus(CommandCreator::hasParameters());
+	doneCommand->setParsedStatus(hasParameters());
 
 	if(doneCommand->getParsedStatus()) {
-		DetailsParser details(CommandCreator::getParameters());
+		DetailsParser details(getParameters());
 		details.markTaskAsDone(doneCommand);
 	} else {
 		doneCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_DONE);
@@ -191,10 +190,10 @@ Command* CommandCreator::createDoneCommand(void) {
 
 Command* CommandCreator::createEditCommand(void) {
 	Command* editCommand = new CommandEdit;
-	editCommand->setParsedStatus(CommandCreator::hasParameters());
+	editCommand->setParsedStatus(hasParameters());
 
 	if(editCommand->getParsedStatus()) {
-		DetailsParser details(CommandCreator::getParameters());
+		DetailsParser details(getParameters());
 		details.editExistingTask(editCommand);
 	} else {
 		editCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_EDIT);
@@ -204,7 +203,7 @@ Command* CommandCreator::createEditCommand(void) {
 
 Command* CommandCreator::createLoadCommand(void) {
 	Command* loadCommand = new CommandLoad;
-	loadCommand->setParsedStatus(CommandCreator::hasNoParameters());
+	loadCommand->setParsedStatus(hasNoParameters());
 
 	if(!loadCommand->getParsedStatus()) {
 		loadCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_LOAD);
@@ -214,7 +213,7 @@ Command* CommandCreator::createLoadCommand(void) {
 
 Command* CommandCreator::createRedoCommand(void) {
 	Command* redoCommand = new CommandRedo;
-	redoCommand->setParsedStatus(CommandCreator::hasNoParameters());
+	redoCommand->setParsedStatus(hasNoParameters());
 	
 	if(!redoCommand->getParsedStatus()) {
 		redoCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_CLEAR);
@@ -224,10 +223,10 @@ Command* CommandCreator::createRedoCommand(void) {
 
 Command* CommandCreator::createSearchCommand(void) {
 	Command* searchCommand = new CommandSearch;
-	searchCommand->setParsedStatus(CommandCreator::hasParameters());
+	searchCommand->setParsedStatus(hasParameters());
 
 	if(searchCommand->getParsedStatus()) {
-		DetailsParser details(CommandCreator::getParameters());
+		DetailsParser details(getParameters());
 		details.searchForTask(searchCommand);
 	} else {
 		searchCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_SEARCH);
@@ -237,7 +236,7 @@ Command* CommandCreator::createSearchCommand(void) {
 
 Command* CommandCreator::createUndoCommand(void) {
 	Command* undoCommand = new CommandUndo;
-	undoCommand->setParsedStatus(CommandCreator::hasNoParameters());
+	undoCommand->setParsedStatus(hasNoParameters());
 		
 	if(!undoCommand->getParsedStatus()) {
 		undoCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_CLEAR);
