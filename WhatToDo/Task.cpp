@@ -41,6 +41,10 @@ void Task::setTaskIsDone(){
 	_isDone = true; 
 }
 
+void setTaskIsNotDone(){
+	_isDone = false;
+}
+
 //Getters
 int Task::getTaskType(){
 	if(!_taskStartDateTime.is_not_a_date_time()){

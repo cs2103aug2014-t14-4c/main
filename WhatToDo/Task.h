@@ -42,6 +42,7 @@ class Task{
 		void setTaskTags(vector<string> tagsToSet);
 		void setTaskIndex(int indexToSet);
 		void setTaskIsDone();
+		void setTaskIsNotDone();
 
 		//Getters
 		int getTaskType();
