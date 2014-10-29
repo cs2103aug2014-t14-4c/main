@@ -8,6 +8,14 @@
 
 class Command;
 
+enum Done{
+	ALL, DONE, UNDONE
+};
+
+enum Type{
+	ALL, TODO, AGENDA, FIXED, DUE
+};
+
 class LogicData{
 
 	private:
@@ -16,6 +24,13 @@ class LogicData{
 		static State _initialState;
 		static vector<Command*> _commandHistory;
 		static int _currentCommandHistoryIndex;
+		struct FILTERS{
+			int done;
+			int type;
+			date startDate;
+			date endDate;
+		};
+		static FILTERS _filters;
 
 	public:
 		//Constructor
@@ -24,10 +39,18 @@ class LogicData{
 		//setters
 		static void setCurrentState(State stateToSet);
 		static void setViewState(State stateToSet);
-		
+		static void setFilterDone(int doneness);
+		static void setFilterType(int type);
+		static void setFilterStartDate(date startDateToSet);
+		static void setFilterEndDate(date endDateToSet);
+
 		//getters
 		static State getCurrentState();
 		static State getViewState();
+		static int getFilterDone();
+		static int getFilterType();
+		static date getFilterStartDate();
+		static date getFilterEndDate();
 
 		//operations
 		static void resetCommandHistory();

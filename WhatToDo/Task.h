@@ -11,6 +11,12 @@ using namespace std;
 using namespace boost::posix_time;
 using namespace boost::gregorian;
 
+//FixedTime start-end
+//FixedTime onlystarttime
+//FixedTime onlystartday
+//Deadline floating
+//Deadline withTime
+
 class Task{
 	private:
 		ptime _taskStartDateTime;

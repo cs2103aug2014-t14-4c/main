@@ -8,6 +8,10 @@ int LogicData::_currentCommandHistoryIndex;
 
 LogicData::LogicData(){
 	_currentCommandHistoryIndex = 0;
+	_filters.done = Done::ALL;
+	_filters.type = Type::ALL;
+	_filters.startDate = boost::gregorian::date(neg_infin);
+	_filters.endDate = boost::gregorian::date(pos_infin);
 }
 
 void LogicData::setCurrentState(State stateToSet){
@@ -20,6 +24,22 @@ void LogicData::setViewState(State stateToSet){
 	_viewState = stateToSet;
 }
 
+void LogicData::setFilterDone(int doneness){
+	_filters.done = doneness;
+}
+
+void LogicData::setFilterType(int type){
+	_filters.type = type;
+}
+
+void LogicData::setFilterStartDate(date startDateToSet){
+	_filters.startDate = startDateToSet;
+}
+
+void LogicData::setFilterEndDate(date endDateToSet){
+	_filters.endDate = endDateToSet;
+}
+
 State LogicData::getCurrentState() {
 	return _currentState;
 }
@@ -30,6 +50,22 @@ State LogicData::getViewState() {
 
 vector<Command*> LogicData::getCommandHistory(){
 	return _commandHistory;
+}
+
+int LogicData::getFilterDone(){
+	return _filters.done;
+}
+
+int LogicData::getFilterType(){
+	return _filters.type;
+}
+
+date LogicData::getFilterStartDate(){
+	return _filters.startDate;
+}
+
+date LogicData::getFilterEndDate(){
+	return _filters.endDate;
 }
 
 void LogicData::addCommandToHistory(Command* commandToAdd){
