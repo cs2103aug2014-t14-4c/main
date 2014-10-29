@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "button.h"
 
 
@@ -9,14 +8,14 @@ button::~button(){
 }
 
 void button::init(float x, float y, std::string name, void(*fptr)()){
-	font.loadFromFile("NotoSansHant-Black.otf");
+	font.loadFromFile("Resources/NotoSansHant-Black.otf");
 	showingText.setFont(font);
 	showingText.setString(name);
 	showingText.setCharacterSize(20);
 	showingText.setColor(sf::Color(255, 255, 255, 255));
-	showingText.setPosition(sf::Vector2f(x+2, y+2));
+	showingText.setPosition(sf::Vector2f(x + 2, y + 2));
 
-	rectangle.setSize(sf::Vector2f(12*name.length() + 6, 30.f));
+	rectangle.setSize(sf::Vector2f(12 * name.length() + 6, 30.f));
 	rectangle.setFillColor(sf::Color(0, 0, 0, 190));
 	rectangle.setPosition(sf::Vector2f(x, y));
 	function = fptr;
@@ -48,4 +47,9 @@ bool button::isClickingOn(sf::Vector2f mouse){
 		return true;
 	}
 	return false;
+}
+
+void button::setAlpha(int alpha){
+	showingText.setColor(sf::Color(255, 255, 255, alpha));
+	rectangle.setFillColor(sf::Color(0, 0, 0, alpha));
 }

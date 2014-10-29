@@ -1,8 +1,10 @@
-#include "stdafx.h"
-#include "main.h"
+#include "test.h"
+#include <QtWidgets/QApplication>
 
-int main() {
-	MainWindow window;
-	window.mainLoop();
-	return 0;
+int main(int argc, char *argv[])
+{
+	QApplication a(argc, argv);
+	test w;
+	w.show();
+	return a.exec();
 }
