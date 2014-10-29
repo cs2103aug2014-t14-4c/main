@@ -6,6 +6,8 @@ string CommandFilter::LOGGING_MSG_EXECUTE_COMMAND_FILTER = "\nCommand Filter Ini
 
 
 CommandFilter::CommandFilter(void) {
+	done = Done::NOT_SET;
+	type = Type::NOT_SET;
 }
 
 
@@ -15,32 +17,50 @@ void CommandFilter::execute() {
 	
 	try {
 		checkIsParsedCorrectly();
-		retrieveExistingViewState();
-		checkIsCommandValid();
 		performFilterOperation();
-		setNewViewState();
 	}
 	catch (string errorMsg) {
 		_userMessage = errorMsg;
-		retrieveExistingViewState();
 		addUserMessageToCurrentState();
-		setNewViewState();
 	}
 
 	return;
 }
 
-void CommandFilter::performFilterOperation() {
-
-	// Work on this!
-
-	return;
+void CommandFilter::setDone(int doneFilter) {
+	done = doneFilter;
 }
 
-bool CommandFilter::checkIsCommandValid() {
+void CommandFilter::setType(int typeFilter) {
+	type = typeFilter;
+}
 
-	// Implement this if you want to check if the filter command is valid
-	// if you are not going to use this then please delete it at the end
+void CommandFilter::setStartDate(date startDateFilter) {
+	start = startDateFilter;
+}
 
-	return true;
+void CommandFilter::setEndDate(date endDateFilter) {
+	end = endDateFilter;
+}
+
+void CommandFilter::performFilterOperation() {
+	LogicData logicData;
+
+	if(done != Done::NOT_SET) {
+		logicData.setFilterDone(done);
+	}
+
+	if(type != Done::NOT_SET) {
+		logicData.setFilterType(type);
+	}
+
+	if(!start.is_not_a_date()) {
+		logicData.setFilterStartDate(start);
+	}
+
+	if(!end.is_not_a_date()) {
+		logicData.setFilterEndDate(end);
+	}
+
+	return;
 }

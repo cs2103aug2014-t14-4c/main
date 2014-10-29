@@ -7,17 +7,31 @@ using namespace std;
 using namespace boost::gregorian;
 using namespace boost::posix_time;
 
+enum Done{
+	NOT_SET = -1, ALL, DONE, UNDONE
+};
+
+enum Type{
+	NOT_SET = -1, ALL, TODO, AGENDA, FIXED, DUE
+};
+
 class CommandFilter: public Command {
 	public:
 		CommandFilter(void);
 		void execute();
+		void setDone(int doneFilter);
+		void setType(int typeFilter);
+		void setStartDate(date startDateFilter);
+		void setEndDate(date endDateFilter);
 
 	protected:
-
+		int done;
+		int type;
+		date start;
+		date end;
 		// CommandAdd Functions For Execution
 
 		void performFilterOperation();
-		bool checkIsCommandValid();
 
 		// All Static Constants And Variables
 
