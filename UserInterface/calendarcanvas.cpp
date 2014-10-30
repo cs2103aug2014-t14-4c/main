@@ -73,31 +73,31 @@ void CalendarCanvas::resizedUpdate(){
 	viewTasksCalendarTimeLine.setSize(sf::Vector2f(this->getSize().x, this->getSize().y));
 	viewTasksCalendarTimeLine.setViewport(sf::FloatRect(
 		1 - ((float)(this->getSize().x - 100) / (float)this->getSize().x),
-		1 - ((float)(this->getSize().y - 60) / (float)this->getSize().y),
+		1 - ((float)(this->getSize().y - TOOLBAR_HEIGHT) / (float)this->getSize().y),
 		1.f,
-		((float)(this->getSize().y - 60) / (float)this->getSize().y)));
+		((float)(this->getSize().y - TOOLBAR_HEIGHT) / (float)this->getSize().y)));
 
 	viewTasksCalendarTimeLine.setCenter(sf::Vector2f(this->getSize().x / 2, this->getSize().y / 2));
 
 	viewTasksCalendarDateLine.setSize(sf::Vector2f(this->getSize().x, this->getSize().y));
 	viewTasksCalendarDateLine.setViewport(sf::FloatRect(
 		0,
-		1 - ((float)(this->getSize().y - 60) / (float)this->getSize().y),
+		1 - ((float)(this->getSize().y - TOOLBAR_HEIGHT) / (float)this->getSize().y),
 		1.f,
-		((float)(this->getSize().y - 60) / (float)this->getSize().y)));
+		((float)(this->getSize().y - TOOLBAR_HEIGHT) / (float)this->getSize().y)));
 
 	viewTasksCalendarDateLine.setCenter(sf::Vector2f(this->getSize().x / 2, this->getSize().y / 2));
 
 	viewTasksCalendar.setSize(sf::Vector2f(this->getSize().x, this->getSize().y));
 	viewTasksCalendar.setViewport(sf::FloatRect(
 		1 - ((float)(this->getSize().x - 100) / (float)this->getSize().x),
-		1 - ((float)(this->getSize().y - 60) / (float)this->getSize().y),
+		1 - ((float)(this->getSize().y - TOOLBAR_HEIGHT) / (float)this->getSize().y),
 		1.f,
-		((float)(this->getSize().y - 60) / (float)this->getSize().y)));
+		((float)(this->getSize().y - TOOLBAR_HEIGHT) / (float)this->getSize().y)));
 
 	viewTasksCalendar.setCenter(sf::Vector2f(this->getSize().x / 2, this->getSize().y / 2));
 
-	bg_sprite.setPosition(sf::Vector2f(0, 60));
+	bg_sprite.setPosition(sf::Vector2f(0, TOOLBAR_HEIGHT));
 	bg_sprite.setScale(sf::Vector2f(1, (float)((float)(this->getSize().y - 120) / (float)this->getSize().y)));
 }
 
@@ -127,6 +127,7 @@ void CalendarCanvas::Init(){
 	this->setFramerateLimit(60);
 	b_active = true;
 	jumpToTask(0);
+
 }
 
 void CalendarCanvas::Update(){
@@ -257,7 +258,7 @@ void CalendarCanvas::createEmptyTable(){
 		//horizontal lines
 		horizontalLine[i].setSize(sf::Vector2f(9999.f, 5.f));
 		horizontalLine[i].setFillColor(sf::Color(0, 0, 0, 170));
-		horizontalLine[i].setPosition(-5000, 100 * i);
+		horizontalLine[i].setPosition(-5000, BLOCK_HEIGHT * i);
 		calendarTableHorizontal_vtr.push_back(horizontalLine[i]);
 
 		if (i < 22){
@@ -268,7 +269,7 @@ void CalendarCanvas::createEmptyTable(){
 				+ to_string((today + days(i)).day())
 				+ " "
 				+ month_to_string((today + days(i)).month()));
-			text_date.setPosition(10, 100 * i);
+			text_date.setPosition(10, BLOCK_HEIGHT * i);
 			calendarTableDate_vtr.push_back(text_date);
 		}
 	}

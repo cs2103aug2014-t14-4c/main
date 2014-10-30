@@ -3,6 +3,9 @@
 #include "LogicExecutor.h"
 #include "button.h"
 
+#define POPUP_MINIUM_WIDTH 230
+#define POPUP_HEIGHT 100
+
 class CalendarCanvas;
 
 struct struct_taskpopup_display{

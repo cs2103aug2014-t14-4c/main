@@ -38,9 +38,12 @@ void taskpopup::updateInfo(sf::Vector2f position, string name, ptime start_time,
 	string display_string = name + "\n" + to_simple_string(start_time) + "\n to " + to_simple_string(end_time);
 	taskpopup_display.text_info.setString(display_string);
 
+	int extra_length = (name.size() - 22)*10;
+	if (extra_length < 0) extra_length = 0;
+
 	taskpopup_display.text_info.setPosition(position);
 	taskpopup_display.rectangle.setPosition(position);
-	taskpopup_display.rectangle.setSize(sf::Vector2f(name.size() * 50, 80));
+	taskpopup_display.rectangle.setSize(sf::Vector2f(POPUP_MINIUM_WIDTH + extra_length, POPUP_HEIGHT));
 
 	taskpopup_display.btn_delete.init(position.x + 80, position.y + 80, "Delete", NULL);
 	taskpopup_display.btn_done.init(position.x, position.y + 80, "Done ", NULL);
@@ -49,10 +52,13 @@ void taskpopup::updateInfo(sf::Vector2f position, string name, ptime start_time,
 void taskpopup::updateInfo(sf::Vector2f position, string name, ptime deadline_time){
 	string display_string = name + "\n" + to_simple_string(deadline_time);
 	taskpopup_display.text_info.setString(display_string);
+	
+	int extra_length = (name.size() - 22) * 10;
+	if (extra_length < 0) extra_length = 0;
 
 	taskpopup_display.text_info.setPosition(position);
 	taskpopup_display.rectangle.setPosition(position);
-	taskpopup_display.rectangle.setSize(sf::Vector2f(name.size() * 50, 100));
+	taskpopup_display.rectangle.setSize(sf::Vector2f(POPUP_MINIUM_WIDTH + extra_length, POPUP_HEIGHT));
 }
 
 void taskpopup::setActive(bool active){
@@ -78,6 +84,7 @@ void taskpopup::eventHandler(sf::Vector2f mouse){
 }
 
 void taskpopup::update(){
+	//Fade in/out effect
 	if (taskpopup_display.b_target_active != taskpopup_display.b_active){
 		if (taskpopup_display.b_target_active == true && taskpopup_display.b_active == false){
 			if (taskpopup_display.alpha_value < 255){

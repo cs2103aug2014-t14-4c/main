@@ -9,8 +9,11 @@
 
 using namespace boost::posix_time;
 using namespace boost::gregorian;
+
+#define TOOLBAR_HEIGHT 109.f
 #define BOUNDARY_FACTOR 4
 #define BLOCK_HEIGHT 100.f
+#define BLOCK_HEIGHT_LOW_RES 80.f
 #define VERTICAL_LINE_INTERVAL 80.f
 #define BLOCK_DEFAULT_OUTLINE_COLOUR sf::Color(0, 0, 0, 255)
 #define BLOCK_HIGHLIGHT_OUTLINE_COLOUR sf::Color(100, 100, 100, 55)
@@ -27,7 +30,6 @@ public:
 		:QSFMLCanvas(Parent, Position, Size, 0){}
 	void readFromState(State);		//get state, for any changes in task please call this
 	void jumpToTask(int);			//jumpToTask(0) to closest task, jumpToTask[all_calendar_task_vtr.size()-1] to latest task
-
 private:
     void Init();					//called when object is created
     void Update();					//called in update loop
