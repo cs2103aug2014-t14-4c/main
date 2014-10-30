@@ -6,8 +6,6 @@ string CommandFilter::LOGGING_MSG_EXECUTE_COMMAND_FILTER = "\nCommand Filter Ini
 
 
 CommandFilter::CommandFilter(void) {
-	done = Done::NOT_SET;
-	type = Type::NOT_SET;
 }
 
 
@@ -27,39 +25,17 @@ void CommandFilter::execute() {
 	return;
 }
 
-void CommandFilter::setDone(int doneFilter) {
-	done = doneFilter;
-}
-
-void CommandFilter::setType(int typeFilter) {
-	type = typeFilter;
-}
-
-void CommandFilter::setStartDate(date startDateFilter) {
-	start = startDateFilter;
-}
-
-void CommandFilter::setEndDate(date endDateFilter) {
-	end = endDateFilter;
-}
-
 void CommandFilter::performFilterOperation() {
 	LogicData logicData;
-
-	if(done != Done::NOT_SET) {
-		logicData.setFilterDone(done);
+	
+	if(_doneFilter != Done::DONE_NOT_SET) {
+		logicData.setDoneFilter(_doneFilter);
 	}
-
-	if(type != Done::NOT_SET) {
-		logicData.setFilterType(type);
+	if(_typeFilter != Type::TYPE_NOT_SET) {
+		logicData.setTypeFilter(_typeFilter);
 	}
-
-	if(!start.is_not_a_date()) {
-		logicData.setFilterStartDate(start);
-	}
-
-	if(!end.is_not_a_date()) {
-		logicData.setFilterEndDate(end);
+	if(!_startDateFilter.is_not_a_date() && !_endDateFilter.is_not_a_date()) {
+		logicData.setDateFilter(_startDateFilter, _endDateFilter);
 	}
 
 	return;
