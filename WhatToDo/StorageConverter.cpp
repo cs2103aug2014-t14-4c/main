@@ -98,7 +98,6 @@ Task StorageConverter::convertStringToTask(vector<string> stringToConvert) {
 string StorageConverter::convertTaskBoolToString(bool boolToConvert){
 	stringstream converter; 
 	converter << boolToConvert;
-	
 
 	return converter.str();
 }
@@ -140,6 +139,7 @@ vector<string> StorageConverter::convertTaskTagStringToVector(string tagString){
 	//pass in the string to a iss object
 	//read individual substr delimited by whitespace
 	//push into the tagVector
+	assert(&tagString!=NULL);
 	istringstream tagStringStream(tagString); 
 	string individualTag; 
 	vector<string> tagVector;

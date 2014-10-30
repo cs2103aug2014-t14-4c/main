@@ -11,6 +11,7 @@ class StorageDatabase{
 		vector<vector<string>> stringToRead; 
 		vector<string> individualReadFile;
 		static const int noOfTaskAttributes; 
+
 	
 	public:
 		static int START;
@@ -23,7 +24,8 @@ class StorageDatabase{
 		
 		//secondary supporting functions
 		vector<string> readFromDataBaseIndividualTaskString();
-		void StorageDatabase::writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, ofstream writeFile, vector<vector<string>> taskStringToWrite);
+		void writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, ofstream& writeFile, vector<vector<string>> taskStringToWrite);
+		void readIndividualFileFromDatabase(ifstream& readFile, string myText);
 };
 
 
