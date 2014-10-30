@@ -10,6 +10,16 @@
 #include "LogicData.h"
 
 using namespace std;
+using namespace boost::posix_time;
+using namespace boost::gregorian;
+
+enum Done{
+	DONE_NOT_SET = -1, DONE_BOTH, ONLY_DONE, ONLY_UNDONE
+};
+
+enum Type{
+	TYPE_NOT_SET = -1, ALL_TYPES, ONLY_FIXED, ONLY_DUE
+};
 
 class Command {
 	public:
@@ -23,14 +33,21 @@ class Command {
 		string getSearchKeyword();
 		string getUserMessage();
 		Task getCurrentTask();
+		int getDoneFilter(void);
+		int getTypeFilter(void);
+		date getStartDateFilter(void);
+		date getEndDateFilter(void);
 		
 		// All Setter Functions
-
 		void setTaskIndex(int commandTaskIndexToSet);
 		void setParsedStatus(bool parsedStatus);
 		void setSearchKeyword(string searchKeywordToSet);
 		void setUserMessage(string userMessageToSet);
 		void setCurrentTask(Task currentTaskToSet);
+		void setDoneFilter(int doneFilter);
+		void setTypeFilter(int typeFilter);
+		void setStartDateFilter(date startDateFilter);
+		void setEndDateFilter(date endDateFilter);
 
 	protected:
 
@@ -43,7 +60,11 @@ class Command {
 		string _userMessage;
 		Task* _currentTask;
 		State* _currentState;
-
+		
+		int _doneFilter;
+		int _typeFilter;
+		date _startDateFilter;
+		date _endDateFilter;
 		// Command Attributes For Logging
 
 		string _logFileName;

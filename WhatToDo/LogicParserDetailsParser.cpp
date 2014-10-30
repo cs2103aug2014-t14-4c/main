@@ -67,7 +67,20 @@ void DetailsParser::editExistingTask(Command* command) {
 		command->setUserMessage(e.what());
 		command->setParsedStatus(false);
 	}
-}	
+}
+
+void DetailsParser::filterExistingTasks(Command* command) {
+	try {
+		_parameters = transformToLowercase(_parameters);
+		_tokens = tokenizeString(_parameters);
+		parseDoneFilter(command);
+		parseTypeFilter(command);
+		parseDateFilter(command);
+	} catch(const invalid_argument& e) {
+		command->setUserMessage(e.what());
+		command->setParsedStatus(false);
+	}
+}
 
 void DetailsParser::searchForTask(Command* command) {
 	try {
@@ -110,6 +123,53 @@ void DetailsParser::addTaskName(Task* task) {
 	}
 }
 
+void DetailsParser::parseDoneFilter(Command* command) {
+	try {
+		if(foundDone()) {
+			command->setDoneFilter(Done::ONLY_DONE);
+		} else if(foundUndone()) {
+			command->setDoneFilter(Done::ONLY_UNDONE);
+		} else if(foundNoDone()) {
+			command->setDoneFilter(Done::DONE_BOTH);
+		}
+	} catch(const invalid_argument&) {
+		throw;
+	}
+}
+
+void DetailsParser::parseTypeFilter(Command* command) {
+	try {
+		if(foundFixed()) {
+			command->setTypeFilter(Type::ONLY_FIXED);
+		} else if(foundDue()) {
+			command->setTypeFilter(Type::ONLY_DUE);
+		} else if(foundNoType()) {
+			command->setTypeFilter(Type::TYPE_NOT_SET);
+		}
+	} catch(const invalid_argument&) {
+		throw;
+	}
+}
+
+void DetailsParser::parseDateFilter(Command* command) {
+	try {
+		if(foundNoDate()) {
+			date positiveInfinity(pos_infin);
+			date negativeInfinity(neg_infin);
+			command->setStartDateFilter(positiveInfinity);
+			command->setEndDateFilter(negativeInfinity);
+		} else {
+			DatetimeParser datetime;
+			datetime.addFilterDate(command, _parameters);
+		}
+	} catch(const invalid_argument&) {
+		throw;
+	} catch(const out_of_range& e) {
+		command->setUserMessage(e.what());
+		command->setParsedStatus(false);
+	}
+}
+
 bool DetailsParser::hasIndex() {
 	return isNumber(_tokens.front());
 }
@@ -124,6 +184,69 @@ bool DetailsParser::hasEditedTask() {
 
 bool DetailsParser::isTag(string word) {
 	return (word.find_first_of(IDENTIFIER_TAG) == Zero);
+}
+
+bool DetailsParser::foundDone(void) {
+	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
+		if(*iter == FILTER_DONE_DONE) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool DetailsParser::foundUndone(void) {
+	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
+		if(*iter == FILTER_DONE_UNDONE) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool DetailsParser::foundNoDone(void) {
+	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
+		if(*iter == FILTER_DONE_BOTH) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool DetailsParser::foundFixed(void) {
+	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
+		if(*iter == FILTER_TYPE_FIXED) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool DetailsParser::foundDue(void) {
+	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
+		if(*iter == FILTER_TYPE_DUE) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool DetailsParser::foundNoType(void) {
+	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
+		if(*iter == FILTER_TYPE_ALL) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool DetailsParser::foundNoDate(void) {
+	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
+		if(*iter == FILTER_DATE_NONE) {
+			return true;
+		}
+	}
+	return false;
 }
 
 void DetailsParser::removeIndexForEdit() {

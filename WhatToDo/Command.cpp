@@ -34,6 +34,8 @@ Command::Command(void) {
 	_userMessage = INITIAL_VALUE_USER_MESSAGE;
 	_currentTask = INITIAL_VALUE_CURRENT_TASK;
 	_currentState = INITIAL_VALUE_CURRENT_STATE;
+	_doneFilter = Done::DONE_NOT_SET;
+	_typeFilter = Type::TYPE_NOT_SET;
 	_logFileName = INITIAL_VALUE_LOG_FILE_NAME;
 	_loggingModeOn = INITIAL_VALUE_LOGGING_MODE_ON;
 }
@@ -62,6 +64,22 @@ string Command::getUserMessage() {
 	return _userMessage;
 }
 
+int Command::getDoneFilter(void) {
+	return _doneFilter;
+}
+
+int Command::getTypeFilter(void) {
+	return _typeFilter;
+}
+
+date Command::getStartDateFilter(void) {
+	return _startDateFilter;
+}
+
+date Command::getEndDateFilter(void) {
+	return _endDateFilter;
+}
+
 void Command::setTaskIndex(int commandTaskIndexToSet) {
 	_commandTaskIndex = commandTaskIndexToSet;
 	return;
@@ -86,6 +104,22 @@ void Command::setCurrentTask(Task currentTaskToSet) {
 void Command::setUserMessage(string userMessageToSet) {
 	_userMessage = userMessageToSet;
 	return;
+}
+
+void Command::setDoneFilter(int doneFilter) {
+	_doneFilter = doneFilter;
+}
+
+void Command::setTypeFilter(int typeFilter) {
+	_typeFilter = typeFilter;
+}
+
+void Command::setStartDateFilter(date startDateFilter) {
+	_startDateFilter = startDateFilter;
+}
+
+void Command::setEndDateFilter(date endDateFilter) {
+	_endDateFilter = endDateFilter;
 }
 
 bool Command::checkIsParsedCorrectly() {

@@ -121,6 +121,7 @@ public:
 	~DatetimeParser(void);
 
 	void addTaskDatetime(Task* task, string& parameters);
+	void addFilterDate(Command* command, string& parameters);
 
 private:
 	vector<string> _parameters;
@@ -138,6 +139,7 @@ private:
 	void setParameters(string parameters);
 	string getParameters(void);
 	void setFoundDatetime(Task* task);
+	void setFilterDatetime(Command* command);
 	void eraseWord(vector<string>::iterator& iter);
 
 	void addDate(vector<string>::iterator iter, 

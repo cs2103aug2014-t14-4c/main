@@ -20,6 +20,8 @@ Command* CommandCreator::createCommand(string userInput) {
 		command = createDoneCommand();
 	} else if(isEditCommand()) {
 		command = createEditCommand();
+	} else if(isFilterCommand()) {
+		command = createFilterCommand();
 	} else if(isLoadCommand()) {
 		command = createLoadCommand();
 	} else if(isRedoCommand()) {
@@ -218,7 +220,7 @@ Command* CommandCreator::createFilterCommand(void) {
 
 	if(filterCommand->getParsedStatus()) {
 		DetailsParser details(getParameters());
-		details.editExistingTask(filterCommand);
+		details.filterExistingTasks(filterCommand);
 	} else {
 		filterCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_FILTER);
 	}

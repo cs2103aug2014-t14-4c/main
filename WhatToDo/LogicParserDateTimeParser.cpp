@@ -27,6 +27,19 @@ void DatetimeParser::addTaskDatetime(Task* task, string& parameters) {
 	}
 }
 
+void DatetimeParser::addFilterDate(Command* command, string& parameters) {
+	try{
+		setParameters(parameters);
+
+		addEndWithIdentifier();
+		addStartWithoutIdentifier();
+
+		setFilterDatetime(command);
+	} catch(const out_of_range&) {
+		throw;
+	}
+}
+
 void DatetimeParser::setParameters(string parameters) {
 	_parameters = tokenizeString(parameters);
 }
@@ -39,6 +52,16 @@ void DatetimeParser::setFoundDatetime(Task* task) {
 	task->setTaskStartTime(_startDatetime);
 	task->setTaskEndTime(_endDatetime);
 	task->setTaskDeadline(_deadlineDatetime);
+}
+
+void DatetimeParser::setFilterDatetime(Command* command) {
+	command->setStartDateFilter(_startDate);
+	if(hasEndDate()) {
+		command->setEndDateFilter(_endDate);
+	} else {
+		date positiveInfinity(pos_infin);
+		command->setEndDateFilter(positiveInfinity);
+	}
 }
 
 void DatetimeParser::eraseWord(vector<string>::iterator& iter) {
