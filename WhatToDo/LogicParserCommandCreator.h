@@ -29,6 +29,7 @@
 #include "CommandDone.h"
 #include "CommandClear.h"
 #include "CommandEdit.h"
+#include "CommandFilter.h"
 #include "CommandLoad.h"
 #include "CommandRedo.h"
 #include "CommandSearch.h"
@@ -39,18 +40,20 @@ using namespace std;
 
 const array<string, 2> COMMANDS_CLEAR = 
 	{"/clear", "/c"};
-const array<string, 2> COMMANDS_DELETE = 
-	{"/delete", "/d"};
+const array<string, 3> COMMANDS_DELETE = 
+	{"/delete", "/del", "/d"};
 const array<string, 2> COMMANDS_DONE = 
-	{"/done, /k"};
-const array<string, 2> COMMANDS_EDIT = 
-	{"/edit", "/e"};
+	{"/done", "/k"};
+const array<string, 3> COMMANDS_EDIT = 
+	{"/edit", "/ed", "/e"};
+const array<string, 2> COMMANDS_FILTER =
+	{"/filter", "/f"};
 const array<string, 1> COMMANDS_LOAD = 
 	{"/load"};
 const array<string, 2> COMMANDS_REDO = 
 	{"/redo", "/r"};
-const array<string, 2> COMMANDS_SEARCH = 
-	{"/search", "/s"};
+const array<string, 3> COMMANDS_SEARCH = 
+	{"/search", "/find", "/s"};
 const array<string, 2> COMMANDS_UNDO = 
 	{"/undo", "/u"};
 
@@ -62,6 +65,8 @@ const string USERMESSAGE_INVALID_COMMAND_DONE =
 	"Type /done <index> to mark the task at <index> as done.";
 const string USERMESSAGE_INVALID_COMMAND_EDIT =
 	"Type /edit <index> <edited task> to edit the task at <index>.";
+const string USERMESSAGE_INVALID_COMMAND_FILTER = 
+	"Type /filter <option> to filter tasks by the option specified.";
 const string USERMESSAGE_INVALID_COMMAND_LOAD = 
 	"/load is a system command and should not be used.";
 const string USERMESSAGE_INVALID_COMMAND_REDO =
@@ -95,6 +100,7 @@ private:
 	bool isDeleteCommand(void);
 	bool isDoneCommand(void);
 	bool isEditCommand(void);
+	bool isFilterCommand(void);
 	bool isLoadCommand(void);
 	bool isRedoCommand(void);
 	bool isSearchCommand(void);
@@ -108,6 +114,7 @@ private:
 	Command* createDeleteCommand(void);
 	Command* createDoneCommand(void);
 	Command* createEditCommand(void);
+	Command* createFilterCommand(void);
 	Command* createLoadCommand(void);
 	Command* createRedoCommand(void);
 	Command* createSearchCommand(void);

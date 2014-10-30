@@ -99,6 +99,17 @@ bool CommandCreator::isEditCommand(void) {
 	return false;
 }
 
+bool CommandCreator::isFilterCommand(void) {
+	for(auto iter = COMMANDS_FILTER.begin();
+			iter != COMMANDS_FILTER.end();
+			++iter) {
+		if(_userCommand == *iter) {
+			return true;
+		}
+	}
+	return false;
+}
+
 bool CommandCreator::isLoadCommand(void) {
 	for(auto iter = COMMANDS_LOAD.begin(); 
 			iter != COMMANDS_LOAD.end(); 
@@ -199,6 +210,19 @@ Command* CommandCreator::createEditCommand(void) {
 		editCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_EDIT);
 	}
 	return editCommand;
+}
+
+Command* CommandCreator::createFilterCommand(void) {
+	Command* filterCommand = new CommandFilter;
+	filterCommand->setParsedStatus(hasParameters());
+
+	if(filterCommand->getParsedStatus()) {
+		DetailsParser details(getParameters());
+		details.editExistingTask(filterCommand);
+	} else {
+		filterCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_FILTER);
+	}
+	return filterCommand;
 }
 
 Command* CommandCreator::createLoadCommand(void) {
