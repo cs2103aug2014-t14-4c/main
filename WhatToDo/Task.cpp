@@ -95,6 +95,18 @@ bool Task::getTaskIsDone(){
 	return _isDone;
 }
 
+bool Task::hasStartTime() {
+	return !(_taskStartDateTime == not_a_date_time);
+}
+
+bool Task::hasEndTime() {
+	return !(_taskEndDateTime == not_a_date_time);
+}
+
+bool Task::hasDeadline() {
+	return !(_taskDeadline == not_a_date_time);
+}
+
 bool Task::isTaskOverlapWith(Task myTask){
 	bool isOverlap = false;
 

@@ -58,6 +58,9 @@ class LogicData{
 		static void setCommandHistoryIndex(int indexToSet);
 		static void fakeinitiate(State fakestate);
 		static State filterTasks();
+		static bool passDoneFilter(Task task);
+		static bool passTypeFilter(Task task);
+		static bool passDateFilter(Task task);
 };
 
 #endif

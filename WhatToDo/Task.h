@@ -58,6 +58,9 @@ class Task{
 
 
 		//Operations
+		bool hasStartTime();
+		bool hasEndTime();
+		bool hasDeadline();
 		bool isTaskOverlapWith(Task myTask);
 		bool isEarlierThan(Task myTask);
 

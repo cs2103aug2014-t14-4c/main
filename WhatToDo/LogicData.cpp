@@ -8,7 +8,7 @@ int LogicData::_currentCommandHistoryIndex;
 
 LogicData::LogicData(){
 	_currentCommandHistoryIndex = 0;
-	_doneFilter = Done::DONE_BOTH;
+	_doneFilter = Done::ONLY_UNDONE;
 	_typeFilter = Type::ALL_TYPES;
 	_startDateFilter = boost::gregorian::date(neg_infin);
 	_endDateFilter = boost::gregorian::date(pos_infin);
@@ -106,6 +106,51 @@ void LogicData::fakeinitiate(State fakestate) {
 }
 
 State LogicData::filterTasks() {
-	State filteredViewState;
+	State filteredViewState = _viewState;
+	vector<Task> unfilteredTasks = _viewState.getAllTasks();
+	vector<Task> filteredTasks;
+	for(auto iter = unfilteredTasks.begin(); iter != unfilteredTasks.end(); ++iter) {
+		if(passDoneFilter(*iter) && passTypeFilter(*iter) && passDateFilter(*iter)) {
+			filteredTasks.push_back(*iter);
+		}
+	}	
+	filteredViewState.setAllTasks(filteredTasks);
+	}
+	return filteredViewState;
+}
 
+bool LogicData::passDoneFilter(Task task) {
+	switch(_doneFilter) {
+		case(Done::DONE_BOTH) :
+			return true;
+		case(Done::ONLY_DONE) :
+			return task.getTaskIsDone();
+		case(Done::ONLY_UNDONE) :
+			return !task.getTaskIsDone();
+	}
+}
+
+bool LogicData::passTypeFilter(Task task) {
+	switch(_typeFilter) {
+		case(Type::ALL_TYPES) :
+			return true;
+		case(Done::ONLY_FIXED) :
+			return !task.hasDeadline();
+		case(Done::ONLY_DUE) :
+			return task.hasDeadline() || !task.hasStartTime();
+	}
+}
+
+bool LogicData::passDateFilter(Task task) {
+	if(!task.hasStartTime() && !task.hasDeadline()) {
+		return true;
+	} else if(task.hasDeadline()) {
+		return (task.getTaskDeadline().date() >= _startDateFilter);
+	} else if(task.hasStartTime() && task.hasEndTime()) {
+		return ((task.getTaskStartTime().date() >= _startDateFilter)
+			&& (task.getTaskEndTime().date() <= _endDateFilter));
+	} else if(task.hasStartTime() && !task.hasEndTime()) {
+		return (task.getTaskStartTime().date() >= _startDateFilter);
+	}
+	return false;
 }
