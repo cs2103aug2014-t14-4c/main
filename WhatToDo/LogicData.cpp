@@ -8,10 +8,10 @@ int LogicData::_currentCommandHistoryIndex;
 
 LogicData::LogicData(){
 	_currentCommandHistoryIndex = 0;
-	_filters.done = Done::ALL;
-	_filters.type = Type::ALL;
-	_filters.startDate = boost::gregorian::date(neg_infin);
-	_filters.endDate = boost::gregorian::date(pos_infin);
+	_doneFilter = Done::DONE_BOTH;
+	_typeFilter = Type::ALL_TYPES;
+	_startDateFilter = boost::gregorian::date(neg_infin);
+	_endDateFilter = boost::gregorian::date(pos_infin);
 }
 
 void LogicData::setCurrentState(State stateToSet){
@@ -24,20 +24,17 @@ void LogicData::setViewState(State stateToSet){
 	_viewState = stateToSet;
 }
 
-void LogicData::setFilterDone(int doneness){
-	_filters.done = doneness;
+void LogicData::setDoneFilter(int doneFilter){
+	_doneFilter = doneFilter;
 }
 
-void LogicData::setFilterType(int type){
-	_filters.type = type;
+void LogicData::setTypeFilter(int typeFilter){
+	_typeFilter = typeFilter;
 }
 
-void LogicData::setFilterStartDate(date startDateToSet){
-	_filters.startDate = startDateToSet;
-}
-
-void LogicData::setFilterEndDate(date endDateToSet){
-	_filters.endDate = endDateToSet;
+void LogicData::setDateFilter(date startDateFilter, date endDateFilter){
+	_startDateFilter = startDateFilter;
+	_endDateFilter = endDateFilter;
 }
 
 State LogicData::getCurrentState() {
@@ -52,20 +49,20 @@ vector<Command*> LogicData::getCommandHistory(){
 	return _commandHistory;
 }
 
-int LogicData::getFilterDone(){
-	return _filters.done;
+int LogicData::getDoneFilter(){
+	return _doneFilter;
 }
 
-int LogicData::getFilterType(){
-	return _filters.type;
+int LogicData::getTypeFilter(){
+	return _typeFilter;
 }
 
-date LogicData::getFilterStartDate(){
-	return _filters.startDate;
+date LogicData::getStartDateFilter(){
+	return _startDateFilter;
 }
 
-date LogicData::getFilterEndDate(){
-	return _filters.endDate;
+date LogicData::getEndDateFilter(){
+	return _endDateFilter;
 }
 
 void LogicData::addCommandToHistory(Command* commandToAdd){
@@ -105,5 +102,10 @@ void LogicData::fakeinitiate(State fakestate) {
 	_initialState = fakestate;
 	_currentState = _initialState;
 	_viewState = _initialState;
+
+}
+
+State LogicData::filterTasks() {
+	State filteredViewState;
 
 }
