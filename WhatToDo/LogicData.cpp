@@ -46,7 +46,7 @@ State LogicData::getCurrentState() {
 }
 
 State LogicData::getViewState() {
-	return _viewState;
+	return filterTasks();
 }
 
 vector<Command*> LogicData::getCommandHistory(){
