@@ -41,7 +41,7 @@ void Task::setTaskIsDone(){
 	_isDone = true; 
 }
 
-void setTaskIsNotDone(){
+void Task::setTaskIsNotDone(){
 	_isDone = false;
 }
 

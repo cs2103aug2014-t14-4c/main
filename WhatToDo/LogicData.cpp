@@ -5,6 +5,10 @@ State LogicData::_viewState;
 State LogicData::_initialState;
 vector<Command*> LogicData::_commandHistory;
 int LogicData::_currentCommandHistoryIndex;
+int LogicData::_doneFilter;
+int LogicData::_typeFilter;
+date LogicData::_startDateFilter;
+date LogicData::_endDateFilter;
 
 LogicData::LogicData(){
 	_currentCommandHistoryIndex = 0;
@@ -115,7 +119,6 @@ State LogicData::filterTasks() {
 		}
 	}	
 	filteredViewState.setAllTasks(filteredTasks);
-	}
 	return filteredViewState;
 }
 
@@ -134,9 +137,9 @@ bool LogicData::passTypeFilter(Task task) {
 	switch(_typeFilter) {
 		case(Type::ALL_TYPES) :
 			return true;
-		case(Done::ONLY_FIXED) :
+		case(Type::ONLY_FIXED) :
 			return !task.hasDeadline();
-		case(Done::ONLY_DUE) :
+		case(Type::ONLY_DUE) :
 			return task.hasDeadline() || !task.hasStartTime();
 	}
 }

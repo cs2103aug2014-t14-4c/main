@@ -13,14 +13,6 @@ using namespace std;
 using namespace boost::posix_time;
 using namespace boost::gregorian;
 
-enum Done{
-	DONE_NOT_SET = -1, DONE_BOTH, ONLY_DONE, ONLY_UNDONE
-};
-
-enum Type{
-	TYPE_NOT_SET = -1, ALL_TYPES, ONLY_FIXED, ONLY_DUE
-};
-
 class Command {
 	public:
 		Command(void);
