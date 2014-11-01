@@ -14,10 +14,13 @@ class CommandEdit: public CommandAdd {
 		// CommandEdit Functions For Execution
 
 		void deleteExistingTask();
+		void setEditActionMessage();
+		void performAddOperation();
 
 		// All Static Constants And Variables
 
 		static string LOGGING_MSG_EXECUTE_COMMAND_EDIT;
 		static string LOGGING_MSG_DELETE_EXISTING_TASK;
+		static string ACTION_MSG_EDIT;
 };
 

@@ -4,6 +4,7 @@
 
 string CommandEdit::LOGGING_MSG_EXECUTE_COMMAND_EDIT = "\nCommand Edit Initiated:\n";
 string CommandEdit::LOGGING_MSG_DELETE_EXISTING_TASK = "Function called: deleteExistingTask(): _commandTaskIndex deleted: %s\n";
+string CommandEdit::ACTION_MSG_EDIT = "Task Edited!";
 
 
 CommandEdit::CommandEdit(void) {
@@ -22,6 +23,8 @@ void CommandEdit::execute() {
 		deleteExistingTask();
 		performAddOperation();
 		addThisCommandToHistory(this);
+		setEditActionMessage();
+		addActionMessageToCurrentState();
 		setNewCurrentState();
 		setNewViewState();
 	}
@@ -39,5 +42,18 @@ void CommandEdit::deleteExistingTask() {
 	_currentState->deleteTask(_commandTaskIndex);
 	sprintf_s(buffer, LOGGING_MSG_DELETE_EXISTING_TASK.c_str(), to_string(_commandTaskIndex).c_str());
 	log(buffer);
+	return;
+}
+
+void CommandEdit::performAddOperation() {
+	_currentState->addTask(*_currentTask, _commandTaskIndex);
+	_actionMessage = ACTION_MSG_ADDED;
+	sprintf_s(buffer, LOGGING_MSG_PERFORM_ADD.c_str());
+	log(buffer);
+	return;
+}
+
+void CommandEdit::setEditActionMessage() {
+	_actionMessage = ACTION_MSG_EDIT;
 	return;
 }

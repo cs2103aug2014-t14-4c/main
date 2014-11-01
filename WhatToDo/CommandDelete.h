@@ -19,5 +19,6 @@ class CommandDelete: public Command {
 
 		static string LOGGING_MSG_EXECUTE_COMMAND_DELETE;
 		static string LOGGING_MSG_PERFORM_DELETE;
+		static string ACTION_MSG_DELETED;
 };
 

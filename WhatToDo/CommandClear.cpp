@@ -15,6 +15,7 @@ void CommandClear::execute() {
 	try {
 		checkIsParsedCorrectly();
 		retrieveExistingCurrentState();
+		_currentState->setLastActionType(State::NONE);
 		setNewViewState();
 	}
 	catch (string errorMsg) {

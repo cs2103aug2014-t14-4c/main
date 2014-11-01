@@ -17,6 +17,9 @@ void CommandLoad::execute() {
 	try {
 		checkIsParsedCorrectly();
 		loadLogicDataSettings();
+		retrieveExistingViewState();
+		_currentState->setLastActionType(State::NONE);
+		setNewViewState();
 	}
 	catch (string errorMsg) {
 		_userMessage = errorMsg;

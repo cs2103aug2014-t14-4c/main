@@ -47,13 +47,29 @@ void Task::setTaskIsNotDone(){
 
 //Getters
 int Task::getTaskType(){
-	if(!_taskStartDateTime.is_not_a_date_time()){
-		return FIXEDTIME;
-	} else if(!_taskDeadline.is_not_a_date_time()){
-		return DEADLINE;
-	} else {
+	if ((_taskStartDateTime == not_a_date_time) && (_taskDeadline == not_a_date_time)) {
 		return FLOATING;
 	}
+	else if (_taskDeadline != not_a_date_time) {
+		if (_taskDeadline.time_of_day().seconds() == 1) {
+			return DEADLINE_ALLDAY;
+		}
+		else {
+			return DEADLINE_TIME;
+		}
+	}
+	else if (_taskStartDateTime != not_a_date_time) {
+		if (_taskEndDateTime != not_a_date_time) {
+			return FIXED_TIME;
+		}
+		else if (_taskStartDateTime.time_of_day().seconds() == 1) {
+			return FIXED_ALLDAY;
+		}
+		else {
+			return FIXED_START;
+		}
+	}
+	return FLOATING;
 }
 
 int Task::getTaskIndex(){
@@ -128,4 +144,82 @@ bool Task::isEarlierThan(Task myTask){
 		isEarlier = true;
 	}
 	return isEarlier;
+}
+
+bool Task::isTaskSortedBefore(Task firstTask, Task secondTask) {
+	if ((firstTask.getTaskType() == FLOATING) && (secondTask.getTaskType() == FLOATING)) {
+		return firstTask.getTaskIndex() < secondTask.getTaskIndex();
+	}
+	else if (firstTask.getTaskType() == FLOATING) {
+		return true;
+	}
+	else if (secondTask.getTaskType() == FLOATING) {
+		return false;
+	}
+
+	ptime firstTaskTime;
+	ptime secondTaskTime;
+
+	if (firstTask.getTaskDeadline() != not_a_date_time) {
+		firstTaskTime = firstTask.getTaskDeadline();
+	}
+	else {
+		firstTaskTime = firstTask.getTaskStartTime();
+	}
+
+	if (secondTask.getTaskDeadline() != not_a_date_time) {
+		secondTaskTime = secondTask.getTaskDeadline();
+	}
+	else {
+		secondTaskTime = secondTask.getTaskStartTime();
+	}
+
+	if (firstTaskTime.date() < secondTaskTime.date()) {
+		return true;
+	}
+	else if (firstTaskTime.date() > secondTaskTime.date()) {
+		return false;
+	}
+	else {
+		
+		if ((firstTask.getTaskType() == DEADLINE_ALLDAY) && (secondTask.getTaskType() == DEADLINE_ALLDAY)) {
+			return firstTask.getTaskIndex() < secondTask.getTaskIndex();
+		}
+		else if (firstTask.getTaskType() == DEADLINE_ALLDAY) {
+			return true;
+		}
+		else if (secondTask.getTaskType() == DEADLINE_ALLDAY) {
+			return false;
+		}
+
+		if ((firstTask.getTaskType() == DEADLINE_TIME) && (secondTask.getTaskType() == DEADLINE_TIME)) {
+			return firstTaskTime < secondTaskTime;
+		}
+		else if (firstTask.getTaskType() == DEADLINE_TIME) {
+			return true;
+		}
+		else if (secondTask.getTaskType() == DEADLINE_TIME) {
+			return false;
+		}
+
+		if ((firstTask.getTaskType() == FIXED_ALLDAY) && (secondTask.getTaskType() == FIXED_ALLDAY)) {
+			return firstTask.getTaskIndex() < secondTask.getTaskIndex();
+		}
+		else if (firstTask.getTaskType() == FIXED_ALLDAY) {
+			return true;
+		}
+		else if (secondTask.getTaskType() == FIXED_ALLDAY) {
+			return false;
+		}
+
+		if (firstTaskTime == secondTaskTime) {
+			return firstTask.getTaskIndex() < secondTask.getTaskIndex();
+		}
+		else {
+			firstTaskTime < secondTaskTime;
+		}
+
+		return true;
+	}
+
 }

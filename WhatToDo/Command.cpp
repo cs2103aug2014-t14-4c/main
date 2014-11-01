@@ -10,6 +10,7 @@ bool Command::INITIAL_VALUE_IS_COMMAND_VALID = true;
 bool Command::INITIAL_VALUE_LOGGING_MODE_ON = false;
 string Command::INITIAL_VALUE_SEARCH_KEYWORD = "";
 string Command::INITIAL_VALUE_USER_MESSAGE = "";
+string Command::INITIAL_VALUE_ACTION_MESSAGE = "";
 string Command::INITIAL_VALUE_LOG_FILE_NAME = "CommandLog.txt";
 Task* Command::INITIAL_VALUE_CURRENT_TASK = NULL;
 State* Command::INITIAL_VALUE_CURRENT_STATE = NULL;
@@ -32,12 +33,13 @@ Command::Command(void) {
 	_isParsedCorrectly = INITIAL_VALUE_IS_PARSED_CORRECTLY;
 	_searchKeyword = INITIAL_VALUE_SEARCH_KEYWORD;
 	_userMessage = INITIAL_VALUE_USER_MESSAGE;
+	_actionMessage = INITIAL_VALUE_ACTION_MESSAGE;
 	_currentTask = INITIAL_VALUE_CURRENT_TASK;
 	_currentState = INITIAL_VALUE_CURRENT_STATE;
-	_doneFilter = Done::DONE_NOT_SET;
-	_typeFilter = Type::TYPE_NOT_SET;
 	_logFileName = INITIAL_VALUE_LOG_FILE_NAME;
 	_loggingModeOn = INITIAL_VALUE_LOGGING_MODE_ON;
+	_doneFilter = Done::DONE_NOT_SET;
+	_typeFilter = Type::TYPE_NOT_SET;
 }
 
 void Command::execute() {
@@ -173,6 +175,11 @@ void Command::addUserMessageToCurrentState() {
 	_currentState->setUserMessage(_userMessage);
 	sprintf_s(buffer, LOGGING_MSG_ADD_USER_MESSAGE_TO_CURRENT_STATE.c_str(), _userMessage.c_str());
 	log(buffer);
+	return;
+}
+
+void Command::addActionMessageToCurrentState() {
+	_currentState->setActionMessage(_actionMessage);
 	return;
 }
 

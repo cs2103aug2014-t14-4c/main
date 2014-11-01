@@ -11,14 +11,17 @@ class State{
 	private:
 		vector<Task> _entireListOfTasks;
 		string _userMessage;
+		string _actionMessage;
 		int maxIndex;
+		int _lastActionType;
+		int _lastActionTaskIndex;
 
 	public:
 		//Constructor
 		State();
 
 		//Operations
-		void addTask(Task taskToAdd);
+		void addTask(Task taskToAdd, int specifiedIndex = -1);
 		void deleteTask(int taskIndexToDelete);
 		void doneTask(int taskIndexToDo);
 		void clearAllTasks();
@@ -26,9 +29,18 @@ class State{
 		vector<Task> getTimedTasks();
 		vector<Task> getDeadlineTasks();
 		vector<Task> getFloatingTasks();
+		int getLastActionType();
+		int getLastActionTaskIndex();
 		void setAllTasks(vector<Task> tasksToSet);
 		void setUserMessage(string stringToSet);
+		void setActionMessage(string stringToSet);
+		void setLastActionType(int actionTypeToSet);
+		void setLastActionTaskIndex(int actionTaskIndexToSet);
 		string getUserMessage();
+		string getActionMessage();
+		
+
+		enum actionType { NONE = 1, CHANGED, DELETED };
 };
 
 #endif

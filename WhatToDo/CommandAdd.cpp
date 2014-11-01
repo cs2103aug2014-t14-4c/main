@@ -6,7 +6,7 @@ string CommandAdd::LOGGING_MSG_EXECUTE_COMMAND_ADD = "\nCommand Add Initiated:\n
 string CommandAdd::LOGGING_MSG_IS_ORDER_DATETIMES_VALD = "Function called: checkIsCommandValid(): isOrderOfDateTimesValid: %s\n";
 string CommandAdd::LOGGING_MSG_IS_INPUT_TIME_ALR_OCCUPIED = "Function called: checkIsCommandValid(): isInputTimeAlreadyOccupied: %s\n";
 string CommandAdd::LOGGING_MSG_IS_COMMAND_VALID = "Function called: checkIsCommandValid(): _isCommandValid: %s\n";
-string CommandAdd::LOGGING_MSG_PERFORM_ADD = "Function called: performAddOperation(): name of Task added: %s\n";
+string CommandAdd::LOGGING_MSG_PERFORM_ADD = "Function called: performAddOperation()\n";
 
 string CommandAdd::ERROR_MSG_DATETIME_INVALID = "Date entered was not valid!";
 string CommandAdd::ERROR_MSG_DEADLINE_PASSED = "The deadline has already passed!";
@@ -14,6 +14,7 @@ string CommandAdd::ERROR_MSG_STARTTIME_PASSED = "The start time has already pass
 string CommandAdd::ERROR_MSG_ENDTIME_BEFORE_STARTTIME = "The end time cannot be before the start time!";
 string CommandAdd::ERROR_MSG_INPUT_TIME_OCCUPIED = "There is already a scheduled task at that slot!";
 
+string CommandAdd::ACTION_MSG_ADDED = "Task Added!";
 
 CommandAdd::CommandAdd(void)
 {
@@ -30,6 +31,8 @@ void CommandAdd::execute() {
 		checkIsCommandValid();
 		performAddOperation();
 		addThisCommandToHistory(this);
+		addUserMessageToCurrentState();
+		addActionMessageToCurrentState();
 		setNewCurrentState();
 		setNewViewState();
 	}
@@ -63,14 +66,26 @@ bool CommandAdd::checkIfOrderOfDateTimesValid() {
 	int currentTaskType = _currentTask->getTaskType();
 	bool isOrderOfDateTimesValid = true;
 
-	if (currentTaskType == Task::FIXEDTIME) {
+	if (currentTaskType == Task::FIXED_TIME) {
 		bool isStartAfterCurrentTime = checkIsStartAfterCurrentTime();
 		bool isEndAfterStart = checkIsEndAfterStart();
 		isOrderOfDateTimesValid = isStartAfterCurrentTime && isEndAfterStart;
 	}
-	else if (currentTaskType == Task::DEADLINE) {
+	else if (currentTaskType == Task::FIXED_START) {
+		bool isStartAfterCurrentTime = checkIsStartAfterCurrentTime();
+		isOrderOfDateTimesValid = isStartAfterCurrentTime;
+	}
+	else if (currentTaskType == Task::FIXED_ALLDAY) {
+		bool isDatePassed = checkIsDatePassed(_currentTask->getTaskStartTime().date());
+		isOrderOfDateTimesValid = isDatePassed;
+	}
+	else if (currentTaskType == Task::DEADLINE_TIME) {
 		bool isDeadlineAfterCurrentTime = checkIsDeadlineAfterCurrentTime();
 		isOrderOfDateTimesValid = isDeadlineAfterCurrentTime;
+	}
+	else if (currentTaskType == Task::DEADLINE_ALLDAY) {
+		bool isDatePassed = checkIsDatePassed(_currentTask->getTaskDeadline().date());
+		isOrderOfDateTimesValid = isDatePassed;
 	}
 	
 	return isOrderOfDateTimesValid;
@@ -100,21 +115,27 @@ bool CommandAdd::checkIsEndAfterStart() {
 	return isEndAfterStart;
 }
 
+bool CommandAdd::checkIsDatePassed(date dateToCheck) {
+	bool isDatePassed = dateToCheck >= second_clock::local_time().date();
+	if (!isDatePassed) {
+		throw ERROR_MSG_STARTTIME_PASSED;
+	}
+	return isDatePassed;
+}
+
 bool CommandAdd::checkIsInputTimeNotOccupied() {
 	vector<Task> listOfTimedTasks = _currentState->getTimedTasks();
 	int currentTaskType = _currentTask->getTaskType();
 	bool isInputTimeNotOccupied = true;
 	int i;
 
-	if (currentTaskType != Task::FIXEDTIME) {
-		return isInputTimeNotOccupied;
-	}
-
 	for (i=0; unsigned(i)<listOfTimedTasks.size(); i++) {
-		if (_currentTask->isTaskOverlapWith(listOfTimedTasks[i])) {
-			isInputTimeNotOccupied = false;
-			throw ERROR_MSG_INPUT_TIME_OCCUPIED;
-			break;
+		if (_currentTask->getTaskType() == Task::FIXED_TIME) {
+			if (_currentTask->isTaskOverlapWith(listOfTimedTasks[i])) {
+				isInputTimeNotOccupied = false;
+				_userMessage = ERROR_MSG_INPUT_TIME_OCCUPIED;
+				break;
+			}
 		}
 	}
 
@@ -123,7 +144,8 @@ bool CommandAdd::checkIsInputTimeNotOccupied() {
 
 void CommandAdd::performAddOperation() {
 	_currentState->addTask(*_currentTask);
-	sprintf_s(buffer, LOGGING_MSG_PERFORM_ADD.c_str(), _currentTask->getTaskName().c_str());
+	_actionMessage = ACTION_MSG_ADDED;
+	sprintf_s(buffer, LOGGING_MSG_PERFORM_ADD.c_str());
 	log(buffer);
 	return;
 }

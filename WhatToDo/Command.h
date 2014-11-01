@@ -10,8 +10,6 @@
 #include "LogicData.h"
 
 using namespace std;
-using namespace boost::posix_time;
-using namespace boost::gregorian;
 
 class Command {
 	public:
@@ -29,8 +27,9 @@ class Command {
 		int getTypeFilter(void);
 		date getStartDateFilter(void);
 		date getEndDateFilter(void);
-		
+
 		// All Setter Functions
+
 		void setTaskIndex(int commandTaskIndexToSet);
 		void setParsedStatus(bool parsedStatus);
 		void setSearchKeyword(string searchKeywordToSet);
@@ -50,13 +49,14 @@ class Command {
 		int _commandTaskIndex;
 		string _searchKeyword;
 		string _userMessage;
+		string _actionMessage;
 		Task* _currentTask;
 		State* _currentState;
-		
 		int _doneFilter;
 		int _typeFilter;
 		date _startDateFilter;
 		date _endDateFilter;
+
 		// Command Attributes For Logging
 
 		string _logFileName;
@@ -71,6 +71,7 @@ class Command {
 		void setNewViewState();
 		void addThisCommandToHistory(Command* commandToAdd);
 		void addUserMessageToCurrentState();
+		void addActionMessageToCurrentState();
 		void resetLogicDataSettings();
 
 		// Command Function For Logging
@@ -87,6 +88,7 @@ class Command {
 		static bool INITIAL_VALUE_LOGGING_MODE_ON;
 		static string INITIAL_VALUE_SEARCH_KEYWORD;
 		static string INITIAL_VALUE_USER_MESSAGE;
+		static string INITIAL_VALUE_ACTION_MESSAGE;
 		static string INITIAL_VALUE_LOG_FILE_NAME;
 		static Task* INITIAL_VALUE_CURRENT_TASK;
 		static State* INITIAL_VALUE_CURRENT_STATE;

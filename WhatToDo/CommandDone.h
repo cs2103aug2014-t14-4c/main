@@ -19,5 +19,6 @@ class CommandDone: public Command {
 
 		static string LOGGING_MSG_EXECUTE_COMMAND_DONE;
 		static string LOGGING_MSG_PERFORM_DONE;
+		static string ACTION_MSG_DONE;
 };
 

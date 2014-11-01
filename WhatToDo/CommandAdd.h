@@ -25,6 +25,7 @@ class CommandAdd: public Command {
 		bool checkIsDeadlineAfterCurrentTime();
 		bool checkIsStartAfterCurrentTime();
 		bool checkIsEndAfterStart();
+		bool checkIsDatePassed(date dateToCheck);
 
 		// All Static Constants And Variables
 
@@ -39,7 +40,7 @@ class CommandAdd: public Command {
 		static string ERROR_MSG_STARTTIME_PASSED;
 		static string ERROR_MSG_ENDTIME_BEFORE_STARTTIME;
 		static string ERROR_MSG_INPUT_TIME_OCCUPIED;
-
+		static string ACTION_MSG_ADDED;
 
 };
 

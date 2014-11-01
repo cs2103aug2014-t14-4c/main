@@ -35,6 +35,7 @@ void CommandSearch::performSearchOperation() {
 	getNameToSearchFor();
 	getListOfTaskIndexesNotMatchingSearch();
 	deleteListOfTaskIndexesNotMatchingSearch();
+	_currentState->setLastActionType(State::NONE);
 	return;
 }
 

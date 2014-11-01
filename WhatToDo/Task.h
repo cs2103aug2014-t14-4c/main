@@ -1,6 +1,9 @@
 #ifndef TASK_H
 #define TASK_H
 
+//1) isDone;
+//2) LogicData;
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -10,12 +13,6 @@
 using namespace std;
 using namespace boost::posix_time;
 using namespace boost::gregorian;
-
-//FixedTime start-end
-//FixedTime onlystarttime
-//FixedTime onlystartday
-//Deadline floating
-//Deadline withTime
 
 class Task{
 	private:
@@ -55,6 +52,7 @@ class Task{
 		string getTaskDetails();//Not used for now
 		vector<string> getTaskTags();
 		bool getTaskIsDone();
+		
 
 
 		//Operations
@@ -63,11 +61,11 @@ class Task{
 		bool hasDeadline();
 		bool isTaskOverlapWith(Task myTask);
 		bool isEarlierThan(Task myTask);
-
+		bool isTaskSortedBefore(Task firstTask, Task secondTask);
 
 		//Enumeration
 		enum TaskType{
-			FIXEDTIME = 1, DEADLINE, FLOATING 
+			 FLOATING = 1, DEADLINE_TIME, DEADLINE_ALLDAY, FIXED_TIME, FIXED_START, FIXED_ALLDAY
 		};
 };
 
