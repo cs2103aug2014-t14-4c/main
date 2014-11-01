@@ -156,8 +156,8 @@ void DetailsParser::parseDateFilter(Command* command) {
 		if(foundNoDate()) {
 			date positiveInfinity(pos_infin);
 			date negativeInfinity(neg_infin);
-			command->setStartDateFilter(positiveInfinity);
-			command->setEndDateFilter(negativeInfinity);
+			command->setStartDateFilter(negativeInfinity);
+			command->setEndDateFilter(positiveInfinity);
 		} else {
 			DatetimeParser datetime;
 			datetime.addFilterDate(command, _parameters);
