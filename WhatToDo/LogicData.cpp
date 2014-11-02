@@ -10,6 +10,21 @@ int LogicData::_typeFilter;
 date LogicData::_startDateFilter;
 date LogicData::_endDateFilter;
 
+string LogicData::ABBREV_MONTH_JAN = "Jan";
+string LogicData::ABBREV_MONTH_FEB = "Feb";
+string LogicData::ABBREV_MONTH_MAR = "Mar";
+string LogicData::ABBREV_MONTH_APR = "Apr";
+string LogicData::ABBREV_MONTH_MAY = "May";
+string LogicData::ABBREV_MONTH_JUN = "Jun";
+string LogicData::ABBREV_MONTH_JUL = "Jul";
+string LogicData::ABBREV_MONTH_AUG = "Aug";
+string LogicData::ABBREV_MONTH_SEP = "Sep";
+string LogicData::ABBREV_MONTH_OCT = "Oct";
+string LogicData::ABBREV_MONTH_NOV = "Nov";
+string LogicData::ABBREV_MONTH_DEC = "Dec";
+string LogicData::STRING_SPACE_CHAR = " ";
+string LogicData::STRING_EMPTY = "";
+
 LogicData::LogicData(){
 	_currentCommandHistoryIndex = 0;
 	_doneFilter = Done::ONLY_UNDONE;
@@ -47,6 +62,7 @@ State LogicData::getCurrentState() {
 
 State LogicData::getViewState() {
 	return filterTasks();
+	//return _viewState;
 }
 
 vector<Command*> LogicData::getCommandHistory(){
@@ -86,6 +102,7 @@ void LogicData::resetToInitialSettings(){
 }
 
 void LogicData::loadInitialSettings(){
+	LogicData();
 	StorageExecutor myStorageExecutor;
 	State initialState = myStorageExecutor.loadFromStorage();
 	_initialState = initialState;
@@ -117,8 +134,11 @@ State LogicData::filterTasks() {
 		if(passDoneFilter(*iter) && passTypeFilter(*iter) && passDateFilter(*iter)) {
 			filteredTasks.push_back(*iter);
 		}
-	}	
+	}
 	filteredViewState.setAllTasks(filteredTasks);
+	if (filteredViewState.getActionMessage() == "") {
+		filteredViewState.setActionMessage(getFilterStatus());
+	}
 	return filteredViewState;
 }
 
@@ -147,13 +167,105 @@ bool LogicData::passTypeFilter(Task task) {
 bool LogicData::passDateFilter(Task task) {
 	if(!task.hasStartTime() && !task.hasDeadline()) {
 		return true;
-	} else if(task.hasDeadline()) {
-		return (task.getTaskDeadline().date() >= _startDateFilter);
-	} else if(task.hasStartTime() && task.hasEndTime()) {
-		return ((task.getTaskStartTime().date() >= _startDateFilter)
-			&& (task.getTaskEndTime().date() <= _endDateFilter));
-	} else if(task.hasStartTime() && !task.hasEndTime()) {
-		return (task.getTaskStartTime().date() >= _startDateFilter);
+	}
+	else if(task.hasDeadline()) {
+		return ((task.getTaskDeadline().date() >= _startDateFilter) && (task.getTaskDeadline().date() <= _endDateFilter));
+	}
+	else if(task.hasStartTime() && task.hasEndTime()) {
+		return ((task.getTaskStartTime().date() >= _startDateFilter) && (task.getTaskStartTime().date() <= _endDateFilter)
+			&& (task.getTaskEndTime().date() <= _endDateFilter) && (task.getTaskStartTime().date() >= _startDateFilter));
+	} 
+	else if(task.hasStartTime() && !task.hasEndTime()) {
+		return ((task.getTaskStartTime().date() >= _startDateFilter) && (task.getTaskStartTime().date() <= _endDateFilter));
 	}
 	return false;
+}
+
+string LogicData::getFilterStatus() {
+	string filterStatus;
+	string doneFilterStatus;
+	string typeFilterStatus;
+	string dateFilterStatus;
+	
+	switch(_doneFilter) {
+		case(Done::DONE_BOTH) :
+			doneFilterStatus = "nodone";
+			break;
+		case(Done::ONLY_DONE) :
+			doneFilterStatus = "done";
+			break;
+		case(Done::ONLY_UNDONE) :
+			doneFilterStatus = "undone";
+			break;
+	}
+
+	switch(_typeFilter) {
+		case(Type::ALL_TYPES) :
+			typeFilterStatus = "all types";
+			break;
+		case(Type::ONLY_FIXED) :
+			typeFilterStatus = "only fixed";
+			break;
+		case(Type::ONLY_DUE) :
+			typeFilterStatus = "only due";
+			break;
+	}
+
+	if (_startDateFilter != boost::gregorian::date(neg_infin)) {
+		dateFilterStatus += " / from " + getDisplayDay(ptime(_startDateFilter));
+	}
+	if (_endDateFilter != boost::gregorian::date(pos_infin)) {
+		dateFilterStatus += " to " + getDisplayDay(ptime(_endDateFilter));
+	}
+
+	filterStatus = "Filtered by: " + doneFilterStatus + " / " + typeFilterStatus + dateFilterStatus;
+	return filterStatus;
+}
+
+string LogicData::getDisplayDay(ptime myTime) {
+	string displayDay;
+	displayDay += to_string(myTime.date().day());
+	displayDay += STRING_SPACE_CHAR + changeMonthToMonthOfYear(myTime.date().month());
+	return displayDay;
+}
+
+string LogicData::changeMonthToMonthOfYear(int month) {
+	if (month == 1) {
+		return ABBREV_MONTH_JAN;
+	}
+	else if (month == 2) {
+		return ABBREV_MONTH_FEB;
+	}
+	else if (month == 3) {
+		return ABBREV_MONTH_MAR;
+	}
+	else if (month == 4) {
+		return ABBREV_MONTH_APR;
+	}
+	else if (month == 5) {
+		return ABBREV_MONTH_MAY;
+	}
+	else if (month == 6) {
+		return ABBREV_MONTH_JUN;
+	}
+	else if (month == 7) {
+		return ABBREV_MONTH_JUL;
+	}
+	else if (month == 8) {
+		return ABBREV_MONTH_AUG;
+	}
+	else if (month == 9) {
+		return ABBREV_MONTH_SEP;
+	}
+	else if (month == 10) {
+		return ABBREV_MONTH_OCT;
+	}
+	else if (month == 11) {
+		return ABBREV_MONTH_NOV;
+	}
+	else if (month == 12) {
+		return ABBREV_MONTH_DEC;
+	}
+
+	return STRING_EMPTY;
 }

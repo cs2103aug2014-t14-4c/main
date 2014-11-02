@@ -34,7 +34,7 @@ void CommandDelete::execute() {
 }
 
 void CommandDelete::performDeleteOperation() {
-	_currentState->deleteTask(_commandTaskIndex);
+	_currentState->deleteTask(_commandTaskIndex, true);
 	_actionMessage = ACTION_MSG_DELETED;
 	sprintf_s(buffer, LOGGING_MSG_PERFORM_DELETE.c_str(), to_string(_commandTaskIndex).c_str());
 	log(buffer);

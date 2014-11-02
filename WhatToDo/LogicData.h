@@ -16,7 +16,7 @@ enum Type{
 
 class Command;
 
-class LogicData{
+class LogicData {
 
 	private:
 		static State _currentState;
@@ -61,6 +61,24 @@ class LogicData{
 		static bool passDoneFilter(Task task);
 		static bool passTypeFilter(Task task);
 		static bool passDateFilter(Task task);
+		static string getFilterStatus();
+		static string changeMonthToMonthOfYear(int month);
+		static string getDisplayDay(ptime myTime);
+
+		static string ABBREV_MONTH_JAN;
+		static string ABBREV_MONTH_FEB;
+		static string ABBREV_MONTH_MAR;
+		static string ABBREV_MONTH_APR;
+		static string ABBREV_MONTH_MAY;
+		static string ABBREV_MONTH_JUN;
+		static string ABBREV_MONTH_JUL;
+		static string ABBREV_MONTH_AUG;
+		static string ABBREV_MONTH_SEP;
+		static string ABBREV_MONTH_OCT;
+		static string ABBREV_MONTH_NOV;
+		static string ABBREV_MONTH_DEC;
+		static string STRING_SPACE_CHAR;
+		static string STRING_EMPTY;
 };
 
 #endif

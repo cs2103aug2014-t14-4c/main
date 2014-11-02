@@ -51,6 +51,7 @@ string WhatToDo::COMMAND_PARAM_HELP = "/help";
 string WhatToDo::COMMAND_PARAM_UNDO = "/undo";
 string WhatToDo::COMMAND_PARAM_REDO = "/redo";
 string WhatToDo::COMMAND_PARAM_LOAD = "/load";
+string WhatToDo::COMMAND_PARAM_FILTER = "/filter";
 string WhatToDo::COMMAND_PARAM_SEARCH = "/search";
 string WhatToDo::COMMAND_PARAM_HELP_EDIT = "edit";
 string WhatToDo::COMMAND_PARAM_HELP_ADD = "add";
@@ -60,6 +61,7 @@ string WhatToDo::COMMAND_PARAM_HELP_CLEAR = "clear";
 string WhatToDo::COMMAND_PARAM_HELP_UNDO = "undo";
 string WhatToDo::COMMAND_PARAM_HELP_REDO = "redo";
 string WhatToDo::COMMAND_PARAM_HELP_LOAD = "load";
+string WhatToDo::COMMAND_PARAM_HELP_FILTER = "filter";
 string WhatToDo::COMMAND_PARAM_HELP_SEARCH = "search";
 string WhatToDo::COMMAND_PARAM_ADD_DATE_DEADLINE = "by ";
 string WhatToDo::COMMAND_PARAM_ADD_DATE_TIMED_ALLDAY = "on ";
@@ -77,6 +79,7 @@ string WhatToDo::RESOURCE_PATHS_HELP_CLEAR = "C:/Users/zhichao/Documents/Visual 
 string WhatToDo::RESOURCE_PATHS_HELP_SEARCH = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Search.html";
 string WhatToDo::RESOURCE_PATHS_HELP_UNDO = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Undo.html";
 string WhatToDo::RESOURCE_PATHS_HELP_REDO = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Redo.html";
+string WhatToDo::RESOURCE_PATHS_HELP_FILTER = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Filter.html";
 string WhatToDo::RESOURCE_PATHS_HELP_CONTENT = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Content.html";
 
 string WhatToDo::ABBREV_MONTH_JAN = "Jan";
@@ -181,7 +184,7 @@ void WhatToDo::handleHotkeyEdit() {
 
 void WhatToDo::handleHotkeyDelete() {
 	_ui.commandLine->setFocus();
-	_ui.commandLine->setPlainText(QString::fromStdString(COMMAND_PARAM_DELETE + STRING_EMPTY));
+	_ui.commandLine->setPlainText(QString::fromStdString(COMMAND_PARAM_DELETE + STRING_SPACE_CHAR));
 	string commandContents = _ui.commandLine->toPlainText().toStdString();
 	QTextCursor cursor = _ui.commandLine->textCursor();
 	cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
@@ -191,7 +194,17 @@ void WhatToDo::handleHotkeyDelete() {
 
 void WhatToDo::handleHotkeyDone() {
 	_ui.commandLine->setFocus();
-	_ui.commandLine->setPlainText(QString::fromStdString(COMMAND_PARAM_DONE + STRING_EMPTY));
+	_ui.commandLine->setPlainText(QString::fromStdString(COMMAND_PARAM_DONE + STRING_SPACE_CHAR));
+	string commandContents = _ui.commandLine->toPlainText().toStdString();
+	QTextCursor cursor = _ui.commandLine->textCursor();
+	cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
+	_ui.commandLine->setTextCursor(cursor);
+	return;
+}
+
+void WhatToDo::handleHotkeyFilter() {
+	_ui.commandLine->setFocus();
+	_ui.commandLine->setPlainText(QString::fromStdString(COMMAND_PARAM_FILTER + STRING_SPACE_CHAR));
 	string commandContents = _ui.commandLine->toPlainText().toStdString();
 	QTextCursor cursor = _ui.commandLine->textCursor();
 	cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
@@ -266,6 +279,7 @@ void WhatToDo::defineAllHotkeys() {
 	QAction *hotkeyDelete = new QAction(this);
 	QAction *hotkeyEdit = new QAction(this);
 	QAction *hotkeyDone = new QAction(this);
+	QAction *hotkeyFilter = new QAction(this);
 	QAction *hotkeyClear = new QAction(this);
 	QAction *hotkeyHelp = new QAction(this);
 
@@ -277,6 +291,7 @@ void WhatToDo::defineAllHotkeys() {
 	hotkeyDelete->setShortcut(Qt::Key_W | Qt::CTRL);
 	hotkeyEdit->setShortcut(Qt::Key_E | Qt::CTRL);
 	hotkeyDone->setShortcut(Qt::Key_D | Qt::CTRL);
+	hotkeyFilter->setShortcut(Qt::Key_Q | Qt::CTRL);
 	hotkeyClear->setShortcut(Qt::Key_Escape);
 	hotkeyHelp->setShortcut(Qt::Key_H | Qt::CTRL);
 
@@ -288,6 +303,7 @@ void WhatToDo::defineAllHotkeys() {
 	connect(hotkeyDelete, SIGNAL(triggered()), this, SLOT(handleHotkeyDelete()));
 	connect(hotkeyEdit, SIGNAL(triggered()), this, SLOT(handleHotkeyEdit()));
 	connect(hotkeyDone, SIGNAL(triggered()), this, SLOT(handleHotkeyDone()));
+	connect(hotkeyFilter, SIGNAL(triggered()), this, SLOT(handleHotkeyFilter()));
 	connect(hotkeyClear, SIGNAL(triggered()), this, SLOT(handleHotkeyClear()));
 	connect(hotkeyHelp, SIGNAL(triggered()), this, SLOT(handleHotkeyHelp()));
 
@@ -299,6 +315,7 @@ void WhatToDo::defineAllHotkeys() {
 	_ui.centralWidget->addAction(hotkeyDelete);
 	_ui.centralWidget->addAction(hotkeyEdit);
 	_ui.centralWidget->addAction(hotkeyDone);
+	_ui.centralWidget->addAction(hotkeyFilter);
 	_ui.centralWidget->addAction(hotkeyClear);
 	_ui.centralWidget->addAction(hotkeyHelp);
 
@@ -342,7 +359,7 @@ void WhatToDo::updateGUIFromSearchBar() {
 		logicComandString = COMMAND_PARAM_CLEAR;
 	}
 	else {
-		logicComandString = COMMAND_PARAM_SEARCH + STRING_EMPTY + userSearchString;
+		logicComandString = COMMAND_PARAM_SEARCH + STRING_SPACE_CHAR + userSearchString;
 	}
 
 	updateGUIWithCommandString(logicComandString);
@@ -421,6 +438,10 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 		}
 		case COMMAND_HELP_REDO: {
 			_ui.displayAgendaviewTimed->load(QUrl::fromLocalFile(QString::fromStdString(RESOURCE_PATHS_HELP_REDO)));
+			break;
+		}
+		case COMMAND_HELP_FILTER: {
+			_ui.displayAgendaviewTimed->load(QUrl::fromLocalFile(QString::fromStdString(RESOURCE_PATHS_HELP_FILTER)));
 			break;
 		}
 	}

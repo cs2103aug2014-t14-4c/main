@@ -35,7 +35,7 @@ void CommandDone::execute() {
 }
 
 void CommandDone::performDoneOperation() {
-	_currentState->doneTask(_commandTaskIndex);
+	_currentState->doneTask(_commandTaskIndex, true);
 	_actionMessage = ACTION_MSG_DONE;
 	sprintf_s(buffer, LOGGING_MSG_PERFORM_DONE.c_str(), to_string(_commandTaskIndex).c_str());
 	log(buffer);

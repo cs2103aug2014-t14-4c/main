@@ -46,7 +46,7 @@ void CommandEdit::deleteExistingTask() {
 }
 
 void CommandEdit::performAddOperation() {
-	_currentState->addTask(*_currentTask, _commandTaskIndex);
+	_currentState->addTask(*_currentTask, true, _commandTaskIndex);
 	_actionMessage = ACTION_MSG_ADDED;
 	sprintf_s(buffer, LOGGING_MSG_PERFORM_ADD.c_str());
 	log(buffer);

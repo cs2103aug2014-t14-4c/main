@@ -9,39 +9,59 @@ State::State(){
 /*
    This function will need to create a unique index for task
 **/
-void State::addTask(Task taskToAdd, int specifiedIndex){
+void State::addTask(Task taskToAdd, bool isUserCommand, int specifiedIndex){
 	if (specifiedIndex == -1) {
 		taskToAdd.setTaskIndex(maxIndex);
-		_lastActionType = CHANGED;
-		_lastActionTaskIndex = maxIndex;
+		if (isUserCommand) {
+			_lastActionType = CHANGED;
+			_lastActionTaskIndex = maxIndex;
+		}
+		else {
+			_lastActionType = NONE;
+		}
 		maxIndex++;
 		_entireListOfTasks.push_back(taskToAdd);
 	}
 	else {
 		taskToAdd.setTaskIndex(specifiedIndex);
-		_lastActionType = CHANGED;
-		_lastActionTaskIndex = specifiedIndex;
+		if (isUserCommand) {
+			_lastActionType = CHANGED;
+			_lastActionTaskIndex = specifiedIndex;
+		}
+		else {
+			_lastActionType = NONE;
+		}
 		_entireListOfTasks.push_back(taskToAdd);
 	}
 }
 
 //Need to consider if task to delete cannot be found --> Throw exception/error?
-void State::deleteTask(int taskIndexToDelete){
+void State::deleteTask(int taskIndexToDelete, bool isUserCommand){
 	for(unsigned int i=0; i< _entireListOfTasks.size();i++){
 		if(_entireListOfTasks[i].getTaskIndex() == taskIndexToDelete){
-			_lastActionType = DELETED;
-			_lastActionTaskIndex = taskIndexToDelete;
+			if (isUserCommand) {
+				_lastActionType = DELETED;
+				_lastActionTaskIndex = taskIndexToDelete;
+			}
+			else {
+				_lastActionType = NONE;
+			}
 			_entireListOfTasks.erase(_entireListOfTasks.begin() + i);
 		}
 	}
 }
 
-void State::doneTask(int taskIndexToDo) {
+void State::doneTask(int taskIndexToDo, bool isUserCommand) {
 	for(unsigned int i=0; i< _entireListOfTasks.size();i++){
 		if(_entireListOfTasks[i].getTaskIndex() == taskIndexToDo){
 			_entireListOfTasks[i].setTaskIsDone();
-			_lastActionType = CHANGED;
-			_lastActionTaskIndex = taskIndexToDo;
+			if (isUserCommand) {
+				_lastActionType = CHANGED;
+				_lastActionTaskIndex = taskIndexToDo;
+			}
+			else {
+				_lastActionType = NONE;
+			}
 		}
 	}
 }

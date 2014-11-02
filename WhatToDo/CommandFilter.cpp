@@ -26,17 +26,19 @@ void CommandFilter::execute() {
 }
 
 void CommandFilter::performFilterOperation() {
-	LogicData logicData;
 	
 	if(_doneFilter != Done::DONE_NOT_SET) {
-		logicData.setDoneFilter(_doneFilter);
+		LogicData::setDoneFilter(_doneFilter);
 	}
 	if(_typeFilter != Type::TYPE_NOT_SET) {
-		logicData.setTypeFilter(_typeFilter);
+		LogicData::setTypeFilter(_typeFilter);
 	}
 	if(!_startDateFilter.is_not_a_date() && !_endDateFilter.is_not_a_date()) {
-		logicData.setDateFilter(_startDateFilter, _endDateFilter);
+		LogicData::setDateFilter(_startDateFilter, _endDateFilter);
 	}
 
+	retrieveExistingCurrentState();
+	_currentState->setLastActionType(State::NONE);
+	setNewViewState();
 	return;
 }

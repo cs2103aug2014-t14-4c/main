@@ -181,7 +181,6 @@ bool Task::isTaskSortedBefore(Task firstTask, Task secondTask) {
 		return false;
 	}
 	else {
-		
 		if ((firstTask.getTaskType() == DEADLINE_ALLDAY) && (secondTask.getTaskType() == DEADLINE_ALLDAY)) {
 			return firstTask.getTaskIndex() < secondTask.getTaskIndex();
 		}
@@ -212,11 +211,53 @@ bool Task::isTaskSortedBefore(Task firstTask, Task secondTask) {
 			return false;
 		}
 
-		if (firstTaskTime == secondTaskTime) {
-			return firstTask.getTaskIndex() < secondTask.getTaskIndex();
+		if ((firstTask.getTaskType() == FIXED_START) && (secondTask.getTaskType() == FIXED_START)) {
+			if (firstTask.getTaskStartTime() < secondTask.getTaskStartTime()) {
+				return true;
+			}
+			else if (firstTask.getTaskStartTime() > secondTask.getTaskStartTime()) {
+				return false;
+			}
+			else {
+				return firstTask.getTaskIndex() < secondTask.getTaskIndex();
+			}
 		}
-		else {
-			firstTaskTime < secondTaskTime;
+		else if ((firstTask.getTaskType() == FIXED_TIME) && (secondTask.getTaskType() == FIXED_TIME)) {
+			if (firstTask.getTaskStartTime() < secondTask.getTaskStartTime()) {
+				return true;
+			}
+			else if (firstTask.getTaskStartTime() > secondTask.getTaskStartTime()) {
+				return false;
+			}
+			
+			if (firstTask.getTaskEndTime() == secondTask.getTaskEndTime()) {
+				return firstTask.getTaskIndex() < secondTask.getTaskIndex();
+			}
+			else {
+				return firstTask.getTaskEndTime() < secondTask.getTaskEndTime();
+			}
+		}
+		else if ((firstTask.getTaskType() == FIXED_TIME) && (secondTask.getTaskType() == FIXED_START)) {
+			firstTaskTime = ptime(firstTask.getTaskStartTime().date(), hours(firstTask.getTaskStartTime().time_of_day().hours()) + minutes(firstTask.getTaskStartTime().time_of_day().minutes()));
+			secondTaskTime = ptime(secondTask.getTaskStartTime().date(), hours(secondTask.getTaskStartTime().time_of_day().hours()) + minutes(secondTask.getTaskStartTime().time_of_day().minutes()));
+			
+			if (firstTaskTime != secondTaskTime) {
+				return firstTaskTime < secondTaskTime;
+			}
+			else {
+				return false;
+			}
+		}
+		else if ((firstTask.getTaskType() == FIXED_START) && (secondTask.getTaskType() == FIXED_TIME)) {
+			firstTaskTime = ptime(firstTask.getTaskStartTime().date(), hours(firstTask.getTaskStartTime().time_of_day().hours()) + minutes(firstTask.getTaskStartTime().time_of_day().minutes()));
+			secondTaskTime = ptime(secondTask.getTaskStartTime().date(), hours(secondTask.getTaskStartTime().time_of_day().hours()) + minutes(secondTask.getTaskStartTime().time_of_day().minutes()));
+			
+			if (firstTaskTime != secondTaskTime) {
+				return firstTaskTime < secondTaskTime;
+			}
+			else {
+				return true;
+			}
 		}
 
 		return true;

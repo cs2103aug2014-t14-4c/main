@@ -21,11 +21,7 @@ class CommandAdd: public Command {
 
 		bool checkIfOrderOfDateTimesValid();
 		bool checkIsInputTimeNotOccupied();
-
-		bool checkIsDeadlineAfterCurrentTime();
-		bool checkIsStartAfterCurrentTime();
 		bool checkIsEndAfterStart();
-		bool checkIsDatePassed(date dateToCheck);
 
 		// All Static Constants And Variables
 
@@ -35,11 +31,8 @@ class CommandAdd: public Command {
 		static string LOGGING_MSG_IS_COMMAND_VALID;
 		static string LOGGING_MSG_PERFORM_ADD;
 
-		static string ERROR_MSG_DATETIME_INVALID;
-		static string ERROR_MSG_DEADLINE_PASSED;
-		static string ERROR_MSG_STARTTIME_PASSED;
 		static string ERROR_MSG_ENDTIME_BEFORE_STARTTIME;
-		static string ERROR_MSG_INPUT_TIME_OCCUPIED;
+		static string USER_MSG_INPUT_TIME_OCCUPIED;
 		static string ACTION_MSG_ADDED;
 
 };

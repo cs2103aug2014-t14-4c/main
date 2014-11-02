@@ -21,9 +21,9 @@ class State{
 		State();
 
 		//Operations
-		void addTask(Task taskToAdd, int specifiedIndex = -1);
-		void deleteTask(int taskIndexToDelete);
-		void doneTask(int taskIndexToDo);
+		void addTask(Task taskToAdd, bool isUserCommand = false, int specifiedIndex = -1);
+		void deleteTask(int taskIndexToDelete, bool isUserCommand = false);
+		void doneTask(int taskIndexToDo, bool isUserCommand = false);
 		void clearAllTasks();
 		vector<Task> getAllTasks();
 		vector<Task> getTimedTasks();

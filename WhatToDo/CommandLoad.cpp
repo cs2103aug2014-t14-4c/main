@@ -17,7 +17,7 @@ void CommandLoad::execute() {
 	try {
 		checkIsParsedCorrectly();
 		loadLogicDataSettings();
-		retrieveExistingViewState();
+		retrieveExistingCurrentState();
 		_currentState->setLastActionType(State::NONE);
 		setNewViewState();
 	}

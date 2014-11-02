@@ -42,6 +42,7 @@ class WhatToDo : public QMainWindow
 		void handleHotkeyEdit();
 		void handleHotkeyDelete();
 		void handleHotkeyDone();
+		void handleHotkeyFilter();
 		void handleButtonEnter();
 		void handleHotkeyClear();
 		void handleHotkeyHelp();
@@ -99,7 +100,7 @@ class WhatToDo : public QMainWindow
 		string convertDateTimeToEditText(ptime timeToConvert);
 		string convertDateToEditText(ptime timeToConvert);
 
-		enum userCommandType { COMMAND_OTHERS = 1, COMMAND_EDIT, COMMAND_DONE, COMMAND_DELETE, COMMAND_HELP, COMMAND_HELP_ADD, COMMAND_HELP_EDIT, COMMAND_HELP_DELETE, COMMAND_HELP_DONE, COMMAND_HELP_SEARCH, COMMAND_HELP_CLEAR, COMMAND_HELP_UNDO, COMMAND_HELP_REDO };
+		enum userCommandType { COMMAND_OTHERS = 1, COMMAND_EDIT, COMMAND_DONE, COMMAND_DELETE, COMMAND_HELP, COMMAND_HELP_ADD, COMMAND_HELP_EDIT, COMMAND_HELP_DELETE, COMMAND_HELP_DONE, COMMAND_HELP_SEARCH, COMMAND_HELP_CLEAR, COMMAND_HELP_UNDO, COMMAND_HELP_REDO, COMMAND_HELP_FILTER };
 
 		static string HTMLTAGS_BEGIN;
 		static string HTMLTAGS_END;
@@ -151,6 +152,7 @@ class WhatToDo : public QMainWindow
 		static string COMMAND_PARAM_UNDO;
 		static string COMMAND_PARAM_REDO;
 		static string COMMAND_PARAM_LOAD;
+		static string COMMAND_PARAM_FILTER;
 		static string COMMAND_PARAM_SEARCH;
 		static string COMMAND_PARAM_HELP_EDIT;
 		static string COMMAND_PARAM_HELP_DELETE;
@@ -160,6 +162,7 @@ class WhatToDo : public QMainWindow
 		static string COMMAND_PARAM_HELP_UNDO;
 		static string COMMAND_PARAM_HELP_REDO;
 		static string COMMAND_PARAM_HELP_LOAD;
+		static string COMMAND_PARAM_HELP_FILTER;
 		static string COMMAND_PARAM_HELP_SEARCH;
 		static string COMMAND_PARAM_ADD_DATE_DEADLINE;
 		static string COMMAND_PARAM_ADD_DATE_TIMED_ALLDAY;
@@ -177,6 +180,7 @@ class WhatToDo : public QMainWindow
 		static string RESOURCE_PATHS_HELP_SEARCH;
 		static string RESOURCE_PATHS_HELP_UNDO;
 		static string RESOURCE_PATHS_HELP_REDO;
+		static string RESOURCE_PATHS_HELP_FILTER;
 		static string RESOURCE_PATHS_HELP_CONTENT;
 
 		static string ABBREV_MONTH_JAN;

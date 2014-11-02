@@ -8,12 +8,8 @@ string CommandAdd::LOGGING_MSG_IS_INPUT_TIME_ALR_OCCUPIED = "Function called: ch
 string CommandAdd::LOGGING_MSG_IS_COMMAND_VALID = "Function called: checkIsCommandValid(): _isCommandValid: %s\n";
 string CommandAdd::LOGGING_MSG_PERFORM_ADD = "Function called: performAddOperation()\n";
 
-string CommandAdd::ERROR_MSG_DATETIME_INVALID = "Date entered was not valid!";
-string CommandAdd::ERROR_MSG_DEADLINE_PASSED = "The deadline has already passed!";
-string CommandAdd::ERROR_MSG_STARTTIME_PASSED = "The start time has already passed!";
 string CommandAdd::ERROR_MSG_ENDTIME_BEFORE_STARTTIME = "The end time cannot be before the start time!";
-string CommandAdd::ERROR_MSG_INPUT_TIME_OCCUPIED = "There is already a scheduled task at that slot!";
-
+string CommandAdd::USER_MSG_INPUT_TIME_OCCUPIED = "Task Added! Note: Beware task overlap!";
 string CommandAdd::ACTION_MSG_ADDED = "Task Added!";
 
 CommandAdd::CommandAdd(void)
@@ -67,44 +63,10 @@ bool CommandAdd::checkIfOrderOfDateTimesValid() {
 	bool isOrderOfDateTimesValid = true;
 
 	if (currentTaskType == Task::FIXED_TIME) {
-		bool isStartAfterCurrentTime = checkIsStartAfterCurrentTime();
 		bool isEndAfterStart = checkIsEndAfterStart();
-		isOrderOfDateTimesValid = isStartAfterCurrentTime && isEndAfterStart;
+		isOrderOfDateTimesValid = isEndAfterStart;
 	}
-	else if (currentTaskType == Task::FIXED_START) {
-		bool isStartAfterCurrentTime = checkIsStartAfterCurrentTime();
-		isOrderOfDateTimesValid = isStartAfterCurrentTime;
-	}
-	else if (currentTaskType == Task::FIXED_ALLDAY) {
-		bool isDatePassed = checkIsDatePassed(_currentTask->getTaskStartTime().date());
-		isOrderOfDateTimesValid = isDatePassed;
-	}
-	else if (currentTaskType == Task::DEADLINE_TIME) {
-		bool isDeadlineAfterCurrentTime = checkIsDeadlineAfterCurrentTime();
-		isOrderOfDateTimesValid = isDeadlineAfterCurrentTime;
-	}
-	else if (currentTaskType == Task::DEADLINE_ALLDAY) {
-		bool isDatePassed = checkIsDatePassed(_currentTask->getTaskDeadline().date());
-		isOrderOfDateTimesValid = isDatePassed;
-	}
-	
 	return isOrderOfDateTimesValid;
-}
-
-bool CommandAdd::checkIsDeadlineAfterCurrentTime() {
-	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask->getTaskDeadline();
-	if (!isStartAfterCurrentTime) {
-		throw ERROR_MSG_DEADLINE_PASSED;
-	}
-	return isStartAfterCurrentTime;
-}
-
-bool CommandAdd::checkIsStartAfterCurrentTime() {
-	bool isStartAfterCurrentTime = second_clock::local_time() <= _currentTask->getTaskStartTime();
-	if (!isStartAfterCurrentTime) {
-		throw ERROR_MSG_STARTTIME_PASSED;
-	}
-	return isStartAfterCurrentTime;
 }
 
 bool CommandAdd::checkIsEndAfterStart() {
@@ -115,14 +77,6 @@ bool CommandAdd::checkIsEndAfterStart() {
 	return isEndAfterStart;
 }
 
-bool CommandAdd::checkIsDatePassed(date dateToCheck) {
-	bool isDatePassed = dateToCheck >= second_clock::local_time().date();
-	if (!isDatePassed) {
-		throw ERROR_MSG_STARTTIME_PASSED;
-	}
-	return isDatePassed;
-}
-
 bool CommandAdd::checkIsInputTimeNotOccupied() {
 	vector<Task> listOfTimedTasks = _currentState->getTimedTasks();
 	int currentTaskType = _currentTask->getTaskType();
@@ -130,10 +84,10 @@ bool CommandAdd::checkIsInputTimeNotOccupied() {
 	int i;
 
 	for (i=0; unsigned(i)<listOfTimedTasks.size(); i++) {
-		if (_currentTask->getTaskType() == Task::FIXED_TIME) {
+		if ((_currentTask->getTaskType() == Task::FIXED_TIME) && (listOfTimedTasks[i].getTaskIsDone() == false)) {
 			if (_currentTask->isTaskOverlapWith(listOfTimedTasks[i])) {
 				isInputTimeNotOccupied = false;
-				_userMessage = ERROR_MSG_INPUT_TIME_OCCUPIED;
+				_userMessage = USER_MSG_INPUT_TIME_OCCUPIED;
 				break;
 			}
 		}
@@ -143,7 +97,7 @@ bool CommandAdd::checkIsInputTimeNotOccupied() {
 }
 
 void CommandAdd::performAddOperation() {
-	_currentState->addTask(*_currentTask);
+	_currentState->addTask(*_currentTask, true);
 	_actionMessage = ACTION_MSG_ADDED;
 	sprintf_s(buffer, LOGGING_MSG_PERFORM_ADD.c_str());
 	log(buffer);
