@@ -67,20 +67,20 @@ string WhatToDo::COMMAND_PARAM_ADD_DATE_DEADLINE = "by ";
 string WhatToDo::COMMAND_PARAM_ADD_DATE_TIMED_ALLDAY = "on ";
 string WhatToDo::COMMAND_PARAM_ADD_DATE_TIMED_START = "from ";
 string WhatToDo::COMMAND_PARAM_ADD_DATE_TIMED_END = "to ";
-
+ 
 string WhatToDo::MESSAGE_USER_WRONG_INDEX = "No such display index!";
 string WhatToDo::MESSAGE_USER_WRONG_PARAMS = "Command parameters wrong!";
 
-string WhatToDo::RESOURCE_PATHS_HELP_ADD = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Add.html";
-string WhatToDo::RESOURCE_PATHS_HELP_DELETE = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Delete.html";
-string WhatToDo::RESOURCE_PATHS_HELP_EDIT = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Edit.html";
-string WhatToDo::RESOURCE_PATHS_HELP_DONE = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Done.html";
-string WhatToDo::RESOURCE_PATHS_HELP_CLEAR = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Clear.html";
-string WhatToDo::RESOURCE_PATHS_HELP_SEARCH = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Search.html";
-string WhatToDo::RESOURCE_PATHS_HELP_UNDO = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Undo.html";
-string WhatToDo::RESOURCE_PATHS_HELP_REDO = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Redo.html";
-string WhatToDo::RESOURCE_PATHS_HELP_FILTER = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Filter.html";
-string WhatToDo::RESOURCE_PATHS_HELP_CONTENT = "C:/Users/zhichao/Documents/Visual Studio 2012/Projects/WhatToDo/WhatToDo/UI Files/Help/Help_Content.html";
+string WhatToDo::RESOURCE_PATHS_HELP_ADD = "C:/Users/cktse/Documents/Visual Studio 2013/Projects/qt_test/WhatToDo/UI Files/Help/Help_Add.html";
+string WhatToDo::RESOURCE_PATHS_HELP_DELETE = "C:/Users/cktse/Documents/Visual Studio 2013/Projects/qt_test/WhatToDo/UI Files/Help/Help_Delete.html";
+string WhatToDo::RESOURCE_PATHS_HELP_EDIT = "C:/Users/cktse/Documents/Visual Studio 2013/Projects/qt_test/WhatToDo/UI Files/Help/Help_Edit.html";
+string WhatToDo::RESOURCE_PATHS_HELP_DONE = "C:/Users/cktse/Documents/Visual Studio 2013/Projects/qt_test/WhatToDo/UI Files/Help/Help_Done.html";
+string WhatToDo::RESOURCE_PATHS_HELP_CLEAR = "C:/Users/cktse/Documents/Visual Studio 2013/Projects/qt_test/WhatToDo/UI Files/Help/Help_Clear.html";
+string WhatToDo::RESOURCE_PATHS_HELP_SEARCH = "C:/Users/cktse/Documents/Visual Studio 2013/Projects/qt_test/WhatToDo/UI Files/Help/Help_Search.html";
+string WhatToDo::RESOURCE_PATHS_HELP_UNDO = "C:/Users/cktse/Documents/Visual Studio 2013/Projects/qt_test/WhatToDo/UI Files/Help/Help_Undo.html";
+string WhatToDo::RESOURCE_PATHS_HELP_REDO = "C:/Users/cktse/Documents/Visual Studio 2013/Projects/qt_test/WhatToDo/UI Files/Help/Help_Redo.html";
+string WhatToDo::RESOURCE_PATHS_HELP_FILTER = "C:/Users/cktse/Documents/Visual Studio 2013/Projects/qt_test/WhatToDo/UI Files/Help/Help_Filter.html";
+string WhatToDo::RESOURCE_PATHS_HELP_CONTENT = "C:/Users/cktse/Documents/Visual Studio 2013/Projects/qt_test/WhatToDo/UI Files/Help/Help_Content.html";
 
 string WhatToDo::ABBREV_MONTH_JAN = "Jan";
 string WhatToDo::ABBREV_MONTH_FEB = "Feb";
@@ -122,7 +122,16 @@ WhatToDo::WhatToDo(QWidget *parent)
 	defineAllHotkeys();
 	connectAllOtherSignalAndSlots();
 	loadSavedSettings();
-
+	b_calendar_active = false;
+	_ui.calendarframe->move(9999, 9999);
+	_ui.calendarbtn_next->move(9999, 9999);
+	_ui.calendarbtn_prev->move(9999, 9999);
+	_ui.horizonScrollBar->move(9999, 9999);
+	_ui.verticalScrollBar->move(9999, 9999);
+	_ui.calendarframe->setAttribute(Qt::WA_TransparentForMouseEvents);
+	SFMLView = new CalendarCanvas(this, _ui.calendarframe, QPoint(0, 0), QSize(921, 501));
+	SFMLView->show();
+	b_calender_init_complete = true;
 }
 
 WhatToDo::~WhatToDo()
@@ -238,12 +247,46 @@ void WhatToDo::handleButtonRedo() {
 }
 
 void WhatToDo::handleButtonToggleCalendar() {
-
+	updateAgendaView();
+	updateCalendarView();
+	b_calendar_active = true;
+	_ui.calendarframe->move(20, 70);
+	_ui.calendarbtn_next->move(290, 10);
+	_ui.calendarbtn_prev->move(220, 10);
+	_ui.horizonScrollBar->move(130, 570);
+	_ui.verticalScrollBar->move(940, 90);
+	_ui.calendarframe->raise();
+	_ui.calendarbtn_next->raise();
+	_ui.calendarbtn_prev->raise();
+	_ui.verticalScrollBar->raise();
+	_ui.horizonScrollBar->raise();
 	return;
 }
 
-void WhatToDo::handleButtonToggleAgenda() {
+void WhatToDo::handleButtonCalendarPrev(){
+	SFMLView->prevPage();
+}
 
+void WhatToDo::handleButtonCalendarNext(){
+	SFMLView->nextPage();
+}
+
+void WhatToDo::handleButtonVertScroll(int value){
+	SFMLView->changeVerti(value);
+}
+void WhatToDo::handleButtonHoriScroll(int value){
+	SFMLView->changeHori(value);
+}
+
+void WhatToDo::handleButtonToggleAgenda() {
+	updateAgendaView();
+	updateCalendarView();
+	b_calendar_active = false;
+	_ui.calendarframe->move(9999, 9999);
+	_ui.calendarbtn_next->move(9999, 9999);
+	_ui.calendarbtn_prev->move(9999, 9999);
+	_ui.horizonScrollBar->move(9999, 9999);
+	_ui.verticalScrollBar->move(9999, 9999);
 	return;
 }
 
@@ -252,16 +295,24 @@ void WhatToDo::handleButtonToggleAgenda() {
 void WhatToDo::connectAllOtherSignalAndSlots() {
 	QObject* decViewPointer;
 
-	decViewPointer = _ui.buttonEnter->rootObject();
-	connect(decViewPointer, SIGNAL(buttonClick()), this, SLOT(handleButtonEnter()));
 	decViewPointer = _ui.buttonUndo->rootObject();
 	connect(decViewPointer, SIGNAL(buttonClick()), this, SLOT(handleButtonUndo()));
+
 	decViewPointer = _ui.buttonRedo->rootObject();
 	connect(decViewPointer, SIGNAL(buttonClick()), this, SLOT(handleButtonRedo()));
+
 	decViewPointer = _ui.buttonAgendaview->rootObject();
 	connect(decViewPointer, SIGNAL(buttonClick()), this, SLOT(handleButtonToggleCalendar()));
+
+	connect(_ui.calendarbtn_prev, SIGNAL(released()), this, SLOT(handleButtonCalendarPrev()));
+	connect(_ui.calendarbtn_next, SIGNAL(released()), this, SLOT(handleButtonCalendarNext()));
+	connect(_ui.horizonScrollBar, SIGNAL(valueChanged(int)), this, SLOT(handleButtonHoriScroll(int)));
+	connect(_ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(handleButtonVertScroll(int)));
+
+
 	decViewPointer = _ui.buttonCalendarview->rootObject();
 	connect(decViewPointer, SIGNAL(buttonClick()), this, SLOT(handleButtonToggleAgenda()));
+
 	connect(_myKeyPressEater, SIGNAL(enterPressed(QObject*)), this, SLOT(handleKeyPressEvents(QObject*)));
 	connect(_myKeyPressEater, SIGNAL(tabPressed()), this, SLOT(handleEntryFieldTab()));
 	connect(_ui.commandSearch, SIGNAL(textChanged()), this, SLOT(handleSearchBarChange()));
@@ -469,8 +520,8 @@ void WhatToDo::updateAgendaView() {
 }
 
 void WhatToDo::updateCalendarView() {
-
-	return;
+	if (b_calender_init_complete == true)
+		SFMLView->readFromState(_currState);
 }
 
 
@@ -1133,6 +1184,9 @@ string WhatToDo::convertDateToEditText(ptime timeToConvert) {
 	return dateEditText;
 }
 
+void WhatToDo::updateCalendarScrollBar(int x, int y){
+	_ui.horizonScrollBar->setValue(x);
+	_ui.verticalScrollBar->setValue(y);
+}
 
-
-
+ 

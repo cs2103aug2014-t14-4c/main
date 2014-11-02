@@ -19,6 +19,7 @@
 #include "LogicExecutor.h"
 #include "State.h"
 #include "Task.h"
+#include "calendarcanvas.h"
 
 using namespace std;
 using namespace boost::posix_time;
@@ -31,6 +32,8 @@ class WhatToDo : public QMainWindow
 	public:
 		WhatToDo(QWidget *parent = 0);
 		~WhatToDo();
+		void updateCalendarScrollBar(int x, int y);
+		void removeDeletedTask(); // to be called by calendar
 
 	public slots:
 		void handleKeyPressEvents(QObject* obj);
@@ -48,7 +51,13 @@ class WhatToDo : public QMainWindow
 		void handleHotkeyHelp();
 		void handleButtonUndo();
 		void handleButtonRedo();
+		//Calendar
 		void handleButtonToggleCalendar();
+		void handleButtonCalendarPrev();
+		void handleButtonCalendarNext();
+		void handleButtonVertScroll(int);
+		void handleButtonHoriScroll(int);
+
 		void handleButtonToggleAgenda();
 
 	private:
@@ -56,6 +65,8 @@ class WhatToDo : public QMainWindow
 		KeyPressEater* _myKeyPressEater;
 		State _currState;
 		State _tempFutureState;
+		CalendarCanvas *SFMLView;
+		bool b_calendar_active, b_calender_init_complete;
 
 		void connectAllOtherSignalAndSlots();
 		void defineAllHotkeys();

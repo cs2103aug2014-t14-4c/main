@@ -1,0 +1,35 @@
+<RCC>
+  <qresource prefix="/">
+    <file>UI Files/Background.qml</file>
+    <file>UI Files/Button_Agendaview.qml</file>
+    <file>UI Files/Button_Calendarview.qml</file>
+    <file>UI Files/Button_Close.qml</file>
+    <file>UI Files/Button_Enter.qml</file>
+    <file>UI Files/Button_Redo.qml</file>
+    <file>UI Files/Button_Undo.qml</file>
+    <file>UI Files/Msgbox_Action.qml</file>
+    <file>UI Files/Msgbox_Feedback.qml</file>
+    <file>UI Files/Textfield_Commandline.qml</file>
+    <file>UI Files/Images/Background.png</file>
+    <file>UI Files/Images/Button_Agendaview.png</file>
+    <file>UI Files/Images/Button_Agendaview_Clicked.png</file>
+    <file>UI Files/Images/Button_Calendarview.png</file>
+    <file>UI Files/Images/Button_Calendarview_Clicked.png</file>
+    <file>UI Files/Images/Button_Redo.png</file>
+    <file>UI Files/Images/Button_Redo_Clicked.png</file>
+    <file>UI Files/Images/Button_Undo.png</file>
+    <file>UI Files/Images/Button_Undo_Clicked.png</file>
+    <file>UI Files/Images/Msgbox_Feedback.png</file>
+    <file>UI Files/Help/Help_Add.html</file>
+    <file>UI Files/Help/Help_Clear.html</file>
+    <file>UI Files/Help/Help_Content.html</file>
+    <file>UI Files/Help/Help_Delete.html</file>
+    <file>UI Files/Help/Help_Done.html</file>
+    <file>UI Files/Help/Help_Edit.html</file>
+    <file>UI Files/Help/Help_Filter.html</file>
+    <file>UI Files/Help/Help_Redo.html</file>
+    <file>UI Files/Help/Help_Search.html</file>
+    <file>UI Files/Help/Help_Undo.html</file>
+    
+  </qresource>
+</RCC>
