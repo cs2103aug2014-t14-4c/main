@@ -136,9 +136,7 @@ State LogicData::filterTasks() {
 		}
 	}
 	filteredViewState.setAllTasks(filteredTasks);
-	if (filteredViewState.getActionMessage() == "") {
-		filteredViewState.setActionMessage(getFilterStatus());
-	}
+	filteredViewState.setActionMessage(filteredViewState.getActionMessage() + "  ||  " + getFilterStatus());
 	return filteredViewState;
 }
 
@@ -226,6 +224,7 @@ string LogicData::getDisplayDay(ptime myTime) {
 	string displayDay;
 	displayDay += to_string(myTime.date().day());
 	displayDay += STRING_SPACE_CHAR + changeMonthToMonthOfYear(myTime.date().month());
+	displayDay += STRING_SPACE_CHAR + to_string(myTime.date().year());
 	return displayDay;
 }
 
