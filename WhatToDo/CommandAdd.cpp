@@ -84,7 +84,7 @@ bool CommandAdd::checkIsInputTimeNotOccupied() {
 	int i;
 
 	for (i=0; unsigned(i)<listOfTimedTasks.size(); i++) {
-		if ((_currentTask->getTaskType() == Task::FIXED_TIME) && (listOfTimedTasks[i].getTaskIsDone() == false)) {
+		if ((_currentTask->getTaskType() == Task::FIXED_TIME) && (listOfTimedTasks[i].getTaskType() == Task::FIXED_TIME) && (listOfTimedTasks[i].getTaskIsDone() == false)) {
 			if (_currentTask->isTaskOverlapWith(listOfTimedTasks[i])) {
 				isInputTimeNotOccupied = false;
 				_userMessage = USER_MSG_INPUT_TIME_OCCUPIED;
