@@ -144,7 +144,7 @@ void DetailsParser::parseTypeFilter(Command* command) {
 		} else if(foundDue()) {
 			command->setTypeFilter(Type::ONLY_DUE);
 		} else if(foundNoType()) {
-			command->setTypeFilter(Type::TYPE_NOT_SET);
+			command->setTypeFilter(Type::ALL_TYPES);
 		}
 	} catch(const invalid_argument&) {
 		throw;
@@ -156,8 +156,8 @@ void DetailsParser::parseDateFilter(Command* command) {
 		if(foundNoDate()) {
 			date positiveInfinity(pos_infin);
 			date negativeInfinity(neg_infin);
-			command->setStartDateFilter(positiveInfinity);
-			command->setEndDateFilter(negativeInfinity);
+			command->setStartDateFilter(negativeInfinity);
+			command->setEndDateFilter(positiveInfinity);
 		} else {
 			DatetimeParser datetime;
 			datetime.addFilterDate(command, _parameters);
