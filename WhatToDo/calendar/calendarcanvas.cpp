@@ -79,6 +79,7 @@ void CalendarCanvas::Init(){
 	changeStartingDate(now.date());
 
 	font.loadFromFile("Resources/NotoSansHant-Black.otf");
+	font_time.loadFromFile("Resources/NotoSansHant-Light.otf");
 	bg_texture.loadFromFile("Resources/image.jpg");
 	bg_sprite.setTexture(bg_texture);
 
@@ -189,6 +190,8 @@ void CalendarCanvas::readFromState(State state){
 	cout << "CalendarCanvas readFromState" << endl;
 	all_calendar_task_vtr.clear();
 	vector<Task> all_task_vtr = state.getAllTasks();
+	lastActionType = state.getLastActionType();
+	lastActionTaskIndex = state.getLastActionTaskIndex();
 	for (unsigned i = 0; i < all_task_vtr.size(); i++){
 		//cout << "[Task: " << i << "] " << all_calendar_task_vtr[i].task.getTaskName() << endl;
 		if (all_task_vtr[i].getTaskType() == Task::DEADLINE_TIME ||
@@ -207,6 +210,7 @@ void CalendarCanvas::createEmptyTable(){
 	calendarTableHorizontal_vtr.clear();
 	calendarTableVertical_vtr.clear();
 	calendarTableDate_vtr.clear();
+	calendarTableTime_vtr.clear();
 
 	//Background dim rectangle
 	sf::RectangleShape darkbg_task;
@@ -225,6 +229,7 @@ void CalendarCanvas::createEmptyTable(){
 	//Time Text
 	sf::Text text_time;
 	text_time.setFont(font);
+	text_time.setStyle(sf::Text::Underlined);
 	text_time.setColor(sf::Color::White);
 	text_time.setCharacterSize(14);
 
@@ -334,8 +339,13 @@ void CalendarCanvas::createTaskBlock(int block_index,Task task){
 		name.setPosition(all_calendar_task_vtr[block_index].calendarTasksBlk.getPosition().x + 3,
 			all_calendar_task_vtr[block_index].calendarTasksBlk.getPosition().y + 3);
 	}
+	//done task
 	if (all_calendar_task_vtr[block_index].task.getTaskIsDone()){
 		all_calendar_task_vtr[block_index].calendarTasksBlk.setFillColor(sf::Color(0, 255, 0, 180));
+	}
+	//deleting task
+	if (lastActionType != State::CHANGED && lastActionType != State::NONE && all_calendar_task_vtr[block_index].task.getTaskIndex() == lastActionTaskIndex){
+		all_calendar_task_vtr[block_index].calendarTasksBlk.setFillColor(sf::Color(100, 0, 0, 80));
 	}
 	calendarTasksName_vtr.push_back(name);
 }
@@ -353,7 +363,7 @@ int CalendarCanvas::clickingOn(sf::Vector2i mouse, sf::View currentView){
 	for (unsigned i = 0; i < all_calendar_task_vtr.size(); i++){
 		all_calendar_task_vtr[i].calendarTasksBlk.setOutlineColor(BLOCK_OUTLINE_COLOUR);
 		if (all_calendar_task_vtr[i].calendarTasksBlk.getGlobalBounds().contains(mapPixelToCoords(mouse, viewTasksCalendar))){
-			//cout << "calendarTasksBlk_vtr: " << all_calendar_task_vtr[i].task.getTaskName() << endl;
+			cout << "calendarTasksBlk_vtr: " << all_calendar_task_vtr[i].task.getTaskName() << endl;
 			all_calendar_task_vtr[i].calendarTasksBlk.setOutlineColor(BLOCK_HIGHLIGHT_OUTLINE_COLOUR);
 			result = i;
 		}

@@ -64,6 +64,9 @@ void taskpopup::updateInfo(int task_index, bool is_done, sf::Vector2f position, 
 }
 
 void taskpopup::updateInfo(int task_index, bool is_done, sf::Vector2f position, string name, ptime deadline_time){
+	currentTask = task_index;
+	b_isTaskDone = is_done;
+
 	string display_string = name + "\n" + to_simple_string(deadline_time);
 	taskpopup_display.text_info.setString(display_string);
 	
@@ -75,6 +78,14 @@ void taskpopup::updateInfo(int task_index, bool is_done, sf::Vector2f position, 
 	position = blockPositionLimit(position, taskpopup_display.rectangle.getSize());
 	taskpopup_display.text_info.setPosition(position);
 	taskpopup_display.rectangle.setPosition(position);
+
+	taskpopup_display.btn_delete.init(position.x + 80, position.y + 80, "Delete");
+	if (!b_isTaskDone){	 // task is not done
+		taskpopup_display.btn_done.init(position.x, position.y + 80, "Done ");
+	}
+	else{
+		taskpopup_display.btn_done.init(position.x, position.y + 80, "unDone");
+	}
 }
 
 void taskpopup::setActive(bool active){
@@ -83,6 +94,9 @@ void taskpopup::setActive(bool active){
 
 void taskpopup::eventHandler(sf::Vector2f mouse){
 	enum userCommandType { COMMAND_OTHERS = 1, COMMAND_EDIT, COMMAND_DONE, COMMAND_DELETE, COMMAND_HELP, COMMAND_HELP_ADD, COMMAND_HELP_EDIT, COMMAND_HELP_DELETE, COMMAND_HELP_DONE, COMMAND_HELP_SEARCH, COMMAND_HELP_CLEAR, COMMAND_HELP_UNDO, COMMAND_HELP_REDO, COMMAND_HELP_FILTER };
+	
+	if (!taskpopup_display.b_target_active) // if it is not active, dont do checking for buttons
+		return;
 
 	if (taskpopup_display.btn_delete.isClickingOn(sf::Vector2f(mouse.x, mouse.y))){
 		cout << "clicked delete " << "/delete " + to_string(currentTask) << endl;

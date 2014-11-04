@@ -122,7 +122,11 @@ class CalendarCanvas : public QSFMLCanvas{
 		date			calendar_starting_date;	// The first showing date in the calendar	
 		bool			b_dragging;				// Is mouse pressed to drag move the view?
 		sf::Vector2i	dragging_start;			// The starting position when user drag since last window update
-		sf::Font		font;
+		sf::Font		font_time;				// Font for time
+		sf::Font		font;					// Font for anything else
+		sf::Text		text_date;
+		int				lastActionType;			// Last action of state (delete or undo/redo or none)
+		int				lastActionTaskIndex;	// Last modified state
 
 		// view to seperate different axies, so that they can move seperately
 		sf::View		viewTasksCalendarTimeLine, viewTasksCalendarDateLine, viewTasksCalendar;	
