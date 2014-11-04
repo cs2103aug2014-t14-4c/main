@@ -1,25 +1,39 @@
 //@author A0128603L
 
+//Class: button
+//Its to provide buttons in calendar view
+
 #pragma once
 #include <SFML\Graphics.hpp>
 #include <string>
 
 class button{
 public:
-	button();	//need to be created with a function
+	button();
 	~button();
-	void init(float, float, std::string, void(*function)());
+
+	// Initialize font, text and the rectangluar box for button
+	void init(float, float, std::string);
+
+	// Render the graphics elements on window
 	void draw(sf::RenderWindow*);
+
+	// Set button position
 	void setPosition(sf::Vector2f);
+
+	// Check if user is clicking on the button
 	bool isClickingOn(sf::Vector2f mouse);
-	void onClick();
-	void onHover();
+
+	// Set the opacity of the button
 	void setAlpha(int);
+
 private:
-	void(*function)();
+	//////////////
+	//Member Data
+	//////////////
 	sf::Font font;
-	sf::Text showingText;
-	sf::RectangleShape rectangle;
-	int alpha_value;
+	sf::Text showingText;			//Button showing name
+	sf::RectangleShape rectangle;	//The rectangular box
+	int alpha_value;				//Opacity
 };
 

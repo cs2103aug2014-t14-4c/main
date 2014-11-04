@@ -45,7 +45,9 @@ string WhatToDo::GUI_PARAM_DISPLAY_DATE_TODAY = "Today";
 
 string WhatToDo::COMMAND_PARAM_EDIT = "/edit";
 string WhatToDo::COMMAND_PARAM_DELETE = "/delete";
+string WhatToDo::COMMAND_PARAM_DELETE_WITH_REAL_INDEX = "/delete_r";
 string WhatToDo::COMMAND_PARAM_DONE = "/done";
+string WhatToDo::COMMAND_PARAM_DONE_WITH_REAL_INDEX = "/done_r";
 string WhatToDo::COMMAND_PARAM_CLEAR = "/clear";
 string WhatToDo::COMMAND_PARAM_HELP = "/help";
 string WhatToDo::COMMAND_PARAM_UNDO = "/undo";
@@ -114,7 +116,7 @@ string WhatToDo::STRING_AM = "am";
 string WhatToDo::STRING_PM = "pm";
 
 WhatToDo::WhatToDo(string exeDirectory, QWidget *parent)
-	: QMainWindow(parent)
+	: QMainWindow(parent), b_calender_init_complete( false )
 {
 	_ui.setupUi(this);
 	_exeDirectory = exeDirectory;
@@ -123,6 +125,16 @@ WhatToDo::WhatToDo(string exeDirectory, QWidget *parent)
 	defineAllHotkeys();
 	connectAllOtherSignalAndSlots();
 	loadSavedSettings();
+
+	_ui.calendarframe->move(9999, 9999);
+	_ui.calendarbtn_next->move(9999, 9999);
+	_ui.calendarbtn_prev->move(9999, 9999);
+	_ui.calendarframe->setAttribute(Qt::WA_TransparentForMouseEvents);
+
+	SFMLView = new CalendarCanvas(this, _ui.calendarframe, QPoint(0, 0), QSize(921, 501));
+	SFMLView->show();
+	b_calender_init_complete = true;
+	
 }
 
 WhatToDo::~WhatToDo()
@@ -233,13 +245,33 @@ void WhatToDo::handleButtonRedo() {
 }
 
 void WhatToDo::handleButtonToggleCalendar() {
+	updateCalendarView();
+	_ui.calendarframe->move(20, 70);
+	_ui.calendarbtn_next->move(290, 10);
+	_ui.calendarbtn_prev->move(220, 10);
 
+	_ui.calendarframe->raise();
+	_ui.calendarbtn_next->raise();
+	_ui.calendarbtn_prev->raise();
 	return;
 }
 
-void WhatToDo::handleButtonToggleAgenda() {
+void WhatToDo::handleButtonCalendarPrev(){
+	SFMLView->prevPage();
+}
 
-	return;
+void WhatToDo::handleButtonCalendarNext(){
+	SFMLView->nextPage();
+}
+void WhatToDo::handleButtonToggleAgenda() {
+	updateAgendaView();
+	_ui.calendarframe->move(9999, 9999);
+	_ui.calendarbtn_next->move(9999, 9999);
+	_ui.calendarbtn_prev->move(9999, 9999);
+}
+
+void WhatToDo::handleCalendarCommands(string command) {
+	updateGUIWithCommandString(command);
 }
 
 
@@ -249,16 +281,24 @@ void WhatToDo::connectAllOtherSignalAndSlots() {
 
 	decViewPointer = _ui.buttonUndo->rootObject();
 	connect(decViewPointer, SIGNAL(buttonClick()), this, SLOT(handleButtonUndo()));
+
 	decViewPointer = _ui.buttonRedo->rootObject();
 	connect(decViewPointer, SIGNAL(buttonClick()), this, SLOT(handleButtonRedo()));
+
 	decViewPointer = _ui.buttonAgendaview->rootObject();
-	connect(decViewPointer, SIGNAL(buttonClick()), this, SLOT(handleButtonToggleCalendar()));
-	decViewPointer = _ui.buttonCalendarview->rootObject();
 	connect(decViewPointer, SIGNAL(buttonClick()), this, SLOT(handleButtonToggleAgenda()));
+
+	decViewPointer = _ui.buttonCalendarview->rootObject();
+	connect(decViewPointer, SIGNAL(buttonClick()), this, SLOT(handleButtonToggleCalendar()));
 	connect(_myKeyPressEater, SIGNAL(enterPressed(QObject*)), this, SLOT(handleKeyPressEvents(QObject*)));
 	connect(_myKeyPressEater, SIGNAL(tabPressed()), this, SLOT(handleEntryFieldTab()));
 	connect(_ui.commandSearch, SIGNAL(textChanged()), this, SLOT(handleSearchBarChange()));
 
+	connect(_ui.calendarbtn_prev, SIGNAL(released()), this, SLOT(handleButtonCalendarPrev()));
+	connect(_ui.calendarbtn_next, SIGNAL(released()), this, SLOT(handleButtonCalendarNext()));
+
+	//connect(reinterpret_cast<QObject*>(SFMLView->popup), SIGNAL(deleteButtonClicked(string)), this, SLOT(handleCalendarCommands(string)));
+	//connect((SFMLView->popup), SIGNAL(deleteButtonClicked(string)), this, SLOT(handleCalendarCommands(string)));
 	return;
 }
 
@@ -318,7 +358,6 @@ void WhatToDo::defineAllHotkeys() {
 void WhatToDo::loadSavedSettings() {
 	refreshCurrStateWithCommand(COMMAND_PARAM_LOAD);
 	updateAgendaView();
-	updateCalendarView();
 	return;
 }
 
@@ -386,11 +425,19 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			break;
 		}
 		case COMMAND_DONE: {
-			processCommandDone(commandString);
+			processCommandDone(commandString, false);
+			break;
+		}
+		case COMMAND_DONE_WITH_REAL_INDEX: {
+			processCommandDone(commandString, true);
 			break;
 		}
 		case COMMAND_DELETE: {
-			processCommandDelete(commandString);
+			processCommandDelete(commandString, false);
+			break;
+		}
+		case COMMAND_DELETE_WITH_REAL_INDEX: {
+			processCommandDelete(commandString, true);
 			break;
 		}
 		case COMMAND_OTHERS: {
@@ -472,8 +519,7 @@ void WhatToDo::updateAgendaView() {
 }
 
 void WhatToDo::updateCalendarView() {
-
-	return;
+	if (b_calender_init_complete)	SFMLView->readFromState(_currState);
 }
 
 
@@ -499,8 +545,14 @@ int WhatToDo::determineCommandType(string usercommandString) {
 	else if (userCommand == COMMAND_PARAM_DONE) {
 		return COMMAND_DONE;
 	}
+	else if (userCommand == COMMAND_PARAM_DONE_WITH_REAL_INDEX) {
+		return COMMAND_DONE_WITH_REAL_INDEX;
+	}
 	else if (userCommand == COMMAND_PARAM_DELETE) {
 		return COMMAND_DELETE;
+	}
+	else if (userCommand == COMMAND_PARAM_DELETE_WITH_REAL_INDEX){
+		return COMMAND_DELETE_WITH_REAL_INDEX;
 	}
 	else if (userCommand == COMMAND_PARAM_HELP) {
 		if (inputString >> userCommandSpecs) {
@@ -584,7 +636,7 @@ void WhatToDo::processCommandEdit(string commandString) {
 	return;
 }
 
-void WhatToDo::processCommandDone(string commandString) {
+void WhatToDo::processCommandDone(string commandString, bool b_usingRealIndex) {
 	istringstream inputString(commandString);
 	vector<Task> allCurrentTasks = _currState.getAllTasks();
 	int displayIndexToDone;
@@ -593,10 +645,16 @@ void WhatToDo::processCommandDone(string commandString) {
 	string commandToPassLogic;
 
 	if (inputString >> userCommand >> displayIndexToDone) {
-		if ((displayIndexToDone >= 1) && (displayIndexToDone <= allCurrentTasks.size())) {
-			actualIndexToDone = allCurrentTasks[displayIndexToDone-1].getTaskIndex();
+		if (b_usingRealIndex){
+			commandToPassLogic = COMMAND_PARAM_DONE + STRING_SPACE_CHAR + to_string(displayIndexToDone);
+			refreshCurrStateWithCommand(commandToPassLogic);
+			updateAgendaView();
+			updateCalendarView();
+			showLogicUserFeedback();
+		}
+		else if ((displayIndexToDone >= 1) && (displayIndexToDone <= allCurrentTasks.size())) {
+			actualIndexToDone = allCurrentTasks[displayIndexToDone - 1].getTaskIndex();
 			commandToPassLogic = COMMAND_PARAM_DONE + STRING_SPACE_CHAR + to_string(actualIndexToDone);
-
 			refreshCurrStateWithCommand(commandToPassLogic);
 			updateAgendaView();
 			updateCalendarView();
@@ -612,7 +670,7 @@ void WhatToDo::processCommandDone(string commandString) {
 	return;
 }
 
-void WhatToDo::processCommandDelete(string commandString) {
+void WhatToDo::processCommandDelete(string commandString, bool b_usingRealIndex) {
 	istringstream inputString(commandString);
 	vector<Task> allCurrentTasks = _currState.getAllTasks();
 	int displayIndexToDelete;
@@ -621,10 +679,16 @@ void WhatToDo::processCommandDelete(string commandString) {
 	string commandToPassLogic;
 
 	if (inputString >> userCommand >> displayIndexToDelete) {
-		if ((displayIndexToDelete >= 1) && (displayIndexToDelete <= allCurrentTasks.size())) {
-			actualIndexToDelete = allCurrentTasks[displayIndexToDelete-1].getTaskIndex();
+		if (b_usingRealIndex){
+			commandToPassLogic = COMMAND_PARAM_DELETE + STRING_SPACE_CHAR + to_string(displayIndexToDelete);
+			refreshCurrStateWithCommand(commandToPassLogic);
+			updateAgendaView();
+			updateCalendarView();
+			showLogicUserFeedback();
+		}
+		else if ((displayIndexToDelete >= 1) && (displayIndexToDelete <= allCurrentTasks.size())) {
+			actualIndexToDelete = allCurrentTasks[displayIndexToDelete - 1].getTaskIndex();
 			commandToPassLogic = COMMAND_PARAM_DELETE + STRING_SPACE_CHAR + to_string(actualIndexToDelete);
-
 			refreshCurrStateWithCommand(commandToPassLogic);
 			updateAgendaView();
 			updateCalendarView();
@@ -680,6 +744,7 @@ void WhatToDo::showGUIUserFeedback(string guiUserFeedback) {
 }
 
 void WhatToDo::refreshCurrStateWithCommand(string commandString) {
+	cout << "entered command: " << commandString << endl;
 	State incomingNewState = LogicExecutor::getNewState(commandString);
 	int lastActionType = incomingNewState.getLastActionType();
 	int lastActionTaskIndex = incomingNewState.getLastActionTaskIndex();
@@ -740,7 +805,7 @@ void WhatToDo::markLastActionForUser(int timedViewScrollPos, int floatViewScroll
 			theChangedTaskElement = timedViewWebFrame->findFirstElement(QString::fromStdString(HTMLTAGS_CHANGED_TASK_TEXT_ID));
 		}
 
-		if (lastActionType == State::CHANGED) {
+		if (lastActionType == State::CHANGED) { 
 			theChangedTaskElement.setAttribute(QString::fromStdString(HTMLTAGS_STYLE_PROPERTY), QString::fromStdString(HTMLTAGS_BACKGROUND_CHANGED_TASK));
 		}
 		else {
