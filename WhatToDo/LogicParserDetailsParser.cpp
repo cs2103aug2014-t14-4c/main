@@ -48,6 +48,7 @@ void DetailsParser::markTaskAsDone(Command* command) {
 			throw invalid_argument(USERMESSAGE_INVALID_DONE);
 		}
 		setTaskIndex(command);
+		command->setIsDoneStatus(true);
 	} catch(const invalid_argument& e) {
 		command->setUserMessage(e.what());
 		command->setParsedStatus(false);
