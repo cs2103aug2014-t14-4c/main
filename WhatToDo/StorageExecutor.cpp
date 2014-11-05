@@ -8,68 +8,65 @@ StorageExecutor::StorageExecutor(void){
 State StorageExecutor::loadFromStorage(){
 	
 	//get vector of strings from StorageDatabase
-	storageToConvert = myStorageDatabase.readFromDatabase();
-	
-	assert(&storageToConvert != NULL);
+	_storageToConvert = _storageDatabaseObj.readFromDatabase();
+	assert(&_storageToConvert != NULL);
 	//cannot read a null pointer
 	
-	vector<vector<string>>::iterator myStorageIterator = storageToConvert.begin();
+	vector<vector<string>>::iterator myStorageIterator = _storageToConvert.begin();
 	
 	//convert each string into task using storageConverterdddd
-	processVectorToTaskConversion(myStorageIterator);
+	processVectorStringToTaskConversion(myStorageIterator);
 
 	//pack tasks into state and return as state
-	vector<Task>::iterator taskIterator = myConvertedTask.begin();
+	vector<Task>::iterator taskIterator = _convertedTaskVector.begin();
 	assert(&taskIterator!=NULL);
-	stateToLoad = processTaskAddition(taskIterator);
+	_stateToLoad = processTaskAddition(taskIterator);
 
-	return stateToLoad;
+	return _stateToLoad;
 }
 
 void StorageExecutor::saveToStorage(State stateToSave){
 	//first get all task for a given State and returns a vector of Tasks
 	assert(&stateToSave!=NULL);
 	
-	taskToStore = stateToSave.getAllTasks(); 
-
-	assert(&taskToStore != NULL);
+	_taskToStore = stateToSave.getAllTasks(); 
 
 	//for each task, convert to string using string converter
-	vector<Task>::iterator myTaskIterator = taskToStore.begin();
+	vector<Task>::iterator myTaskIterator = _taskToStore.begin();
 	convertAllTaskToString(myTaskIterator);
 	//send to StorageDatabase for writing of file
-	myStorageDatabase.writeToDatabase(convertedTaskStringStorage);
+	_storageDatabaseObj.writeToDatabase(_convertedStringStorage);
 	
 	return;
 }
 
-void StorageExecutor::processVectorToTaskConversion(vector<vector<string>>::iterator vIterator){
+void StorageExecutor::processVectorStringToTaskConversion(vector<vector<string>>::iterator vIterator){
 	//convert string to task
-	while(vIterator!=storageToConvert.end()){
-		myIndividualTask = myStorageConverter.convertStringToTask(*vIterator);
-		myConvertedTask.push_back(myIndividualTask);
+	while(vIterator!=_storageToConvert.end()){
+		_individualTask = _storageConverterObj.convertStringToTask(*vIterator);
+		_convertedTaskVector.push_back(_individualTask);
 		vIterator++;
 	}
 	return;
 }
 
 State StorageExecutor::processTaskAddition(vector<Task>::iterator taskIterator){
-	State stateToLoad;
+
 	//adding task for loading by state
-	while(taskIterator!= myConvertedTask.end()){
-		stateToLoad.addTask(*taskIterator); 
+	while(taskIterator!= _convertedTaskVector.end()){
+		_stateToLoad.addTask(*taskIterator); 
 		taskIterator++; 
 	}
-	return stateToLoad;
+	return _stateToLoad;
 }
 
 void StorageExecutor::convertAllTaskToString(vector<Task>::iterator taskIterator){
 
-	convertedTaskStringStorage.clear();
-	while(taskIterator!=taskToStore.end()){
-		individualConvertedTask = myStorageConverter.convertTaskToString(*taskIterator);
+	_convertedStringStorage.clear();
+	while(taskIterator!=_taskToStore.end()){
+		_individualConvertedTask = _storageConverterObj.convertTaskToString(*taskIterator);
 		//store the converted string into a vector of strings
-		convertedTaskStringStorage.push_back(individualConvertedTask);
+		_convertedStringStorage.push_back(_individualConvertedTask);
 		taskIterator++;
 	}
 

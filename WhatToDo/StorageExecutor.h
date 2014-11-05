@@ -10,18 +10,18 @@
 using namespace std;
 
 class StorageExecutor{
-	private: 
-		vector<string> myStorage;
-		vector<vector<string>> storageToConvert; 
-		StorageDatabase myStorageDatabase;
-		StorageConverter myStorageConverter; 
-		State stateToLoad; 
-		Task myIndividualTask; 
-		vector<vector<string>> convertedTaskStringStorage; 
-		vector<string> individualConvertedTask;
-		vector<Task> myConvertedTask;
-		vector<Task> taskToStore;
-	
+private: 
+		StorageDatabase _storageDatabaseObj;
+		StorageConverter _storageConverterObj; 
+
+		State _stateToLoad; 
+		Task _individualTask; 
+
+		vector<vector<string>> _storageToConvert; 
+		vector<vector<string>> _convertedStringStorage; 
+		vector<string> _individualConvertedTask;
+		vector<Task> _convertedTaskVector;
+		vector<Task> _taskToStore;
 public:
 		StorageExecutor(void);
 		
@@ -30,7 +30,7 @@ public:
 		void saveToStorage(State stateToSave);
 		
 		//supporting functions
-		void processVectorToTaskConversion(vector<vector<string>>::iterator vectorStringIterator);
+		void processVectorStringToTaskConversion(vector<vector<string>>::iterator vectorStringIterator);
 		State processTaskAddition(vector<Task>::iterator taskIterator);
 		void StorageExecutor::convertAllTaskToString(vector<Task>::iterator taskIterator);
 
