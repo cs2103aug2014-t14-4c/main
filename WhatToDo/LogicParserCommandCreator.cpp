@@ -30,6 +30,8 @@ Command* CommandCreator::createCommand(string userInput) {
 		command = createSearchCommand();
 	} else if(isUndoCommand()) {
 		command = createUndoCommand();
+	} else if(isUndoneCommand()) {
+		command = createUndoneCommand();
 	} else {
 		command = createAddCommand();
 	}
@@ -58,100 +60,71 @@ bool CommandCreator::hasNoParameters(void) {
 }
 
 bool CommandCreator::isClearCommand(void) {
-	for(auto iter = COMMANDS_CLEAR.begin(); 
-			iter != COMMANDS_CLEAR.end(); 
-			++iter) {
-		if(_userCommand == *iter) {
+	if(_userCommand == COMMAND_CLEAR) {
 			return true;
-		}
 	}
 	return false;
 }
 
 bool CommandCreator::isDeleteCommand(void) {
-	for(auto iter = COMMANDS_DELETE.begin(); 
-			iter != COMMANDS_DELETE.end(); 
-			++iter) {
-		if(_userCommand == *iter) {
+	if(_userCommand == COMMAND_DELETE) {
 			return true;
-		}
 	}
 	return false;
 }
 
 bool CommandCreator::isDoneCommand(void) {
-	for(auto iter = COMMANDS_DONE.begin(); 
-			iter != COMMANDS_DONE.end(); 
-			++iter) {
-		if(_userCommand == *iter) {
+	if(_userCommand == COMMAND_DONE) {
 			return true;
-		}
 	}
 	return false;
 }
 
 bool CommandCreator::isEditCommand(void) {
-	for(auto iter = COMMANDS_EDIT.begin(); 
-			iter != COMMANDS_EDIT.end(); 
-			++iter) {
-		if(_userCommand == *iter) {
+	if(_userCommand == COMMAND_EDIT) {
 			return true;
-		}
 	}
 	return false;
 }
 
 bool CommandCreator::isFilterCommand(void) {
-	for(auto iter = COMMANDS_FILTER.begin();
-			iter != COMMANDS_FILTER.end();
-			++iter) {
-		if(_userCommand == *iter) {
+	if(_userCommand == COMMAND_FILTER) {
 			return true;
-		}
 	}
 	return false;
 }
 
 bool CommandCreator::isLoadCommand(void) {
-	for(auto iter = COMMANDS_LOAD.begin(); 
-			iter != COMMANDS_LOAD.end(); 
-			++iter) {
-		if(_userCommand == *iter) {
+	if(_userCommand == COMMAND_LOAD) {
 			return true;
-		}
 	}
 	return false;
 }
 
 bool CommandCreator::isRedoCommand(void) {
-	for(auto iter = COMMANDS_REDO.begin(); 
-			iter != COMMANDS_REDO.end(); 
-			++iter) {
-		if(_userCommand == *iter) {
+	if(_userCommand == COMMAND_REDO) {
 			return true;
-		}
 	}
 	return false;
 }
 
 bool CommandCreator::isSearchCommand(void) {
-	for(auto iter = COMMANDS_SEARCH.begin(); 
-			iter != COMMANDS_SEARCH.end(); 
-			++iter) {
-		if(_userCommand == *iter) {
+	if(_userCommand == COMMAND_SEARCH) {
 			return true;
-		}
 	}
 	return false;
 }
 
 bool CommandCreator::isUndoCommand(void) {
-	for(auto iter = COMMANDS_UNDO.begin(); 
-			iter != COMMANDS_UNDO.end(); 
-			++iter) {
-		if(_userCommand == *iter) {
+	if(_userCommand == COMMAND_UNDO) {
 			return true;
-		}
+	}
+	return false;
+}
+
+bool CommandCreator::isUndoneCommand(void) {
+	if(_userCommand == COMMAND_UNDONE) {
+			return true;
 	}
 	return false;
 }
@@ -268,4 +241,17 @@ Command* CommandCreator::createUndoCommand(void) {
 		undoCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_CLEAR);
 	}
 	return undoCommand;
+}
+
+Command* CommandCreator::createUndoneCommand(void) {
+	Command* undoneCommand = new CommandDone;
+	undoneCommand->setParsedStatus(hasParameters());
+
+	if(undoneCommand->getParsedStatus()) {
+		DetailsParser details(getParameters());
+		details.markTaskAsUndone(undoneCommand);
+	} else {
+		undoneCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_UNDONE);
+	}
+	return undoneCommand;
 }

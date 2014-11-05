@@ -2,15 +2,16 @@
 #define WHATTODO_H
 
 #include <QtWidgets/QMainWindow>
-#include <QWebElement>
+#include <QtWebKit/qwebelement.h>
 #include <QWebFrame>
 #include <QShortcut>
 #include <QGraphicsObject>
 #include <QTextCursor>
 #include <QObject>
 #include <QAction>
+
 #include <boost/algorithm/string.hpp>
-#include <boost\date_time.hpp>
+#include <boost/date_time.hpp>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -20,6 +21,7 @@
 #include "State.h"
 #include "Task.h"
 #include "calendarcanvas.h"
+#include "taskpopup.h"
 
 using namespace std;
 using namespace boost::posix_time;
@@ -30,10 +32,10 @@ class WhatToDo : public QMainWindow
 	Q_OBJECT
 
 	public:
-		WhatToDo(QWidget *parent = 0);
+		WhatToDo(string exeDirectory, QWidget *parent = 0);
 		~WhatToDo();
-		void updateCalendarScrollBar(int x, int y);
-		void removeDeletedTask(); // to be called by calendar
+		void handleCalendarCommands(string command); //calling updateGUIWithCommandString(string)
+		void updateCalendarView();
 
 	public slots:
 		void handleKeyPressEvents(QObject* obj);
@@ -46,7 +48,6 @@ class WhatToDo : public QMainWindow
 		void handleHotkeyDelete();
 		void handleHotkeyDone();
 		void handleHotkeyFilter();
-		void handleButtonEnter();
 		void handleHotkeyClear();
 		void handleHotkeyHelp();
 		void handleButtonUndo();
@@ -55,9 +56,6 @@ class WhatToDo : public QMainWindow
 		void handleButtonToggleCalendar();
 		void handleButtonCalendarPrev();
 		void handleButtonCalendarNext();
-		void handleButtonVertScroll(int);
-		void handleButtonHoriScroll(int);
-
 		void handleButtonToggleAgenda();
 
 	private:
@@ -65,8 +63,9 @@ class WhatToDo : public QMainWindow
 		KeyPressEater* _myKeyPressEater;
 		State _currState;
 		State _tempFutureState;
-		CalendarCanvas *SFMLView;
-		bool b_calendar_active, b_calender_init_complete;
+		string _exeDirectory;
+		CalendarCanvas* SFMLView;
+		bool b_calender_init_complete;
 
 		void connectAllOtherSignalAndSlots();
 		void defineAllHotkeys();
@@ -77,7 +76,6 @@ class WhatToDo : public QMainWindow
 		void updateGUIFromCommandLine();
 		void updateGUIWithCommandString(string commandString);
 		void updateAgendaView();
-		void updateCalendarView();
 		void showLogicUserFeedback();
 		void showGUIUserFeedback(string guiUserFeedback);
 		void refreshCurrStateWithCommand(string commandString);
@@ -86,8 +84,8 @@ class WhatToDo : public QMainWindow
 		bool checkIsUserCommandInputValid(string usercommandString);
 		int determineCommandType(string usercommandString);
 		void processCommandEdit(string commandString);
-		void processCommandDone(string commandString);
-		void processCommandDelete(string commandString);
+		void processCommandDone(string commandString, bool b_usingRealIndex);
+		void processCommandDelete(string commandString, bool b_usingRealIndex);
 		void processCommandOthers(string commandString);
 
 		string getAgendaTimedViewHtml();
@@ -111,7 +109,7 @@ class WhatToDo : public QMainWindow
 		string convertDateTimeToEditText(ptime timeToConvert);
 		string convertDateToEditText(ptime timeToConvert);
 
-		enum userCommandType { COMMAND_OTHERS = 1, COMMAND_EDIT, COMMAND_DONE, COMMAND_DELETE, COMMAND_HELP, COMMAND_HELP_ADD, COMMAND_HELP_EDIT, COMMAND_HELP_DELETE, COMMAND_HELP_DONE, COMMAND_HELP_SEARCH, COMMAND_HELP_CLEAR, COMMAND_HELP_UNDO, COMMAND_HELP_REDO, COMMAND_HELP_FILTER };
+		enum userCommandType { COMMAND_OTHERS = 1, COMMAND_EDIT, COMMAND_DONE, COMMAND_DONE_WITH_REAL_INDEX, COMMAND_DELETE, COMMAND_DELETE_WITH_REAL_INDEX, COMMAND_HELP, COMMAND_HELP_ADD, COMMAND_HELP_EDIT, COMMAND_HELP_DELETE, COMMAND_HELP_DONE, COMMAND_HELP_SEARCH, COMMAND_HELP_CLEAR, COMMAND_HELP_UNDO, COMMAND_HELP_REDO, COMMAND_HELP_FILTER };
 
 		static string HTMLTAGS_BEGIN;
 		static string HTMLTAGS_END;
@@ -157,7 +155,9 @@ class WhatToDo : public QMainWindow
 
 		static string COMMAND_PARAM_EDIT;
 		static string COMMAND_PARAM_DELETE;
+		static string COMMAND_PARAM_DELETE_WITH_REAL_INDEX;
 		static string COMMAND_PARAM_DONE;
+		static string COMMAND_PARAM_DONE_WITH_REAL_INDEX;
 		static string COMMAND_PARAM_CLEAR;
 		static string COMMAND_PARAM_HELP;
 		static string COMMAND_PARAM_UNDO;

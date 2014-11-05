@@ -4,7 +4,6 @@
     <file>UI Files/Button_Agendaview.qml</file>
     <file>UI Files/Button_Calendarview.qml</file>
     <file>UI Files/Button_Close.qml</file>
-    <file>UI Files/Button_Enter.qml</file>
     <file>UI Files/Button_Redo.qml</file>
     <file>UI Files/Button_Undo.qml</file>
     <file>UI Files/Msgbox_Action.qml</file>

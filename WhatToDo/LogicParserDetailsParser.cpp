@@ -35,6 +35,7 @@ void DetailsParser::deleteExistingTask(Command* command) {
 			throw invalid_argument(USERMESSAGE_INVALID_DELETE);
 		}
 		setTaskIndex(command);
+		command->setIsDoneStatus(true);
 	} catch(const invalid_argument& e) {
 		command->setUserMessage(e.what());
 		command->setParsedStatus(false);
@@ -47,6 +48,20 @@ void DetailsParser::markTaskAsDone(Command* command) {
 			throw invalid_argument(USERMESSAGE_INVALID_DONE);
 		}
 		setTaskIndex(command);
+		command->setIsDoneStatus(true);
+	} catch(const invalid_argument& e) {
+		command->setUserMessage(e.what());
+		command->setParsedStatus(false);
+	}
+}
+
+void DetailsParser::markTaskAsUndone(Command* command) {
+	try {
+		if(!hasOnlyIndex()) {
+			throw invalid_argument(USERMESSAGE_INVALID_UNDONE);
+		}
+		setTaskIndex(command);
+		command->setIsDoneStatus(false);
 	} catch(const invalid_argument& e) {
 		command->setUserMessage(e.what());
 		command->setParsedStatus(false);
@@ -125,12 +140,12 @@ void DetailsParser::addTaskName(Task* task) {
 
 void DetailsParser::parseDoneFilter(Command* command) {
 	try {
-		if(foundDone()) {
+		if(foundNoDone()) {
+			command->setDoneFilter(Done::DONE_BOTH);
+		} else if(foundDone()) {
 			command->setDoneFilter(Done::ONLY_DONE);
 		} else if(foundUndone()) {
 			command->setDoneFilter(Done::ONLY_UNDONE);
-		} else if(foundNoDone()) {
-			command->setDoneFilter(Done::DONE_BOTH);
 		}
 	} catch(const invalid_argument&) {
 		throw;
@@ -139,12 +154,12 @@ void DetailsParser::parseDoneFilter(Command* command) {
 
 void DetailsParser::parseTypeFilter(Command* command) {
 	try {
-		if(foundFixed()) {
-			command->setTypeFilter(Type::ONLY_FIXED);
+		if(foundNoType()) {
+			command->setTypeFilter(Type::ALL_TYPES);
 		} else if(foundDue()) {
 			command->setTypeFilter(Type::ONLY_DUE);
-		} else if(foundNoType()) {
-			command->setTypeFilter(Type::TYPE_NOT_SET);
+		} else if(foundFixed()) {
+			command->setTypeFilter(Type::ONLY_FIXED);
 		}
 	} catch(const invalid_argument&) {
 		throw;
@@ -156,8 +171,8 @@ void DetailsParser::parseDateFilter(Command* command) {
 		if(foundNoDate()) {
 			date positiveInfinity(pos_infin);
 			date negativeInfinity(neg_infin);
-			command->setStartDateFilter(positiveInfinity);
-			command->setEndDateFilter(negativeInfinity);
+			command->setStartDateFilter(negativeInfinity);
+			command->setEndDateFilter(positiveInfinity);
 		} else {
 			DatetimeParser datetime;
 			datetime.addFilterDate(command, _parameters);
@@ -206,7 +221,7 @@ bool DetailsParser::foundUndone(void) {
 
 bool DetailsParser::foundNoDone(void) {
 	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
-		if(*iter == FILTER_DONE_BOTH) {
+		if(*iter == FILTER_DONE_ALL) {
 			return true;
 		}
 	}
