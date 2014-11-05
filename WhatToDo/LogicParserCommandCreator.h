@@ -38,24 +38,16 @@
 
 using namespace std;
 
-const array<string, 2> COMMANDS_CLEAR = 
-	{"/clear", "/c"};
-const array<string, 3> COMMANDS_DELETE = 
-	{"/delete", "/del", "/d"};
-const array<string, 2> COMMANDS_DONE = 
-	{"/done", "/k"};
-const array<string, 3> COMMANDS_EDIT = 
-	{"/edit", "/ed", "/e"};
-const array<string, 2> COMMANDS_FILTER =
-	{"/filter", "/f"};
-const array<string, 1> COMMANDS_LOAD = 
-	{"/load"};
-const array<string, 2> COMMANDS_REDO = 
-	{"/redo", "/r"};
-const array<string, 3> COMMANDS_SEARCH = 
-	{"/search", "/find", "/s"};
-const array<string, 2> COMMANDS_UNDO = 
-	{"/undo", "/u"};
+const string COMMAND_CLEAR = "/clear";
+const string COMMAND_DELETE = "/delete";
+const string COMMAND_DONE = "/done";
+const string COMMAND_EDIT = "/edit";
+const string COMMAND_FILTER = "/filter";
+const string COMMAND_LOAD = "/load";
+const string COMMAND_REDO = "/redo";
+const string COMMAND_SEARCH = "/search";
+const string COMMAND_UNDO = "/undo";
+const string COMMAND_UNDONE = "/undone";
 
 const string USERMESSAGE_INVALID_COMMAND_CLEAR = 
 	"Type /clear to clear the search results.";
@@ -75,6 +67,8 @@ const string USERMESSAGE_INVALID_COMMAND_SEARCH =
 	"Type /search <keyword> to search for the keyword in your tasks.";
 const string USERMESSAGE_INVALID_COMMAND_UNDO =
 	"Type /undo to undo the last performed action.";
+const string USERMESSAGE_INVALID_COMMAND_UNDONE =
+	"Type /undone <index> to mark the task at <index> as not done.";
 
 class CommandCreator : public StringModifier {
 public:
@@ -105,6 +99,7 @@ private:
 	bool isRedoCommand(void);
 	bool isSearchCommand(void);
 	bool isUndoCommand(void);
+	bool isUndoneCommand(void);
 
 	//Creates the pointer to the respective Command subclasses, and populate
 	//their internal fields with the variables required as specified in the
@@ -119,4 +114,5 @@ private:
 	Command* createRedoCommand(void);
 	Command* createSearchCommand(void);
 	Command* createUndoCommand(void);
+	Command* createUndoneCommand(void);
 };
