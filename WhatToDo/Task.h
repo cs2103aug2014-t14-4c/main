@@ -38,7 +38,7 @@ class Task{
 		void setTaskDetails(string detailsToSet); // Not used for now
 		void setTaskTags(vector<string> tagsToSet);
 		void setTaskIndex(int indexToSet);
-		void setTaskIsDone();
+		void setTaskIsDone(bool doneStatusToSet = true);
 		void setTaskIsNotDone();
 
 		//Getters

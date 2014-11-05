@@ -1,17 +1,13 @@
 #include "CommandSearchPowerSearch.h"
 
-int CommandSearchPowerSearch::INITIAL_VALUE_PARTIAL_SHORT_HAND_INDEX = 1;
-int CommandSearchPowerSearch::INITIAL_VALUE_FUZZYSEARCH_IDEAL_FOUND_INDEX = 0;
-int CommandSearchPowerSearch::INITIAL_VALUE_FUZZYSEARCH_DEFAULT_ERROR = 1;
-double CommandSearchPowerSearch::FUZZY_SEARCH_MATCH_REORD_TOLERANCE = 0.75;
-
 CommandSearchPowerSearch::CommandSearchPowerSearch(void) {
 }
 
 CommandSearchPowerSearch::~CommandSearchPowerSearch(void) {
 }
 
-bool CommandSearchPowerSearch::checkIsFound(string mainString, string searchString) {
+bool CommandSearchPowerSearch::checkIsFound(string mainString, 
+		string searchString) {
 	bool isFound = false;
 	_mainString = mainString;
 	_remainingString = mainString;
@@ -44,7 +40,9 @@ bool CommandSearchPowerSearch::checkIsFoundbyPowerSearch() {
 	}
 
 	for (i=0; unsigned(i)<_tokenizedSearchString.size(); i++) {
-		isTokenFound = powerSearchRemainingString(_tokenizedSearchString[i]);
+		isTokenFound = 
+			powerSearchRemainingString(_tokenizedSearchString[i]);
+
 		if (!isTokenFound) {
 			isFound = false;
 			break;
@@ -54,7 +52,8 @@ bool CommandSearchPowerSearch::checkIsFoundbyPowerSearch() {
 	return isFound;
 }
 
-bool CommandSearchPowerSearch::powerSearchRemainingString(string searchToken) {
+bool CommandSearchPowerSearch::powerSearchRemainingString(
+		string searchToken) {
 	bool isFound = false;
 
 	if (checkIsFoundByShorthandSearch(searchToken)) {
@@ -71,7 +70,8 @@ bool CommandSearchPowerSearch::powerSearchRemainingString(string searchToken) {
 	return isFound;
 }
 
-bool CommandSearchPowerSearch::checkIsFoundByFuzzySearch(string searchToken) {
+bool CommandSearchPowerSearch::checkIsFoundByFuzzySearch(
+		string searchToken) {
 	string mainString = _mainString;
 	bool isFound = false;
 	int mainStringSize = mainString.size();
@@ -87,8 +87,10 @@ bool CommandSearchPowerSearch::checkIsFoundByFuzzySearch(string searchToken) {
 	return isFound;
 }
 
-bool CommandSearchPowerSearch::checkIsFoundByShorthandSearch(string searchToken) {
-	vector<string> tokenizedMainString = tokenizeString(_remainingString);
+bool CommandSearchPowerSearch::checkIsFoundByShorthandSearch(
+		string searchToken) {
+	vector<string> tokenizedMainString = 
+		tokenizeString(_remainingString);
 	bool isFound;
 	int indexShorthandLastFound = 0;
 	int i;
@@ -96,19 +98,27 @@ bool CommandSearchPowerSearch::checkIsFoundByShorthandSearch(string searchToken)
 
 	for (i=0; unsigned(i)<tokenizedMainString.size(); i++) {
 		string currentMainToken = tokenizedMainString[i];
-		int indexPartialShorthandLastFound = INITIAL_VALUE_PARTIAL_SHORT_HAND_INDEX;
+		int indexPartialShorthandLastFound = 
+			INITIAL_VALUE_PARTIAL_SHORT_HAND_INDEX;
 		isFound = true;
 		
 		for (j=0; unsigned(j)<searchToken.size(); j++) {
 			bool isPartialSearchTokenFound = false;
 
 			if ((j==0) && (searchToken[0] == currentMainToken[0])) {
-				currentMainToken = currentMainToken.substr(indexPartialShorthandLastFound);
+				currentMainToken = 
+					currentMainToken.substr(
+					indexPartialShorthandLastFound);
 				isPartialSearchTokenFound = true;
 			}
-			else if ((j!=0) && (currentMainToken.find(searchToken[j]) != string::npos)){
-				indexPartialShorthandLastFound = currentMainToken.find(searchToken[j]);
-				currentMainToken = currentMainToken.substr(indexPartialShorthandLastFound+1);
+			else if ((j!=0) 
+					&& (currentMainToken.find(
+					searchToken[j]) != string::npos)){
+				indexPartialShorthandLastFound = 
+					currentMainToken.find(searchToken[j]);
+				currentMainToken = 
+					currentMainToken.substr(
+					indexPartialShorthandLastFound+1);
 				isPartialSearchTokenFound = true;
 			}
 
@@ -122,9 +132,11 @@ bool CommandSearchPowerSearch::checkIsFoundByShorthandSearch(string searchToken)
 			int k;
 			indexShorthandLastFound = i;
 			for (k=0; unsigned(k)<=indexShorthandLastFound; k++) {
-				tokenizedMainString.erase(tokenizedMainString.begin());
+				tokenizedMainString.erase(
+					tokenizedMainString.begin());
 			}
-			_newRemainingString = untokenizeString(tokenizedMainString);
+			_newRemainingString =
+				untokenizeString(tokenizedMainString);
 			return true;
 		}
 		
@@ -133,25 +145,34 @@ bool CommandSearchPowerSearch::checkIsFoundByShorthandSearch(string searchToken)
 	return false;
 }
 
-bool CommandSearchPowerSearch::checkIsFoundByAcronymSearch(string searchToken) {
-	vector<string> tokenizedMainString = tokenizeString(_remainingString);
-	string stringOfMainStringFirstChars = getFirstCharacters(tokenizedMainString);
-	string remainingMainStringFirstChars = stringOfMainStringFirstChars;
+bool CommandSearchPowerSearch::checkIsFoundByAcronymSearch(
+		string searchToken) {
+	vector<string> tokenizedMainString = 
+		tokenizeString(_remainingString);
+	string stringOfMainStringFirstChars = 
+		getFirstCharacters(tokenizedMainString);
+	string remainingMainStringFirstChars = 
+		stringOfMainStringFirstChars;
 	bool isFound = true;
 	int indexAcronymLastFound = 0;
 	int charIndex = 0;
 	int i;
 
 	for (i=0; unsigned(i)<searchToken.size(); i++) {
-		if (remainingMainStringFirstChars.find(searchToken[i]) == string::npos) {
+		if (remainingMainStringFirstChars.find(
+				searchToken[i]) == string::npos) {
 			isFound = false;
 			break;
 		}
-		charIndex = remainingMainStringFirstChars.find(searchToken[i]);
-		remainingMainStringFirstChars = remainingMainStringFirstChars.substr(charIndex+1);
+		charIndex = 
+			remainingMainStringFirstChars.find(searchToken[i]);
+		remainingMainStringFirstChars = 
+			remainingMainStringFirstChars.substr(charIndex+1);
 	}
 
-	indexAcronymLastFound = stringOfMainStringFirstChars.size() - remainingMainStringFirstChars.size();
+	indexAcronymLastFound = 
+		stringOfMainStringFirstChars.size() - 
+		remainingMainStringFirstChars.size();
 	for (i=0; unsigned(i)<indexAcronymLastFound; i++) {
 		tokenizedMainString.erase(tokenizedMainString.begin());
 	}
@@ -160,7 +181,10 @@ bool CommandSearchPowerSearch::checkIsFoundByAcronymSearch(string searchToken) {
 	return isFound;
 }
 
-vector<string> CommandSearchPowerSearch::tokenizeString(string stringToTokenize) {
+
+
+vector<string> CommandSearchPowerSearch::tokenizeString(
+		string stringToTokenize) {
 	istringstream inputString(stringToTokenize);
 	string tokenString;
 	vector<string> tokenizedString;
@@ -172,7 +196,8 @@ vector<string> CommandSearchPowerSearch::tokenizeString(string stringToTokenize)
 	return tokenizedString;
 }
 
-string CommandSearchPowerSearch::untokenizeString(vector<string> stringTokens) {
+string CommandSearchPowerSearch::untokenizeString(
+		vector<string> stringTokens) {
 	ostringstream outputString;
 	int i;
 	
@@ -187,24 +212,28 @@ string CommandSearchPowerSearch::untokenizeString(vector<string> stringTokens) {
 	return outputString.str();
 }
 
-string CommandSearchPowerSearch::getFirstCharacters(vector<string> tokenizedMainString) {
+string CommandSearchPowerSearch::getFirstCharacters(
+		vector<string> tokenizedMainString) {
 	string listOfFirstCharacters;
 	int i;
 
 	for (i=0; unsigned(i)<tokenizedMainString.size(); i++) {
 		if (tokenizedMainString[i].size() > 0) {
-			listOfFirstCharacters.push_back(tokenizedMainString[i][0]);
+			listOfFirstCharacters.push_back(
+				tokenizedMainString[i][0]);
 		}
 	}
 
 	return listOfFirstCharacters;
 }
 
-bool CommandSearchPowerSearch::checkIsMatchesFuzzySearch(string mainToken, string searchToken) {
+bool CommandSearchPowerSearch::checkIsMatchesFuzzySearch(
+		string mainToken, string searchToken) {
 	vector<int> matchRecord;
 	vector<int> errorRecord;
 	int defaultError = INITIAL_VALUE_FUZZYSEARCH_DEFAULT_ERROR;
-	int idealFoundIndex = INITIAL_VALUE_FUZZYSEARCH_IDEAL_FOUND_INDEX;
+	int idealFoundIndex = 
+		INITIAL_VALUE_FUZZYSEARCH_IDEAL_FOUND_INDEX;
 	int actualFoundIndex;
 	int lowerBound;
 	int upperBound;
@@ -215,13 +244,15 @@ bool CommandSearchPowerSearch::checkIsMatchesFuzzySearch(string mainToken, strin
 		idealFoundIndex = i;
 		lowerBound = idealFoundIndex - defaultError;
 		upperBound = idealFoundIndex + defaultError;
-		actualFoundIndex = mainToken.find(searchToken[i], toZeroIfNegative(lowerBound));
+		actualFoundIndex = mainToken.find(searchToken[i], 
+			toZeroIfNegative(lowerBound));
 
 		if (actualFoundIndex == string::npos) {
 			matchRecord.push_back(NOTFOUND);
 		}
 		else {
-			if (isInRange(lowerBound, upperBound, actualFoundIndex)) {
+			if (isInRange(lowerBound, upperBound, 
+					actualFoundIndex)) {
 				matchRecord.push_back(FOUND);
 			}
 			else {
@@ -235,7 +266,11 @@ bool CommandSearchPowerSearch::checkIsMatchesFuzzySearch(string mainToken, strin
 	return isFound;
 }
 
-bool CommandSearchPowerSearch::isInRange(int lowerBound, int upperBound, int toCheckRange) {
+
+
+bool CommandSearchPowerSearch::isInRange(int lowerBound, 
+		int upperBound, int toCheckRange) {
+
 	if (toCheckRange < lowerBound) {
 		return false;
 	}
@@ -252,7 +287,8 @@ int CommandSearchPowerSearch::toZeroIfNegative(int toConvert) {
 	return 0;
 }
 
-bool CommandSearchPowerSearch::detIfmatchRecordAcceptable(vector<int> matchRecord) {
+bool CommandSearchPowerSearch::detIfmatchRecordAcceptable(
+		vector<int> matchRecord) {
 	double percentageFit;
 	double totalSum = 0;
 	int i;

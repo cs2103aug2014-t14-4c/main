@@ -1,23 +1,19 @@
 #include "CommandSearch.h"
 
-// These are the static variables that cannot be initialized in header file
-
-string CommandSearch::TAG_DELIMITER = "#";
-string CommandSearch::LOGGING_MSG_EXECUTE_COMMAND_SEARCH = "\nCommand Search Initiated:\n";
-
-
 CommandSearch::CommandSearch(void) {
 	_myPowerSearch = new CommandSearchPowerSearch;
 }
 
 void CommandSearch::execute() {
-	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_SEARCH.c_str());
+	sprintf_s(buffer, MSG_LOGGING_EXECUTE_COMMAND_SEARCH.c_str());
 	log(buffer);
 
 	try {
 		checkIsParsedCorrectly();
 		retrieveExistingCurrentState();
 		performSearchOperation();
+		_currentState->setLastActionType(State::NONE);
+		_currentState->setUserMessage(STRING_EMPTY);
 		setNewViewState();
 	}
 	catch (string errorMsg) {
@@ -35,7 +31,6 @@ void CommandSearch::performSearchOperation() {
 	getNameToSearchFor();
 	getListOfTaskIndexesNotMatchingSearch();
 	deleteListOfTaskIndexesNotMatchingSearch();
-	_currentState->setLastActionType(State::NONE);
 	return;
 }
 
@@ -46,9 +41,12 @@ void CommandSearch::getTagsToSearchFor() {
 	int endPos;
 	string currentTag;
 
-	while (_searchKeyword.find(TAG_DELIMITER, posOfNextTag) != string::npos) {
-		posOfCurrentTag = _searchKeyword.find(TAG_DELIMITER, posOfNextTag);
-		posOfNextTag = _searchKeyword.find(TAG_DELIMITER, posOfCurrentTag+1);
+	while (_searchKeyword.find(TAG_DELIMITER, posOfNextTag) != 
+			string::npos) {
+		posOfCurrentTag = _searchKeyword.find(TAG_DELIMITER, 
+			posOfNextTag);
+		posOfNextTag = _searchKeyword.find(TAG_DELIMITER, 
+			posOfCurrentTag+1);
 
 		if (posOfNextTag != string::npos) {
 			startPos = posOfCurrentTag + 1;
@@ -56,7 +54,6 @@ void CommandSearch::getTagsToSearchFor() {
 			currentTag = _searchKeyword.substr(startPos, endPos);
 			_tagsToSearchFor.push_back(currentTag);
 		}
-
 		else {
 			startPos = posOfCurrentTag + 1;
 			currentTag = _searchKeyword.substr(startPos);
@@ -97,9 +94,12 @@ void CommandSearch::deleteListOfTaskIndexesNotMatchingSearch() {
 }
 
 bool CommandSearch::checkIsFitsSearchCriteria(Task taskToCheck) {
-	bool isFitsTagSearchCriteria = checkIsFitsTagSearchCriteria(taskToCheck);
-	bool isFitsNameSearchCriteria = checkIsFitsNameSearchCriteria(taskToCheck);
-	bool isFitsSearchCriteria = isFitsTagSearchCriteria && isFitsNameSearchCriteria;
+	bool isFitsTagSearchCriteria = 
+		checkIsFitsTagSearchCriteria(taskToCheck);
+	bool isFitsNameSearchCriteria = 
+		checkIsFitsNameSearchCriteria(taskToCheck);
+	bool isFitsSearchCriteria = 
+		isFitsTagSearchCriteria && isFitsNameSearchCriteria;
 	return isFitsSearchCriteria;
 }
 
@@ -113,11 +113,13 @@ bool CommandSearch::checkIsFitsTagSearchCriteria(Task taskToCheck) {
 
 	for (j=0; unsigned(j)<_tagsToSearchFor.size(); j++) {
 		for (i=0; unsigned(i)<listOfTagsForTask.size(); i++) {
-			taskTag = listOfTagsForTask[i];
-			if (_myPowerSearch->checkIsFound(convertToLower(taskTag), _tagsToSearchFor[j])) {
+				taskTag = listOfTagsForTask[i];
+			if (_myPowerSearch->checkIsFound(convertToLower(taskTag), 
+					_tagsToSearchFor[j])) {
 				currentTagFound = true;
 			}
 		}
+
 		if (!currentTagFound) {
 			isFitsTagSearchCriteria = false;
 			break;
@@ -132,7 +134,10 @@ bool CommandSearch::checkIsFitsTagSearchCriteria(Task taskToCheck) {
 
 bool CommandSearch::checkIsFitsNameSearchCriteria(Task taskToCheck) {
 	string taskName = taskToCheck.getTaskName();
-	bool isFitsNameSearchCriteria = _myPowerSearch->checkIsFound(convertToLower(taskName), _stringToSearchFor);
+	bool isFitsNameSearchCriteria = 
+		_myPowerSearch->checkIsFound(convertToLower(taskName), 
+		_stringToSearchFor);
+
 	return isFitsNameSearchCriteria;
 }
 
