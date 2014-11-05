@@ -1,4 +1,6 @@
 //@author A0128603L
+//
+// Description in header file
 
 #include "button.h"
 
@@ -9,7 +11,7 @@ button::~button(){
 }
 
 void button::init(float x, float y, std::string name){
-	font.loadFromFile("Resources/NotoSansHant-Black.otf");
+	font.loadFromFile("UI Files/NotoSansHant-Black.otf");
 	showingText.setFont(font);
 	showingText.setString(name);
 	showingText.setCharacterSize(20);

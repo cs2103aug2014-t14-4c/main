@@ -10,6 +10,16 @@ WhatToDo::WhatToDo(string exeDirectory, QWidget *parent)
 	defineAllHotkeys();
 	connectAllOtherSignalAndSlots();
 	loadSavedSettings();
+
+	//Calendar setup
+	_ui.calendarframe->move(9999, 9999);
+	_ui.calendarbtn_next->move(9999, 9999);
+	_ui.calendarbtn_prev->move(9999, 9999);
+	_ui.calendarframe->setAttribute(Qt::WA_TransparentForMouseEvents);
+
+	SFMLView = new CalendarCanvas(this, _ui.calendarframe, QPoint(0, 0), QSize(921, 501));
+	SFMLView->show();
+	b_calender_init_complete = true;
 }
 
 WhatToDo::~WhatToDo() {
@@ -141,16 +151,37 @@ void WhatToDo::handleButtonRedo() {
 	return;
 }
 
-void WhatToDo::handleButtonToggleCalendar() {
 
+void WhatToDo::handleButtonToggleCalendar() {
+	updateCalendarView();
+	_ui.calendarframe->move(20, 70);
+	_ui.calendarbtn_next->move(290, 10);
+	_ui.calendarbtn_prev->move(220, 10);
+
+	_ui.calendarframe->raise();
+	_ui.calendarbtn_next->raise();
+	_ui.calendarbtn_prev->raise();
 	return;
+}
+
+void WhatToDo::handleButtonCalendarPrev(){
+	SFMLView->prevPage();
+}
+
+void WhatToDo::handleButtonCalendarNext(){
+	SFMLView->nextPage();
 }
 
 void WhatToDo::handleButtonToggleAgenda() {
-
-	return;
+	updateAgendaView();
+	_ui.calendarframe->move(9999, 9999);
+	_ui.calendarbtn_next->move(9999, 9999);
+	_ui.calendarbtn_prev->move(9999, 9999);
 }
 
+void WhatToDo::handleCalendarCommands(string command) {
+	updateGUIWithCommandString(command);
+}
 
 
 void WhatToDo::connectAllOtherSignalAndSlots() {
@@ -174,6 +205,9 @@ void WhatToDo::connectAllOtherSignalAndSlots() {
 		this, SLOT(handleEntryFieldTab()));
 	connect(_ui.commandSearch, SIGNAL(textChanged()), 
 		this, SLOT(handleSearchBarChange()));
+
+	connect(_ui.calendarbtn_prev, SIGNAL(released()), this, SLOT(handleButtonCalendarPrev()));
+	connect(_ui.calendarbtn_next, SIGNAL(released()), this, SLOT(handleButtonCalendarNext()));
 
 	return;
 }
@@ -250,7 +284,7 @@ void WhatToDo::defineAllHotkeys() {
 void WhatToDo::loadSavedSettings() {
 	refreshCurrStateWithCommand(COMMAND_PARAM_LOAD);
 	updateAgendaView();
-	updateCalendarView();
+	//updateCalendarView();
 	return;
 }
 
@@ -333,6 +367,33 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 	}
 
 	switch (commandType) {
+		case COMMAND_DONE_WITH_REAL_INDEX: {
+			try {
+				processCommandDone(commandString, true);
+			}
+			catch (string errorMsg) {
+				showGUIUserFeedback(errorMsg);
+			}
+			break;
+		}
+		case COMMAND_UNDONE_WITH_REAL_INDEX: {
+			try {
+				processCommandUndone(commandString, true);
+			}
+			catch (string errorMsg) {
+				showGUIUserFeedback(errorMsg);
+			}
+			break;
+		}
+		case COMMAND_DELETE_WITH_REAL_INDEX: {
+			try {
+				processCommandDelete(commandString, true);
+			}
+			catch (string errorMsg) {
+				showGUIUserFeedback(errorMsg);
+			}
+			break;
+		}
 		case COMMAND_EDIT: {
 			try {
 				processCommandEdit(commandString);
@@ -344,7 +405,7 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 		}
 		case COMMAND_DONE: {
 			try {
-				processCommandDone(commandString);
+				processCommandDone(commandString, false);
 			}
 			catch (string errorMsg) {
 				showGUIUserFeedback(errorMsg);
@@ -353,7 +414,7 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 		}
 		case COMMAND_UNDONE: {
 			try {
-				processCommandUndone(commandString);
+				processCommandUndone(commandString, false);
 			}
 			catch (string errorMsg) {
 				showGUIUserFeedback(errorMsg);
@@ -362,7 +423,7 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 		}
 		case COMMAND_DELETE: {
 			try {
-				processCommandDelete(commandString);
+				processCommandDelete(commandString, false);
 			}
 			catch (string errorMsg) {
 				showGUIUserFeedback(errorMsg);
@@ -384,6 +445,8 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
+
+			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_ADD: {
@@ -392,6 +455,7 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
+			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_EDIT: {
@@ -400,6 +464,7 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
+			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_DONE: {
@@ -408,6 +473,7 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
+			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_DELETE: {
@@ -416,6 +482,7 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
+			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_SEARCH: {
@@ -424,6 +491,7 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
+			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_CLEAR: {
@@ -432,6 +500,7 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
+			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_UNDO: {
@@ -440,6 +509,7 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
+			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_REDO: {
@@ -448,6 +518,7 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
+			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_FILTER: {
@@ -456,6 +527,7 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
+			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 	}
@@ -489,8 +561,8 @@ void WhatToDo::updateAgendaView() {
 }
 
 void WhatToDo::updateCalendarView() {
-
-	return;
+	if (b_calender_init_complete)
+		SFMLView->readFromState(_currState);
 }
 
 
@@ -519,8 +591,16 @@ int WhatToDo::determineCommandType(string usercommandString) {
 	if (!(inputString >> userCommand)) {
 		throw MSG_ERROR_INSUFFICIENT_INPUT;
 	}
-
-	if (userCommand == COMMAND_PARAM_EDIT) {
+	if (userCommand == COMMAND_PARAM_DELETE_WITH_REAL_INDEX) {
+		return COMMAND_DELETE_WITH_REAL_INDEX;
+	}
+	else if (userCommand == COMMAND_PARAM_DONE_WITH_REAL_INDEX) {
+		return COMMAND_DONE_WITH_REAL_INDEX;
+	}
+	else if (userCommand == COMMAND_PARAM_UNDONE_WITH_REAL_INDEX) {
+		return COMMAND_UNDONE_WITH_REAL_INDEX;
+	}
+	else if (userCommand == COMMAND_PARAM_EDIT) {
 		return COMMAND_EDIT;
 	}
 	else if (userCommand == COMMAND_PARAM_DONE) {
@@ -632,7 +712,7 @@ void WhatToDo::processCommandEdit(string commandString) {
 	return;
 }
 
-void WhatToDo::processCommandDone(string commandString) {
+void WhatToDo::processCommandDone(string commandString, bool b_usingRealIndex) {
 	istringstream inputString(commandString);
 	vector<Task> allCurrentTasks = _currState.getAllTasks();
 	int displayIndexToDone;
@@ -643,7 +723,14 @@ void WhatToDo::processCommandDone(string commandString) {
 	assert(commandString != STRING_EMPTY);
 
 	if (inputString >> userCommand >> displayIndexToDone) {
-		if ((displayIndexToDone >= 1) 
+		if (b_usingRealIndex){
+			commandToPassLogic = COMMAND_PARAM_DONE + STRING_SPACE_CHAR + to_string(displayIndexToDone);
+			refreshCurrStateWithCommand(commandToPassLogic);
+			updateAgendaView();
+			updateCalendarView();
+			showLogicUserFeedback();
+		}
+		else if ((displayIndexToDone >= 1) 
 			&& (displayIndexToDone <= allCurrentTasks.size())) {
 			
 			actualIndexToDone = 
@@ -667,7 +754,7 @@ void WhatToDo::processCommandDone(string commandString) {
 	return;
 }
 
-void WhatToDo::processCommandUndone(string commandString) {
+void WhatToDo::processCommandUndone(string commandString, bool b_usingRealIndex) {
 	istringstream inputString(commandString);
 	vector<Task> allCurrentTasks = _currState.getAllTasks();
 	int displayIndexToUndone;
@@ -678,7 +765,14 @@ void WhatToDo::processCommandUndone(string commandString) {
 	assert(commandString != STRING_EMPTY);
 
 	if (inputString >> userCommand >> displayIndexToUndone) {
-		if ((displayIndexToUndone >= 1) 
+		if (b_usingRealIndex){
+			commandToPassLogic = COMMAND_PARAM_UNDONE + STRING_SPACE_CHAR + to_string(displayIndexToUndone);
+			refreshCurrStateWithCommand(commandToPassLogic);
+			updateAgendaView();
+			updateCalendarView();
+			showLogicUserFeedback();
+		}
+		else if ((displayIndexToUndone >= 1) 
 			&& (displayIndexToUndone <= allCurrentTasks.size())) {
 			
 			actualIndexToUndone = 
@@ -702,7 +796,7 @@ void WhatToDo::processCommandUndone(string commandString) {
 	return;
 }
 
-void WhatToDo::processCommandDelete(string commandString) {
+void WhatToDo::processCommandDelete(string commandString, bool b_usingRealIndex) {
 	istringstream inputString(commandString);
 	vector<Task> allCurrentTasks = _currState.getAllTasks();
 	int displayIndexToDelete;
@@ -713,7 +807,14 @@ void WhatToDo::processCommandDelete(string commandString) {
 	assert(commandString != STRING_EMPTY);
 
 	if (inputString >> userCommand >> displayIndexToDelete) {
-		if ((displayIndexToDelete >= 1) 
+		if (b_usingRealIndex){
+			commandToPassLogic = COMMAND_PARAM_DELETE + STRING_SPACE_CHAR + to_string(displayIndexToDelete);
+			refreshCurrStateWithCommand(commandToPassLogic);
+			updateAgendaView();
+			updateCalendarView();
+			showLogicUserFeedback();
+		}
+		else if ((displayIndexToDelete >= 1) 
 			&& (displayIndexToDelete <= allCurrentTasks.size())) {
 			
 			actualIndexToDelete = 

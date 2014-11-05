@@ -32,6 +32,8 @@
 #include "State.h"
 #include "Task.h"
 
+#include "calendarcanvas.h"
+
 using namespace std;
 using namespace boost::posix_time;
 using namespace boost::gregorian;
@@ -101,6 +103,9 @@ const int GUI_MIN_CHAR = 0;
 const int GUI_MAX_CHAR = 255;
 
 const string COMMAND_PARAM_EDIT = "/edit";
+const string COMMAND_PARAM_DELETE_WITH_REAL_INDEX = "/delete_r";
+const string COMMAND_PARAM_DONE_WITH_REAL_INDEX = "/done_r";
+const string COMMAND_PARAM_UNDONE_WITH_REAL_INDEX = "/undone_r";
 const string COMMAND_PARAM_DELETE = "/delete";
 const string COMMAND_PARAM_DONE = "/done";
 const string COMMAND_PARAM_UNDONE = "/undone";
@@ -194,6 +199,8 @@ class WhatToDo : public QMainWindow
 	public:
 		WhatToDo(string exeDirectory, QWidget *parent = 0);
 		~WhatToDo();
+		void handleCalendarCommands(string command); //calling updateGUIWithCommandString(string)
+		void updateCalendarView();
 
 	public slots:
 		
@@ -218,7 +225,8 @@ class WhatToDo : public QMainWindow
 		void handleButtonRedo();
 		void handleButtonToggleCalendar();
 		void handleButtonToggleAgenda();
-
+		void handleButtonCalendarPrev();
+		void handleButtonCalendarNext();
 	private:
 		
 		// Attributes For Execution
@@ -228,10 +236,13 @@ class WhatToDo : public QMainWindow
 		State _currState;
 		State _tempFutureState;
 		string _exeDirectory;
-		
+		CalendarCanvas* SFMLView;
+		bool b_calender_init_complete;
+
 		enum userCommandType { 
-			COMMAND_OTHERS = 1, COMMAND_EDIT, COMMAND_DONE, 
-			COMMAND_UNDONE, 	COMMAND_DELETE, COMMAND_HELP, 
+			COMMAND_OTHERS = 1, COMMAND_EDIT, 
+			COMMAND_DONE_WITH_REAL_INDEX, COMMAND_UNDONE_WITH_REAL_INDEX, COMMAND_DELETE_WITH_REAL_INDEX,
+			COMMAND_DONE, COMMAND_UNDONE, 	COMMAND_DELETE, COMMAND_HELP, 
 			COMMAND_HELP_ADD, COMMAND_HELP_EDIT, 
 			COMMAND_HELP_DELETE, COMMAND_HELP_DONE, 
 			COMMAND_HELP_SEARCH, COMMAND_HELP_CLEAR, 
@@ -256,7 +267,7 @@ class WhatToDo : public QMainWindow
 		void updateGUIFromCommandLine();
 		void updateGUIWithCommandString(string commandString);
 		void updateAgendaView();
-		void updateCalendarView();
+		//void updateCalendarView();
 		void showLogicUserFeedback();
 		void showGUIUserFeedback(string guiUserFeedback);
 		void refreshCurrStateWithCommand(string commandString);
@@ -266,9 +277,9 @@ class WhatToDo : public QMainWindow
 		bool checkIsUserCommandInputValid(string usercommandString);
 		int determineCommandType(string usercommandString);
 		void processCommandEdit(string commandString);
-		void processCommandDone(string commandString);
-		void processCommandUndone(string commandString);
-		void processCommandDelete(string commandString);
+		void processCommandDone(string commandString, bool b_usingRealIndex);
+		void processCommandUndone(string commandString, bool b_usingRealIndex);
+		void processCommandDelete(string commandString, bool b_usingRealIndex);
 		void processCommandOthers(string commandString);
 
 		// Functions that facilitate the construction of html tags
