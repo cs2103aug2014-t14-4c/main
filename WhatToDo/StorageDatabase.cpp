@@ -8,7 +8,10 @@ int StorageDatabase::START=0;
 int StorageDatabase::NO_OF_ATTRIBUTES = 6;
 
 StorageDatabase::StorageDatabase(){
-	fileName = "integrate2.txt";
+	_fileName = "Database.txt";
+	_backUpFileName = "backupDatabase.txt";
+	_stringToRead.clear();
+
 }
 
 //pass in a vector<vector<string>> where each vector<string> is a task in vector<string> form
@@ -18,12 +21,17 @@ void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToW
 	assert(&taskVectorIterator != NULL);
 	ofstream writeFile;
 
-	writeFile.open(fileName);
-	assert(fileName == "integrate2.txt");
-	
+	writeFile.open(_fileName);
+	assert(&writeFile!=NULL);
 	writeIndivdualFileToDatabase(taskVectorIterator, writeFile, taskStringVectorToWrite);
-
 	writeFile.close();
+
+	taskVectorIterator = taskStringVectorToWrite.begin(); 
+	assert(&writeFile != NULL);
+	writeFile.open(_backUpFileName);
+	writeIndivdualFileToDatabase(taskVectorIterator, writeFile, taskStringVectorToWrite); 
+
+	writeFile.close(); 
 	return;
 }
 
@@ -33,35 +41,34 @@ void StorageDatabase::writeToDatabase(vector<vector<string>> taskStringVectorToW
 //3. push the vector<string> into the vector of vectors
 vector<vector<string>> StorageDatabase::readFromDatabase(){
 
-	ifstream readFile(fileName);
-	assert(fileName == "integrate2.txt");
+	ifstream readFile(_fileName);
+	assert(&readFile!=NULL);
 	string myText; 
 	try {
 		readIndividualFileFromDatabase(readFile, myText);
 	}
-	catch(string error){
-		cout << "WTF" << endl;
-		//do some shit;	
+	catch(...){
+		readFile.close(); 
+		readFile.open(_backUpFileName);
+		readIndividualFileFromDatabase(readFile,myText); 
+		//do smth
 	}
 	readFile.close();
 
-	return stringToRead; 
+	return _stringToRead; 
 }
 
 void StorageDatabase::readIndividualFileFromDatabase(ifstream &readFile, string myText){
 	while(readFile.peek()!=EOF){
 		for(int i = START; i<NO_OF_ATTRIBUTES; i++){
-				if (!getline(readFile,myText)) {
-					throw string("hahaha");
-				}
-				individualReadFile.push_back(myText);
+			getline(readFile,myText);
+			_individualReadFile.push_back(myText);
 		}
 		//read newline character
 		getline(readFile,myText);
-		stringToRead.push_back(individualReadFile);
+		_stringToRead.push_back(_individualReadFile);
 		//clear to be ready for the next vector<string>
-		individualReadFile.clear();
-		assert(individualReadFile.empty());
+		_individualReadFile.clear();
 	}
 	return;
 }

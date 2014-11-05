@@ -7,10 +7,10 @@ using namespace std;
 
 class StorageDatabase{
 	private:
-		string fileName;
-		vector<vector<string>> stringToRead; 
-		vector<string> individualReadFile;
-		static const int noOfTaskAttributes; 
+		string _fileName;
+		string _backUpFileName;
+		vector<vector<string>> _stringToRead; 
+		vector<string> _individualReadFile;
 	
 	public:
 		static int START;
@@ -23,7 +23,8 @@ class StorageDatabase{
 		
 		//secondary supporting functions
 		vector<string> readFromDataBaseIndividualTaskString();
-		void StorageDatabase::writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, ofstream writeFile, vector<vector<string>> taskStringToWrite);
+		void writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, ofstream& writeFile, vector<vector<string>> taskStringToWrite);
+		void readIndividualFileFromDatabase(ifstream& readFile, string myText);
 };
 
 

@@ -29,16 +29,26 @@ using namespace std;
 
 const string IDENTIFIER_TAG = "#";
 
+const string FILTER_DONE_ALL = "nodone";
+const string FILTER_DONE_DONE = "done";
+const string FILTER_DONE_UNDONE = "undone";
+const string FILTER_TYPE_ALL = "notype";
+const string FILTER_TYPE_FIXED = "fixed";
+const string FILTER_TYPE_DUE = "due";
+const string FILTER_DATE_NONE = "nodate";
+
 const string USERMESSAGE_NO_TASK_NAME =
 	"You cannot add a task without a task name!";
 const string USERMESSAGE_INVALID_DELETE = 
-	"Type /delete <index> to delete the task at <index>.";
+	"You must specify an index to delete a task!";
 const string USERMESSAGE_INVALID_DONE = 
-	"Type /done <index> to mark the task at <index> as done.";
+	"You must specify an index to mark a task as done!";
+const string USERMESSAGE_INVALID_UNDONE = 
+	"You must specify an index to mark a task as not done!";
 const string USERMESSAGE_INVALID_EDIT_NO_INDEX = 
-	"No index found. Type /edit <index> <edited task> to edit a task.";
+	"You must specify an index to edit a task!";
 const string USERMESSAGE_INVALID_EDIT_NO_TASK = 
-	"No edited task found. Type /edit <index> <edited task> to edit a task.";
+	"You must add changed task details to edit a task!";
 
 class DetailsParser : public StringModifier {
 public:
@@ -55,9 +65,14 @@ public:
 	//Command pointer will have its _commandTaskIndex set to the index given.
 	void markTaskAsDone(Command* command);
 
+	//Command pointer will have its _commandTaskIndex set to the index given.
+	void markTaskAsUndone(Command* command);
+
 	//Command pointer will have its _commandTaskIndex set to the index given  
 	//and _currentTask set with parameters as specified by the user input.
 	void editExistingTask(Command* command);
+
+	void filterExistingTasks(Command* command);
 
 	//Command pointer will have its _searchKeyword set with parameters as
 	//specified by the user input and formatted in accordance with the 
@@ -71,11 +86,24 @@ private:
 	void setTaskIndex(Command* command);
 	void addTaskTags(Task* task);
 	void addTaskName(Task* task);
+	void parseDoneFilter(Command* command);
+	void parseTypeFilter(Command* command);
+	void parseDateFilter(Command* command);
 
 	bool hasIndex(void);
 	bool hasOnlyIndex(void);
 	bool hasEditedTask(void);
 	bool isTag(string word);
+
+	bool foundDone(void);
+	bool foundUndone(void);
+	bool foundNoDone(void);
+
+	bool foundFixed(void);
+	bool foundDue(void);
+	bool foundNoType(void);
+
+	bool foundNoDate(void);
 
 	void removeIndexForEdit(void);	
 	void formatForSearch(void);

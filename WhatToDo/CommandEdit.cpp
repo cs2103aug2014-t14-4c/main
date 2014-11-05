@@ -1,16 +1,10 @@
 #include "CommandEdit.h"
 
-// These are the static variables that cannot be initialized in header file
-
-string CommandEdit::LOGGING_MSG_EXECUTE_COMMAND_EDIT = "\nCommand Edit Initiated:\n";
-string CommandEdit::LOGGING_MSG_DELETE_EXISTING_TASK = "Function called: deleteExistingTask(): _commandTaskIndex deleted: %s\n";
-
-
 CommandEdit::CommandEdit(void) {
 }
 
 void CommandEdit::execute() {
-	sprintf_s(buffer, LOGGING_MSG_EXECUTE_COMMAND_EDIT.c_str());
+	sprintf_s(buffer, MSG_LOGGING_EXECUTE_COMMAND_EDIT.c_str());
 	log(buffer);
 	
 	try {
@@ -22,6 +16,8 @@ void CommandEdit::execute() {
 		deleteExistingTask();
 		performAddOperation();
 		addThisCommandToHistory(this);
+		addUserMessageToCurrentState();
+		addActionMessageToCurrentState();
 		setNewCurrentState();
 		setNewViewState();
 	}
@@ -37,7 +33,18 @@ void CommandEdit::execute() {
 
 void CommandEdit::deleteExistingTask() {
 	_currentState->deleteTask(_commandTaskIndex);
-	sprintf_s(buffer, LOGGING_MSG_DELETE_EXISTING_TASK.c_str(), to_string(_commandTaskIndex).c_str());
+
+	sprintf_s(buffer, MSG_LOGGING_DELETE_EXISTING_TASK.c_str(), 
+		to_string(_commandTaskIndex).c_str());
+	log(buffer);
+	return;
+}
+
+void CommandEdit::performAddOperation() {
+	_currentState->addTask(*_currentTask, true, _commandTaskIndex);
+	_actionMessage = MSG_ACTION_EDIT;
+
+	sprintf_s(buffer, MSG_LOGGING_PERFORM_ADD.c_str());
 	log(buffer);
 	return;
 }
