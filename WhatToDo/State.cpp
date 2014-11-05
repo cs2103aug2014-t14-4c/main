@@ -6,6 +6,7 @@ State::State(){
 }
 
 //Operations
+
 /*
    This function will need to create a unique index for task
 **/
