@@ -11,7 +11,7 @@ using namespace std;
 class StorageConverter{
 	private:
 		//attributes for StorageConverter
-		vector<string> taskStringAttributes;
+		vector<string> _taskStringAttributes;
 		string _taskDatetimeString; 
 		string _taskName;
 		string _taskTags;

@@ -1,6 +1,5 @@
 #include "StorageConverter.h"
 
-
 string StorageConverter::TITLE_TASKSTARTDATETIME = "Start Datetime: ";
 string StorageConverter::TITLE_TASKENDDATETIME = "End Datetime: ";
 string StorageConverter::TITLE_TASKDEADLINE = "Task Deadline: ";
@@ -24,9 +23,7 @@ vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 	//will convert individual task attributes to strings
 	//note: order of conversion important for the developer, not for the user
 	//clear initial content
-	taskStringAttributes.clear(); 
-	//ensures that the taskStringAttribute is empty
-	assert(taskStringAttributes.empty());
+	_taskStringAttributes.clear(); 
 	
 	//string parameters after conversion
 	string taskStartDatetime = convertTaskPtimeToString(taskToConvert.getTaskStartTime());
@@ -37,22 +34,21 @@ vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 	string taskIsDone = convertTaskBoolToString(taskToConvert.getTaskIsDone());
 	
 	//storing each string in a vector
-	taskStringAttributes.push_back(TITLE_TASKSTARTDATETIME + taskStartDatetime);
-	taskStringAttributes.push_back(TITLE_TASKENDDATETIME + taskEndDatetime); 
-	taskStringAttributes.push_back(TITLE_TASKDEADLINE + taskDeadline);
-	taskStringAttributes.push_back(TITLE_TASKNAME + taskName);
-	taskStringAttributes.push_back(TITLE_TASKTAGS + taskTags);
-	taskStringAttributes.push_back(TITLE_TASKISDONE + taskIsDone); 
+	_taskStringAttributes.push_back(TITLE_TASKSTARTDATETIME + taskStartDatetime);
+	_taskStringAttributes.push_back(TITLE_TASKENDDATETIME + taskEndDatetime); 
+	_taskStringAttributes.push_back(TITLE_TASKDEADLINE + taskDeadline);
+	_taskStringAttributes.push_back(TITLE_TASKNAME + taskName);
+	_taskStringAttributes.push_back(TITLE_TASKTAGS + taskTags);
+	_taskStringAttributes.push_back(TITLE_TASKISDONE + taskIsDone); 
 
 	//finally write the whole vector of string into file
-	return taskStringAttributes; 
+	return _taskStringAttributes; 
 }
 
 Task StorageConverter::convertStringToTask(vector<string> stringToConvert) {
 	Task convertedTask; 
-
+	assert(&stringToConvert != NULL);
 	vector<string>::iterator taskAttributeIterator = stringToConvert.begin(); 
-	assert(&taskAttributeIterator != NULL); 
 	
 	//get the substring which is input for conversion
 	//convert individual substrings into task attributes
