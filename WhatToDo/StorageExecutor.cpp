@@ -7,16 +7,7 @@ StorageExecutor::StorageExecutor(void){
 
 State StorageExecutor::loadFromStorage(){
 	
-	//get vector of strings from StorageDatabase
-	_storageToConvert = _storageDatabaseObj.readFromDatabase();
-	assert(&_storageToConvert != NULL);
-	//cannot read a null pointer
-	
-	vector<vector<string>>::iterator myStorageIterator = _storageToConvert.begin();
-	
-	//convert each string into task using storageConverterdddd
-	processVectorStringToTaskConversion(myStorageIterator);
-
+	readFileAndConvertString();
 	//pack tasks into state and return as state
 	vector<Task>::iterator taskIterator = _convertedTaskVector.begin();
 	assert(&taskIterator!=NULL);
@@ -42,12 +33,17 @@ void StorageExecutor::saveToStorage(State stateToSave){
 
 void StorageExecutor::processVectorStringToTaskConversion(vector<vector<string>>::iterator vIterator){
 	//convert string to task
-	while(vIterator!=_storageToConvert.end()){
-		_individualTask = _storageConverterObj.convertStringToTask(*vIterator);
-		_convertedTaskVector.push_back(_individualTask);
-		vIterator++;
+	try{
+		while(vIterator!=_storageToConvert.end()){
+			_individualTask = _storageConverterObj.convertStringToTask(*vIterator);
+			_convertedTaskVector.push_back(_individualTask);
+			vIterator++;
+		}
+		return;
+	} catch(exception&){
+		//catch errors from conversion
+		throw;
 	}
-	return;
 }
 
 State StorageExecutor::processTaskAddition(vector<Task>::iterator taskIterator){
@@ -71,4 +67,23 @@ void StorageExecutor::convertAllTaskToString(vector<Task>::iterator taskIterator
 	}
 
 	return;
+}
+
+void StorageExecutor::readFileAndConvertString(){
+
+	//convert each string into task using storageConverterdddd
+	try{
+		_storageToConvert = _storageDatabaseObj.readFromDatabase();
+		assert(&_storageToConvert != NULL);
+		//cannot read a null pointer
+		vector<vector<string>>::iterator myStorageIterator = _storageToConvert.begin();
+		processVectorStringToTaskConversion(myStorageIterator);
+	} catch(exception&){
+		//load from backupfile
+		//log message " loading from backup";
+		_storageToConvert.clear();
+		_storageToConvert = _storageDatabaseObj.readFromBackUpDatabase();
+		vector<vector<string>>::iterator myStorageIterator = _storageToConvert.begin();
+		processVectorStringToTaskConversion(myStorageIterator);
+	}
 }

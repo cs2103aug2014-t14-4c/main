@@ -1,3 +1,5 @@
+//@author A0116278B
+
 #pragma once
 
 #include "State.h"
@@ -32,7 +34,8 @@ public:
 		//supporting functions
 		void processVectorStringToTaskConversion(vector<vector<string>>::iterator vectorStringIterator);
 		State processTaskAddition(vector<Task>::iterator taskIterator);
-		void StorageExecutor::convertAllTaskToString(vector<Task>::iterator taskIterator);
+		void convertAllTaskToString(vector<Task>::iterator taskIterator);
+		void readFileAndConvertString();
 
 };
 
