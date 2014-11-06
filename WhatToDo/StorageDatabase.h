@@ -1,3 +1,5 @@
+//@author A0116278B
+
 #include <vector>
 #include <string>
 #include <assert.h>
@@ -19,12 +21,16 @@ class StorageDatabase{
 		
 		//primary functions
 		vector<vector<string>> readFromDatabase();
+		vector<vector<string>> readFromBackUpDatabase();
 		void writeToDatabase(vector<vector<string>> taskStringVectorToWrite);
 		
 		//secondary supporting functions
 		vector<string> readFromDataBaseIndividualTaskString();
-		void writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, ofstream& writeFile, vector<vector<string>> taskStringToWrite);
+		void writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, 
+										  ofstream& writeFile, 
+										  vector<vector<string>> taskStringToWrite);
 		void readIndividualFileFromDatabase(ifstream& readFile, string myText);
+		
 };
 
 

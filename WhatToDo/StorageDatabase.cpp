@@ -44,21 +44,28 @@ vector<vector<string>> StorageDatabase::readFromDatabase(){
 	ifstream readFile(_fileName);
 	assert(&readFile!=NULL);
 	string myText; 
-	try {
-		readIndividualFileFromDatabase(readFile, myText);
-	}
-	catch(...){
-		readFile.close(); 
-		readFile.open(_backUpFileName);
-		readIndividualFileFromDatabase(readFile,myText); 
-		//do smth
-	}
+	readIndividualFileFromDatabase(readFile, myText);
+
+	readFile.close();
+
+	return _stringToRead; 
+}
+
+vector<vector<string>> StorageDatabase::readFromBackUpDatabase(){
+
+	ifstream readFile(_backUpFileName);
+	assert(&readFile!=NULL);
+	string myText; 
+	readIndividualFileFromDatabase(readFile, myText);
+
 	readFile.close();
 
 	return _stringToRead; 
 }
 
 void StorageDatabase::readIndividualFileFromDatabase(ifstream &readFile, string myText){
+	_individualReadFile.clear();
+	_stringToRead.clear();
 	while(readFile.peek()!=EOF){
 		for(int i = START; i<NO_OF_ATTRIBUTES; i++){
 			getline(readFile,myText);
