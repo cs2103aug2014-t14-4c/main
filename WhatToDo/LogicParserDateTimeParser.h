@@ -1,4 +1,5 @@
 //****************************************************************************
+//@author A0110655N
 //DatetimeParser is responsible for the parsing of date and/or time tokens in
 //the user input, if any. It takes in a Task pointer and a string reference to
 //the parameters that is to be parsed.
@@ -43,8 +44,6 @@
 //	Task* task = new task;
 //	string parameters = "parameters are inside here";
 //	datetime.addTaskDatetime(task, parameters);
-//
-//@Shu Chang A0110655N
 //****************************************************************************
 #pragma once
 #include "boost\date_time.hpp"

@@ -1,4 +1,5 @@
 //****************************************************************************
+//@author A0110655N
 //StringModifier is the class containing the common string manipulation and 
 //modification methods used throughout the Parser component.
 //
@@ -6,8 +7,6 @@
 //	StringModifier stringMod;
 //	string output = stringMod.transformToLowercase("One");
 //  //output == "one"
-//
-//@Shu Chang A0110655N
 //****************************************************************************
 
 #pragma once

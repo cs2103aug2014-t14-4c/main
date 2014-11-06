@@ -1,3 +1,4 @@
+//@author A0110655N
 #include "LogicParserDetailsParser.h"
 
 DetailsParser::DetailsParser(string parameters) {

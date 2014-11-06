@@ -1,3 +1,4 @@
+//@author A0110655N
 #include "LogicParserStringModifier.h"
 
 StringModifier::StringModifier(void) {

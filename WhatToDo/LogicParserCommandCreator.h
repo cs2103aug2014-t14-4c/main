@@ -1,4 +1,5 @@
 //****************************************************************************
+//@author A0110655N
 //CommandCreator is the class responsible for the creation of pointers to each
 //concrete Command subclass, based on the parsed user input in comparison to 
 //the arrays of valid command inputs as listed below. 
@@ -19,8 +20,6 @@
 //Sample usage:
 //	CommandCreator commandCreator;
 //	Command* command = commandCreator.createCommand(string);
-//
-//@Shu Chang A0110655N
 //****************************************************************************
 
 #pragma once

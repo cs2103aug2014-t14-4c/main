@@ -1,3 +1,4 @@
+//@author A0110655N
 #include "LogicParserDatetimeParser.h"
 
 DatetimeParser::DatetimeParser(void) {
@@ -16,9 +17,7 @@ void DatetimeParser::addTaskDatetime(Task* task, string& parameters) {
 
 		addDeadlineDatetime();	
 		addStartDatetime();
-		if(hasStartDatetime()) {
-			addEndDatetime();
-		}
+		addEndDatetime();
 
 		setFoundDatetime(task);
 		parameters = getParameters();
@@ -110,6 +109,7 @@ void DatetimeParser::addStartDatetime(void) {
 			addStartWithoutIdentifier();
 		}
 		combineStartDatetime();
+		combineEndDatetime();
 	} catch(const out_of_range&) {
 		throw;
 	}
@@ -187,7 +187,6 @@ void DatetimeParser::combineStartDatetime(void) {
 void DatetimeParser::addEndDatetime(void) {
 	try {
 		addEndWithIdentifier(); 
-		combineEndDatetime();
 	} catch(const out_of_range&) {
 		throw;
 	}
