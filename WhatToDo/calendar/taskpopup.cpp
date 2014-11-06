@@ -1,5 +1,5 @@
 //@author A0128603L
-
+//
 // Description in header file
 
 #include "taskpopup.h"
@@ -8,7 +8,7 @@
 
 taskpopup::taskpopup(CalendarCanvas* canvas_ptr_){
 	canvas_ptr = canvas_ptr_;
-	font.loadFromFile("Resources/NotoSansHant-Black.otf");
+	font.loadFromFile("UI FIles/NotoSansHant-Black.otf");
 	taskpopup_display.text_info.setCharacterSize(18);
 	taskpopup_display.text_info.setFont(font);
 	taskpopup_display.text_info.setColor(sf::Color(255, 255, 255, taskpopup_display.alpha_value));
@@ -103,23 +103,22 @@ void taskpopup::eventHandler(sf::Vector2f mouse){
 		(canvas_ptr->main_program_ptr)->handleCalendarCommands("/delete_r " + to_string(currentTask));
 		(canvas_ptr->main_program_ptr)->updateCalendarView();
 		setActive(false);
-		//emit this->deleteButtonClicked("/delete_r " + to_string(currentTask));
 	}
 	else if (taskpopup_display.btn_done.isClickingOn(sf::Vector2f(mouse.x, mouse.y))){
 		if (!b_isTaskDone){
-			cout << "clicked done " << "/done " + to_string(currentTask) << endl;
+			//cout << "clicked done " << "/done " + to_string(currentTask) << endl;
 			(canvas_ptr->main_program_ptr)->handleCalendarCommands("/done_r " + to_string(currentTask));
-			(canvas_ptr->main_program_ptr)->updateCalendarView();
 		}
 		else{
-			cout << "clicked done " << "/undone " + to_string(currentTask) << endl;
+			//cout << "clicked done " << "/undone " + to_string(currentTask) << endl;
 			(canvas_ptr->main_program_ptr)->handleCalendarCommands("/undone_r " + to_string(currentTask));
-			(canvas_ptr->main_program_ptr)->updateCalendarView();
 		}
+		(canvas_ptr->main_program_ptr)->updateCalendarView();
+		setActive(false);
 	}
 	//if user clicking elsewhere (even not in rectangle), popup deactive it self
 	else if (!taskpopup_display.rectangle.getGlobalBounds().contains(mouse)){
-			setActive(false);
+		setActive(false);
 	}
 }
 

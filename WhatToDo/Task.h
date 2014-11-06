@@ -1,9 +1,6 @@
 #ifndef TASK_H
 #define TASK_H
 
-//1) isDone;
-//2) LogicData;
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -38,7 +35,7 @@ class Task{
 		void setTaskDetails(string detailsToSet); // Not used for now
 		void setTaskTags(vector<string> tagsToSet);
 		void setTaskIndex(int indexToSet);
-		void setTaskIsDone();
+		void setTaskIsDone(bool doneStatusToSet = true);
 		void setTaskIsNotDone();
 
 		//Getters

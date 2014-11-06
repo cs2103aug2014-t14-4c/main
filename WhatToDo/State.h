@@ -1,9 +1,6 @@
 #ifndef STATE_H
 #define STATE_H
-//
-//1) Introduce Exceptions
-//	a) if taskIndexToDelete is out of bounds --> Error
-//
+
 #include "Task.h"
 using namespace std;
 

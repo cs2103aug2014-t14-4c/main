@@ -6,6 +6,7 @@ State::State(){
 }
 
 //Operations
+
 /*
    This function will need to create a unique index for task
 **/
@@ -54,14 +55,9 @@ void State::deleteTask(int taskIndexToDelete, bool isUserCommand){
 void State::doneTask(int taskIndexToDo, bool isUserCommand) {
 	for(unsigned int i=0; i< _entireListOfTasks.size();i++){
 		if(_entireListOfTasks[i].getTaskIndex() == taskIndexToDo){
-			_entireListOfTasks[i].setTaskIsDone();
-			if (isUserCommand) {
-				_lastActionType = CHANGED;
-				_lastActionTaskIndex = taskIndexToDo;
-			}
-			else {
-				_lastActionType = NONE;
-			}
+			_entireListOfTasks[i].setTaskIsDone(isUserCommand);
+			_lastActionType = CHANGED;
+			_lastActionTaskIndex = taskIndexToDo;
 		}
 	}
 }

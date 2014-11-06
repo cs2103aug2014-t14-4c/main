@@ -37,8 +37,8 @@ void Task::setTaskIndex(int indexToSet){
 	_taskIndex = indexToSet;
 }
 
-void Task::setTaskIsDone(){
-	_isDone = true; 
+void Task::setTaskIsDone(bool doneStatusToSet){
+	_isDone = doneStatusToSet; 
 }
 
 void Task::setTaskIsNotDone(){
@@ -125,6 +125,13 @@ bool Task::hasDeadline() {
 
 bool Task::isTaskOverlapWith(Task myTask){
 	bool isOverlap = false;
+
+	if (!((myTask.getTaskStartTime().time_of_day().seconds() == 0) 
+		&& (myTask.getTaskEndTime().time_of_day().seconds() == 0)
+		&& (_taskStartDateTime.time_of_day().seconds() == 0)
+		&& (_taskEndDateTime.time_of_day().seconds() == 0))) {
+			return isOverlap;
+	}
 
 	if(_taskStartDateTime < myTask.getTaskStartTime() && _taskEndDateTime > myTask.getTaskStartTime()){
 		isOverlap = true;

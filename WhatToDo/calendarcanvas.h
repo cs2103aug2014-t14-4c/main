@@ -1,6 +1,6 @@
 //@author A0128603L
-
-//Class CalendarCanvas
+//
+// Class CalendarCanvas
 // This is a derived class of QSFMLCanvas, to provide the features of calendar.
 
 #pragma once
@@ -10,7 +10,6 @@
 
 #include "qsfmlcanvas.h"
 #include "LogicExecutor.h"
-#include "State.h"
 
 #define TOOLBAR_HEIGHT 0.f
 #define BOUNDARY_FACTOR 8
@@ -32,6 +31,7 @@
 #define LEFT_BOUNDARY 460
 #define RIGHT_BOUNDARY 1140
 
+// forward declaration is need in circular dependency
 class WhatToDo;
 class taskpopup;
 
@@ -59,16 +59,16 @@ class CalendarCanvas : public QSFMLCanvas{
 		// Get State. Update all_calendar_task_vtr, for any changes in task please call this
 		void readFromState(State state);
 
-		// Jump to a particular task in the view
-		// e.g. jumpToTask(0) to closest task, jumpToTask[all_calendar_task_vtr.size() - 1] to latest task
-		void jumpToTask(int);
-
 		// Determinate view size with updated window size
 		void resizedUpdate(int, int);
 
 		// Methods for QT buttons to call
 		void prevPage();
 		void nextPage();
+
+		// Jump to a particular task in the view
+		// e.g. jumpToTask(0) to closest task, jumpToTask[all_calendar_task_vtr.size() - 1] to latest task
+		void jumpToTask(int);
 
 		//////////////
 		//Member Data
@@ -78,10 +78,10 @@ class CalendarCanvas : public QSFMLCanvas{
 		taskpopup*		popup;					// Popup window when task is clicked
 
 	private:
-		// Called when object is created, do initialization
+		// Called when object is created, do initialization (see qsfmlcanvas.cpp)
 		void Init();
 
-		// Called in update loop
+		// Called in update loop (see qsfmlcanvas.cpp)
 		void Update();
 
 		// Event handler, only run when b_active is true
@@ -114,6 +114,10 @@ class CalendarCanvas : public QSFMLCanvas{
 
 		// Change the first showing date in the calendar
 		void changeStartingDate(date Date);
+
+		// Convert integer day/month to their names
+		string CalendarCanvas::day_of_week_to_string(int day);
+		string CalendarCanvas::month_to_string(int month);
 
 		//////////////
 		//Member Data

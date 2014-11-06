@@ -1,5 +1,5 @@
 //@author A0128603L
-
+//
 // Description in header file
 
 #include "calendarcanvas.h"
@@ -7,80 +7,13 @@
 #include "taskpopup.h"
 #include "Task.h"
 
-string day_of_week_to_string(int day){
-	if (day == 0) {
-		return "Mon";
-	}
-	else if (day == 1) {	
-		return "Tue";
-	}
-	else if (day == 2) {
-		return "Wed";
-	}
-	else if (day == 3) {
-		return "Thu";
-	}
-	else if (day == 4) {
-		return "Fri";
-	}
-	else if (day == 5) {
-		return "Sat";
-	}
-	else if (day == 6) {
-		return "Sun";
-	}
-
-	return "";
-}
-
-string month_to_string(int month) {
-	if (month == 1) {
-		return "Jan";
-	}
-	else if (month == 2) {
-		return "Feb";
-	}
-	else if (month == 3) {
-		return "Mar";
-	}
-	else if (month == 4) {
-		return "Apr";
-	}
-	else if (month == 5) {
-		return "May";
-	}
-	else if (month == 6) {
-		return "Jun";
-	}
-	else if (month == 7) {
-		return "Jul";
-	}
-	else if (month == 8) {
-		return "Aug";
-	}
-	else if (month == 9) {
-		return "Sep";
-	}
-	else if (month == 10) {
-		return "Oct";
-	}
-	else if (month == 11) {
-		return "Nov";
-	}
-	else if (month == 12) {
-		return "Dec";
-	}
-
-	return "";
-}
-
 void CalendarCanvas::Init(){
 	ptime now = second_clock::local_time();
 	changeStartingDate(now.date());
 
-	font.loadFromFile("Resources/NotoSansHant-Black.otf");
-	font_time.loadFromFile("Resources/NotoSansHant-Light.otf");
-	bg_texture.loadFromFile("Resources/image.jpg");
+	font.loadFromFile("UI Files/NotoSansHant-Black.otf");
+	font_time.loadFromFile("UI Files/NotoSansHant-Light.otf");
+	bg_texture.loadFromFile("UI Files/image.jpg");
 	bg_sprite.setTexture(bg_texture);
 
 	createEmptyTable();
@@ -126,6 +59,26 @@ void CalendarCanvas::Update(){
 	}
 }
 
+void CalendarCanvas::readFromState(State state){
+	cout << "CalendarCanvas readFromState" << endl;
+	all_calendar_task_vtr.clear();
+	vector<Task> all_task_vtr = state.getAllTasks();
+	lastActionType = state.getLastActionType();
+	lastActionTaskIndex = state.getLastActionTaskIndex();
+	for (unsigned i = 0; i < all_task_vtr.size(); i++){
+		//cout << "[Task: " << i << "] " << all_calendar_task_vtr[i].task.getTaskName() << endl;
+		if (all_task_vtr[i].getTaskType() == Task::DEADLINE_TIME ||
+			all_task_vtr[i].getTaskType() == Task::FIXED_TIME ||
+			all_task_vtr[i].getTaskType() == Task::FIXED_START){
+			Calendar_task suitable_task;
+			suitable_task.task = all_task_vtr[i];
+			all_calendar_task_vtr.push_back(suitable_task);
+		}
+	}
+	createEmptyTable();
+	createTaskOnTable();
+}
+
 void CalendarCanvas::resizedUpdate(int window_width, int window_height){
 
 	viewTasksCalendarTimeLine.setSize(sf::Vector2f(window_width, window_height));
@@ -159,6 +112,73 @@ void CalendarCanvas::resizedUpdate(int window_width, int window_height){
 	bg_sprite.setScale(sf::Vector2f(1, (float)((float)(window_height - 120) / (float)window_height)));
 }
 
+void CalendarCanvas::prevPage(){
+	changeStartingDate(calendar_starting_date - days(21));
+	createEmptyTable();
+	createTaskOnTable();
+}
+
+void CalendarCanvas::nextPage(){
+	changeStartingDate(calendar_starting_date + days(21));
+	createEmptyTable();
+	createTaskOnTable();
+}
+
+void CalendarCanvas::jumpToTask(int index){	//using index in all_calendar_task_vtr
+	if (all_calendar_task_vtr.size() == 0)
+		return;	//no task to see, dont jump
+
+	if (all_calendar_task_vtr[index].task.getTaskType() != Task::DEADLINE_TIME)
+		changeStartingDate(all_calendar_task_vtr[index].task.getTaskStartTime().date());
+	else
+		changeStartingDate(all_calendar_task_vtr[index].task.getTaskDeadline().date());
+
+
+	sf::Vector2f target_pos = all_calendar_task_vtr[index].calendarTasksBlk.getPosition();
+	target_pos.x = target_pos.x + viewTasksCalendar.getSize().x / 2 - 100;
+	target_pos.y = target_pos.y + viewTasksCalendar.getSize().y / 2 - 100;
+
+	//cout << "Center Pos:" << viewTasksCalendar.getCenter().x << " " << viewTasksCalendar.getCenter().y << endl;
+	//cout << "Target Pos:" << target_pos.x << " " << target_pos.y << endl;
+	if (abs(viewTasksCalendar.getCenter().x - target_pos.x) > 10){
+		if (viewTasksCalendar.getCenter().x > target_pos.x){
+			while (ableToMove(LEFT, -10)){
+				if (viewTasksCalendar.getCenter().x < target_pos.x)
+					break;
+				else
+					viewMove(LEFT, -10);
+			}
+		}
+		else if (viewTasksCalendar.getCenter().x < target_pos.x){
+			while (ableToMove(RIGHT, 10)){
+				if (viewTasksCalendar.getCenter().x > target_pos.x)
+					break;
+				else
+					viewMove(RIGHT, 10);
+			}
+		}
+	}
+
+	if (abs(viewTasksCalendar.getCenter().y - target_pos.y) > 10){
+		if (viewTasksCalendar.getCenter().y > target_pos.y){
+			while (ableToMove(UP, -10)){
+				if (viewTasksCalendar.getCenter().y < target_pos.y)
+					break;
+				else
+					viewMove(UP, -10);
+			}
+		}
+		else if (viewTasksCalendar.getCenter().y < target_pos.y){
+			while (ableToMove(DOWN, 10)){
+				if (viewTasksCalendar.getCenter().y > target_pos.y)
+					break;
+				else
+					viewMove(DOWN, 10);
+			}
+		}
+	}
+}
+
 void CalendarCanvas::drawTasks(){
 	draw(calendarBackground[0]);
 
@@ -184,26 +204,6 @@ void CalendarCanvas::drawHorizontalFloating(){
 	draw(seperate_line);
 	for (unsigned i = 0; i < calendarTableDate_vtr.size(); i++)
 		draw(calendarTableDate_vtr[i]);
-}
-
-void CalendarCanvas::readFromState(State state){
-	cout << "CalendarCanvas readFromState" << endl;
-	all_calendar_task_vtr.clear();
-	vector<Task> all_task_vtr = state.getAllTasks();
-	lastActionType = state.getLastActionType();
-	lastActionTaskIndex = state.getLastActionTaskIndex();
-	for (unsigned i = 0; i < all_task_vtr.size(); i++){
-		//cout << "[Task: " << i << "] " << all_calendar_task_vtr[i].task.getTaskName() << endl;
-		if (all_task_vtr[i].getTaskType() == Task::DEADLINE_TIME ||
-			all_task_vtr[i].getTaskType() == Task::FIXED_TIME ||
-			all_task_vtr[i].getTaskType() == Task::FIXED_START){
-			Calendar_task suitable_task;
-			suitable_task.task = all_task_vtr[i];
-			all_calendar_task_vtr.push_back(suitable_task);
-		}
-	}
-	createEmptyTable();
-	createTaskOnTable();
 }
 
 void CalendarCanvas::createEmptyTable(){
@@ -371,62 +371,6 @@ int CalendarCanvas::clickingOn(sf::Vector2i mouse, sf::View currentView){
 	return result;
 }
 
-
-void CalendarCanvas::jumpToTask(int index){	//using index in all_calendar_task_vtr
-	if (all_calendar_task_vtr.size() == 0)
-		return;	//no task to see, dont jump
-
-	if (all_calendar_task_vtr[index].task.getTaskType() != Task::DEADLINE_TIME)
-		changeStartingDate(all_calendar_task_vtr[index].task.getTaskStartTime().date());
-	else
-		changeStartingDate(all_calendar_task_vtr[index].task.getTaskDeadline().date());
-
-
-	sf::Vector2f target_pos = all_calendar_task_vtr[index].calendarTasksBlk.getPosition();
-	target_pos.x = target_pos.x + viewTasksCalendar.getSize().x / 2 - 100;
-	target_pos.y = target_pos.y + viewTasksCalendar.getSize().y / 2 - 100;
-
-	//cout << "Center Pos:" << viewTasksCalendar.getCenter().x << " " << viewTasksCalendar.getCenter().y << endl;
-	//cout << "Target Pos:" << target_pos.x << " " << target_pos.y << endl;
-	if (abs(viewTasksCalendar.getCenter().x - target_pos.x) > 10){
-		if (viewTasksCalendar.getCenter().x > target_pos.x){
-			while (ableToMove(LEFT, -10)){
-				if (viewTasksCalendar.getCenter().x < target_pos.x)
-					break;
-				else
-					viewMove(LEFT, -10);
-			}
-		}
-		else if (viewTasksCalendar.getCenter().x < target_pos.x){
-			while (ableToMove(RIGHT, 10)){
-				if (viewTasksCalendar.getCenter().x > target_pos.x)
-					break;
-				else
-					viewMove(RIGHT, 10);
-			}
-		}
-	}
-
-	if (abs(viewTasksCalendar.getCenter().y - target_pos.y) > 10){
-		if (viewTasksCalendar.getCenter().y > target_pos.y){
-			while (ableToMove(UP, -10)){
-				if (viewTasksCalendar.getCenter().y < target_pos.y)
-					break;
-				else
-					viewMove(UP, -10);
-			}
-		}
-		else if (viewTasksCalendar.getCenter().y < target_pos.y){
-			while (ableToMove(DOWN, 10)){
-				if (viewTasksCalendar.getCenter().y > target_pos.y)
-					break;
-				else
-					viewMove(DOWN, 10);
-			}
-		}
-	}
-}
-
 void CalendarCanvas::wheelEvent(QWheelEvent *x){
 }
 
@@ -559,20 +503,75 @@ void CalendarCanvas::viewMove(ENUM_DIR dir, int distance){
 	}
 }
 
-
 void CalendarCanvas::changeStartingDate(date Date){
 	calendar_starting_date = Date;
 	//readFromState(state);
 }
 
-void CalendarCanvas::prevPage(){
-	changeStartingDate(calendar_starting_date - days(21));
-	createEmptyTable();
-	createTaskOnTable();
+
+string CalendarCanvas::day_of_week_to_string(int day){
+	if (day == 0) {
+		return "Mon";
+	}
+	else if (day == 1) {
+		return "Tue";
+	}
+	else if (day == 2) {
+		return "Wed";
+	}
+	else if (day == 3) {
+		return "Thu";
+	}
+	else if (day == 4) {
+		return "Fri";
+	}
+	else if (day == 5) {
+		return "Sat";
+	}
+	else if (day == 6) {
+		return "Sun";
+	}
+
+	return "";
 }
 
-void CalendarCanvas::nextPage(){
-	changeStartingDate(calendar_starting_date + days(21));
-	createEmptyTable();
-	createTaskOnTable();
+string CalendarCanvas::month_to_string(int month) {
+	if (month == 1) {
+		return "Jan";
+	}
+	else if (month == 2) {
+		return "Feb";
+	}
+	else if (month == 3) {
+		return "Mar";
+	}
+	else if (month == 4) {
+		return "Apr";
+	}
+	else if (month == 5) {
+		return "May";
+	}
+	else if (month == 6) {
+		return "Jun";
+	}
+	else if (month == 7) {
+		return "Jul";
+	}
+	else if (month == 8) {
+		return "Aug";
+	}
+	else if (month == 9) {
+		return "Sep";
+	}
+	else if (month == 10) {
+		return "Oct";
+	}
+	else if (month == 11) {
+		return "Nov";
+	}
+	else if (month == 12) {
+		return "Dec";
+	}
+
+	return "";
 }

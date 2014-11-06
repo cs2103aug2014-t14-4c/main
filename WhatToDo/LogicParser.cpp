@@ -1,3 +1,4 @@
+//@author A0110655N
 #include "LogicParser.h"
 
 LogicParser::LogicParser(void) {

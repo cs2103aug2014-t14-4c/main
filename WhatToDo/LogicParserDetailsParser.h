@@ -1,4 +1,5 @@
 //****************************************************************************
+//@author A0110655N
 //DetailsParser is concerned with the parsing of parameters for Command 
 //subclasses which require them, specifically {CommandAdd, CommandDelete, 
 //CommandDone, CommandEdit, CommandSearch}. It firstly checks the validity
@@ -17,8 +18,6 @@
 //				Command pointer.
 //	DetailsParser details(parameters);
 //	details.addNewTask((CommandAdd*) add);
-//
-//@Shu Chang A0110655N
 //****************************************************************************
 
 #pragma once
