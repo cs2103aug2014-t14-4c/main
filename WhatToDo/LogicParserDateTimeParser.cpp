@@ -16,8 +16,8 @@ void DatetimeParser::addTaskDatetime(Task* task, string& parameters) {
 		setParameters(parameters);
 
 		addDeadlineDatetime();	
-		addStartDatetime();
 		addEndDatetime();
+		addStartDatetime();
 
 		setFoundDatetime(task);
 		parameters = getParameters();
