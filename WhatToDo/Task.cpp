@@ -47,18 +47,30 @@ void Task::setTaskIsNotDone(){
 
 //Getters
 int Task::getTaskType(){
-	if ((_taskStartDateTime == not_a_date_time) && (_taskDeadline == not_a_date_time)) {
+	if ((!hasStartDateTime()) && (!hasDeadline())) {
 		return FLOATING;
-	} else if (_taskDeadline != not_a_date_time) {
-		if (_taskDeadline.time_of_day().seconds() == 1) {
+	} else if (hasDeadline()) {
+		if (isFullDay(_taskDeadline)) {
 			return DEADLINE_ALLDAY;
 		} else {
 			return DEADLINE_TIME;
 		}
-	} else if (_taskStartDateTime != not_a_date_time) {
-		if (_taskEndDateTime != not_a_date_time) {
-			return FIXED_TIME;
-		} else if (_taskStartDateTime.time_of_day().seconds() == 1) {
+	} else if (hasStartDateTime()) {
+		if (hasEndDateTime()) {
+			if(isStartDateEqualEndDate()) {
+				return FIXED_TIME_WITHIN_DAY;
+			} else if (isFullDay(_taskStartDateTime)) {
+				if(isFullDay(_taskEndDateTime)) {
+					return FIXED_DAY_TO_DAY;
+				} else {
+					return FIXED_DAY_TO_TIME;
+				}
+			} else if(isFullDay(_taskEndDateTime)) {
+				return FIXED_TIME_TO_DAY;
+			} else {
+				return FIXED_TIME_ACROSS_DAY;
+			}
+		} else if (isFullDay(_taskStartDateTime)) {
 			return FIXED_ALLDAY;
 		} else {
 			return FIXED_START;
@@ -83,7 +95,6 @@ ptime Task::getTaskDeadline(){
 	return _taskDeadline;
 }
 
-//Assumes that taskEndDateTime and taskStartDateTime are initialized
 time_duration Task::getTaskDuration(){
 	time_duration taskDurationToReturn;
 	taskDurationToReturn = _taskEndDateTime - _taskStartDateTime;
@@ -106,11 +117,11 @@ bool Task::getTaskIsDone(){
 	return _isDone;
 }
 
-bool Task::hasStartTime() {
+bool Task::hasStartDateTime() {
 	return !(_taskStartDateTime == not_a_date_time);
 }
 
-bool Task::hasEndTime() {
+bool Task::hasEndDateTime() {
 	return !(_taskEndDateTime == not_a_date_time);
 }
 
@@ -118,19 +129,26 @@ bool Task::hasDeadline() {
 	return !(_taskDeadline == not_a_date_time);
 }
 
+bool Task::isFullDay(ptime dateTimeToCheck){
+	return dateTimeToCheck.time_of_day().seconds() == MARKED_AS_FULL_DAY;
+}
+
+bool Task::isStartDateEqualEndDate(){
+	return _taskStartDateTime.date() == _taskEndDateTime.date();
+}
+
 bool Task::isTaskOverlapWith(Task myTask){
 	bool isOverlap = false;
-
 	assert(myTask.getTaskType() != FLOATING && this->getTaskType() != FLOATING);
 
-	if (!((myTask.getTaskStartTime().time_of_day().seconds() == 0) 
-		&& (myTask.getTaskEndTime().time_of_day().seconds() == 0)
-		&& (_taskStartDateTime.time_of_day().seconds() == 0)
-		&& (_taskEndDateTime.time_of_day().seconds() == 0))) {
-			return isOverlap;
+	if(isFullDay(myTask.getTaskStartTime())
+	   || isFullDay(myTask.getTaskEndTime())
+	   || isFullDay(_taskStartDateTime)
+	   || isFullDay(_taskEndDateTime)){
+		   return isOverlap;
 	}
 
-	assert(myTask.getTaskType() == FIXED_TIME && this->getTaskType() == FIXED_TIME);
+	assert(myTask.getTaskType() == FIXED_TIME_WITHIN_DAY && this->getTaskType() == FIXED_TIME_WITHIN_DAY);
 	if(_taskStartDateTime < myTask.getTaskStartTime() && _taskEndDateTime > myTask.getTaskStartTime()){
 		isOverlap = true;
 	}else if(_taskStartDateTime< myTask.getTaskEndTime() && _taskEndDateTime > myTask.getTaskEndTime()){
@@ -170,14 +188,13 @@ bool Task::compare(Task firstTask, Task secondTask, bool *orderConfirmed, int fu
 	switch(functionToCall){
 		case COMPARE_FLOAT: return compareByFloat(firstTask,secondTask, orderConfirmed);
 		case COMPARE_DATETIME: return compareByDateTime(firstTask,secondTask, orderConfirmed);
-		case COMPARE_DEADLINEALLDAY: return compareByDeadlineAllDay(firstTask,secondTask, orderConfirmed);
-		case COMPARE_DEADLINETIME: return compareByDeadlineTime(firstTask,secondTask, orderConfirmed);
-		case COMPARE_FIXEDALLDAY: return compareByFixedAllDay(firstTask,secondTask, orderConfirmed);
-		case COMPARE_FIXEDSTART: return compareByFixedStart(firstTask,secondTask, orderConfirmed);
-		case COMPARE_FIXEDTIME: return compareByFixedTime(firstTask,secondTask, orderConfirmed);
-		case COMPARE_FIXEDTIMEANDSTART: return compareByFixedTimeAndStart(firstTask,secondTask, orderConfirmed);
-		default:;
-			throw invalid_argument(MSG_ERR_INVALID_FUNCTION_CALL);
+		case COMPARE_DEADLINE_ALLDAY: return compareByDeadlineAllDay(firstTask,secondTask, orderConfirmed);
+		case COMPARE_DEADLINE_TIME: return compareByDeadlineTime(firstTask,secondTask, orderConfirmed);
+		case COMPARE_FIXED_ALLDAY: return compareByFixedAllDay(firstTask,secondTask, orderConfirmed);
+		case COMPARE_FIXED_START: return compareByFixedStart(firstTask,secondTask, orderConfirmed);
+		case COMPARE_FIXED_TIME_WITHIN_DAY: return compareByFixedTime(firstTask,secondTask, orderConfirmed);
+		case COMPARE_FIXED_TIME_START: return compareByFixedTimeAndStart(firstTask,secondTask, orderConfirmed);
+		default: throw invalid_argument(MSG_ERR_INVALID_FUNCTION_CALL);
 	}
 }
 
@@ -238,7 +255,7 @@ bool Task::compareByDeadlineAllDay(Task firstTask, Task secondTask, bool *orderC
 bool Task::compareByDeadlineTime(Task firstTask, Task secondTask, bool *orderConfirmed){
 	if ((firstTask.getTaskType() == DEADLINE_TIME) && (secondTask.getTaskType() == DEADLINE_TIME)) {
 		*orderConfirmed = true;
-		return  firstTask.getTaskDeadline()< secondTask.getTaskDeadline();
+		return  firstTask.getTaskIndex()< secondTask.getTaskIndex();
 	} else if (firstTask.getTaskType() == DEADLINE_TIME) {
 		*orderConfirmed = true;
 		return true;
@@ -266,26 +283,26 @@ bool Task::compareByFixedAllDay(Task firstTask, Task secondTask, bool *orderConf
 bool Task::compareByFixedStart(Task firstTask, Task secondTask, bool *orderConfirmed){
 	if ((firstTask.getTaskType() == FIXED_START) && (secondTask.getTaskType() == FIXED_START)) {
 		*orderConfirmed = true;
-		if (firstTask.getTaskStartTime() < secondTask.getTaskStartTime()) {
-			return true;
-		} else if (firstTask.getTaskStartTime() > secondTask.getTaskStartTime()) {
-			return false;
-		} else {
+		//if (firstTask.getTaskStartTime() < secondTask.getTaskStartTime()) {
+		//	return true;
+		//} else if (firstTask.getTaskStartTime() > secondTask.getTaskStartTime()) {
+		//	return false;
+		//} else {
 			return firstTask.getTaskIndex() < secondTask.getTaskIndex();
-		}
+		//}
 	}
 	return false;
 }
 
 bool Task::compareByFixedTime(Task firstTask, Task secondTask, bool *orderConfirmed){
-	if ((firstTask.getTaskType() == FIXED_TIME) && (secondTask.getTaskType() == FIXED_TIME)) {
+	if ((firstTask.getTaskType() == FIXED_TIME_WITHIN_DAY) && (secondTask.getTaskType() == FIXED_TIME_WITHIN_DAY)) {
 		*orderConfirmed = true;
-		if (firstTask.getTaskStartTime() < secondTask.getTaskStartTime()) {
-			return true;
-		} else if (firstTask.getTaskStartTime() > secondTask.getTaskStartTime()) {
-			return false;
-		}
-			
+		//if (firstTask.getTaskStartTime() < secondTask.getTaskStartTime()) {
+		//	return true;
+		//} else if (firstTask.getTaskStartTime() > secondTask.getTaskStartTime()) {
+		//	return false;
+		//}
+		//	
 		if (firstTask.getTaskEndTime() == secondTask.getTaskEndTime()) {
 			return firstTask.getTaskIndex() < secondTask.getTaskIndex();
 		} else {
@@ -299,26 +316,34 @@ bool Task::compareByFixedTimeAndStart(Task firstTask, Task secondTask, bool *ord
     ptime firstTaskTime;
 	ptime secondTaskTime;
 	
-	if ((firstTask.getTaskType() == FIXED_TIME) && (secondTask.getTaskType() == FIXED_START)) {
-		firstTaskTime = ptime(firstTask.getTaskStartTime().date(), hours(firstTask.getTaskStartTime().time_of_day().hours()) + minutes(firstTask.getTaskStartTime().time_of_day().minutes()));
-		secondTaskTime = ptime(secondTask.getTaskStartTime().date(), hours(secondTask.getTaskStartTime().time_of_day().hours()) + minutes(secondTask.getTaskStartTime().time_of_day().minutes()));
+	if ((firstTask.getTaskType() == FIXED_TIME_WITHIN_DAY) && (secondTask.getTaskType() == FIXED_START)) {
+		//firstTaskTime = ptime(firstTask.getTaskStartTime().date(), 
+		//	hours(firstTask.getTaskStartTime().time_of_day().hours()) + 
+		//	minutes(firstTask.getTaskStartTime().time_of_day().minutes()));
+		//secondTaskTime = ptime(secondTask.getTaskStartTime().date(), 
+		//	hours(secondTask.getTaskStartTime().time_of_day().hours()) + 
+		//	minutes(secondTask.getTaskStartTime().time_of_day().minutes()));
 		*orderConfirmed = true;
 
-		if (firstTaskTime != secondTaskTime) {
-			return firstTaskTime < secondTaskTime;
-		} else {
+		//if (firstTaskTime != secondTaskTime) {
+		//	return firstTaskTime < secondTaskTime;
+		//} else {
 			return false;
-		}
-	} else if ((firstTask.getTaskType() == FIXED_START) && (secondTask.getTaskType() == FIXED_TIME)) {
-		firstTaskTime = ptime(firstTask.getTaskStartTime().date(), hours(firstTask.getTaskStartTime().time_of_day().hours()) + minutes(firstTask.getTaskStartTime().time_of_day().minutes()));
-		secondTaskTime = ptime(secondTask.getTaskStartTime().date(), hours(secondTask.getTaskStartTime().time_of_day().hours()) + minutes(secondTask.getTaskStartTime().time_of_day().minutes()));
+		/*}*/
+	} else if ((firstTask.getTaskType() == FIXED_START) && (secondTask.getTaskType() == FIXED_TIME_WITHIN_DAY)) {
+		//firstTaskTime = ptime(firstTask.getTaskStartTime().date(), 
+		//	hours(firstTask.getTaskStartTime().time_of_day().hours()) + 
+		//	minutes(firstTask.getTaskStartTime().time_of_day().minutes()));
+		//secondTaskTime = ptime(secondTask.getTaskStartTime().date(), 
+		//	hours(secondTask.getTaskStartTime().time_of_day().hours()) + 
+		//	minutes(secondTask.getTaskStartTime().time_of_day().minutes()));
 		*orderConfirmed = true;
 
-		if (firstTaskTime != secondTaskTime) {
-			return firstTaskTime < secondTaskTime;
-		} else {
+		//if (firstTaskTime != secondTaskTime) {
+		//	return firstTaskTime < secondTaskTime;
+		//} else {
 			return true;
-		}
+		//}
 	}
 	return false;
 }

@@ -26,10 +26,19 @@ const string LogicData::STRING_SPACE_CHAR = " ";
 const string LogicData::STRING_EMPTY = "";
 
 const string LogicData::INITIAL_VALUE_LOG_FILE_NAME = "LogicDataLog.txt";
+const string LOG_MSG_CURRENT_STATE_SET = "Function called: setCurrentState()\n";
+const string LOG_MSG_VIEW_STATE_SET = "Function called: setViewState()\n";
+const string LOG_MSG_DONE_FILTER_SET = "Function called: setDoneFilter()\n";
+const string LOG_MSG_TYPE_FILTER_SET = "Function called: setTypeFilter()\n";
+const string LOG_MSG_DATE_FILTER_SET = "Function called: setDateFilter()\n";
+const string LOG_MSG_COMMAND_HISTORY_RESET = "Function called: resetCommandHistory()\n";
+const string LOG_MSG_COMMAND_HISTORY_ADDED = "Function called: addCommandHistory()\n";
+const string LOG_MSG_RESET = "Function called: resetToInitialSettings()\n";
+const string LOG_MSG_LOAD = "Function called: loadInitialSettings()\n";
 
 LogicData::LogicData(){
 	_currentCommandHistoryIndex = 0;
-	_doneFilter = Done::ONLY_UNDONE;
+	_doneFilter = Status::ONLY_UNDONE;
 	_typeFilter = Type::ALL_TYPES;
 	_startDateFilter = boost::gregorian::date(neg_infin);
 	_endDateFilter = boost::gregorian::date(pos_infin);
@@ -41,23 +50,28 @@ void LogicData::setCurrentState(State stateToSet){
 	_currentState = stateToSet;
 	StorageExecutor myStorageExecutor;
 	myStorageExecutor.saveToStorage(_currentState);
+	log(LOG_MSG_CURRENT_STATE_SET);
 }
 
 void LogicData::setViewState(State stateToSet){
 	_viewState = stateToSet;
+	log(LOG_MSG_VIEW_STATE_SET);
 }
 
 void LogicData::setDoneFilter(int doneFilter){
 	_doneFilter = doneFilter;
+	log(LOG_MSG_DONE_FILTER_SET);
 }
 
 void LogicData::setTypeFilter(int typeFilter){
 	_typeFilter = typeFilter;
+	log(LOG_MSG_TYPE_FILTER_SET);
 }
 
 void LogicData::setDateFilter(date startDateFilter, date endDateFilter){
 	_startDateFilter = startDateFilter;
 	_endDateFilter = endDateFilter;
+	log(LOG_MSG_DATE_FILTER_SET);
 }
 
 State LogicData::getCurrentState() {
@@ -66,7 +80,6 @@ State LogicData::getCurrentState() {
 
 State LogicData::getViewState() {
 	return filterTasks();
-	//return _viewState;
 }
 
 vector<Command*> LogicData::getCommandHistory(){
@@ -92,6 +105,7 @@ date LogicData::getEndDateFilter(){
 void LogicData::addCommandToHistory(Command* commandToAdd){
 	_commandHistory.push_back(commandToAdd);
 	_currentCommandHistoryIndex++;
+	log(LOG_MSG_COMMAND_HISTORY_ADDED);
 }
 
 int LogicData::getCurrentCommandHistoryIndex(){
@@ -103,6 +117,7 @@ void LogicData::resetToInitialSettings(){
 	_currentState = _initialState;
 	_viewState = _initialState;
 	_commandHistory.clear();
+	log(LOG_MSG_RESET);
 }
 
 void LogicData::loadInitialSettings(){
@@ -112,10 +127,12 @@ void LogicData::loadInitialSettings(){
 	_initialState = initialState;
 	_currentState = initialState;
 	_viewState = initialState;
+	log(LOG_MSG_LOAD);
 }
 
 void LogicData::resetCommandHistory() {
 	_commandHistory.clear();
+	log(LOG_MSG_COMMAND_HISTORY_RESET);
 	return;
 }
 
@@ -142,7 +159,7 @@ State LogicData::filterTasks() {
 		}
 	} catch (const invalid_argument& ia){
 		if(!isLoggingModeOn())
-			setLoggingModeOn;
+			setLoggingModeOn();
 	    log(ia.what());
 	}
 	filteredViewState.setAllTasks(filteredTasks);
@@ -153,14 +170,14 @@ State LogicData::filterTasks() {
 bool LogicData::passDoneFilter(Task task) {
 	try{
 		switch(_doneFilter) {
-			case(Done::DONE_BOTH) :
+			case(Status::DONE_BOTH) :
 				return true;
-			case(Done::ONLY_DONE) :
+			case(Status::ONLY_DONE) :
 				return task.getTaskIsDone();
-			case(Done::ONLY_UNDONE) :
+			case(Status::ONLY_UNDONE) :
 				return !task.getTaskIsDone();
 			default:;
-				throw invalid_argument("INVALID_ARGUMENT: Filter Type not known\n");
+				throw invalid_argument("INVALID_ARGUMENT: Status Type not known\n");
 		}
 	} catch (const invalid_argument&){
 		throw;
@@ -175,9 +192,9 @@ bool LogicData::passTypeFilter(Task task) {
 			case(Type::ONLY_FIXED) : 
 				return !task.hasDeadline();
 			case(Type::ONLY_DUE) :
-				return task.hasDeadline() || !task.hasStartTime();
+				return task.hasDeadline() || !task.hasStartDateTime();
 			default:;
-				throw invalid_argument("INVALID_ARGUMENT: Filter Type not known\n");
+				throw invalid_argument("INVALID_ARGUMENT: Task Type not known\n");
 		}
 	} catch (const invalid_argument&){
 		throw;
@@ -185,14 +202,14 @@ bool LogicData::passTypeFilter(Task task) {
 }
 
 bool LogicData::passDateFilter(Task task) {
-	if(!task.hasStartTime() && !task.hasDeadline()) {
+	if(!task.hasStartDateTime() && !task.hasDeadline()) {
 		return true;
 	} else if(task.hasDeadline()) {
 		return ((task.getTaskDeadline().date() >= _startDateFilter) && (task.getTaskDeadline().date() <= _endDateFilter));
-	} else if(task.hasStartTime() && task.hasEndTime()) {
+	} else if(task.hasStartDateTime() && task.hasEndDateTime()) {
 		return ((task.getTaskStartTime().date() >= _startDateFilter) && (task.getTaskStartTime().date() <= _endDateFilter)
 			&& (task.getTaskEndTime().date() <= _endDateFilter) && (task.getTaskStartTime().date() >= _startDateFilter));
-	} else if(task.hasStartTime() && !task.hasEndTime()) {
+	} else if(task.hasStartDateTime() && !task.hasEndDateTime()) {
 		return ((task.getTaskStartTime().date() >= _startDateFilter) && (task.getTaskStartTime().date() <= _endDateFilter));
 	}
 	return false;
@@ -205,13 +222,13 @@ string LogicData::getFilterStatus() {
 	string dateFilterStatus;
 	
 	switch(_doneFilter) {
-		case(Done::DONE_BOTH) :
+		case(Status::DONE_BOTH) :
 			doneFilterStatus = "nodone";
 			break;
-		case(Done::ONLY_DONE) :
+		case(Status::ONLY_DONE) :
 			doneFilterStatus = "done";
 			break;
-		case(Done::ONLY_UNDONE) :
+		case(Status::ONLY_UNDONE) :
 			doneFilterStatus = "undone";
 			break;
 	}

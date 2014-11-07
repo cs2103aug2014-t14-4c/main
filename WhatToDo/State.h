@@ -1,9 +1,11 @@
 //****************************************************************************
-//A State is responsible for storing a list of Tasks. State is able to return
+//State is responsible for storing a list of Tasks. State primarily deals with
+//the adding, deleting of Tasks to itself. Also, when a Task is completed,
+//State is able to set the Task as done. Other than this, State can return
 //the caller a list of specified Tasks based on their Task types:
-//1) Timed 
-//2) Deadline
-//3) Floating
+//	1) Timed 
+//	2) Deadline
+//	3) Floating
 //
 //
 //@author A0110873L
@@ -37,6 +39,7 @@ class State{
 		void deleteTask(int taskIndexToDelete, bool isUserCommand = UNSPECIFIED_USER_COMMAND);
 		void doneTask(int taskIndexToDo, bool isUserCommand = UNSPECIFIED_USER_COMMAND);
 		void clearAllTasks();
+		void sortAllTasks();
 		vector<Task> getAllTasks();
 		vector<Task> getTimedTasks();
 		vector<Task> getDeadlineTasks();

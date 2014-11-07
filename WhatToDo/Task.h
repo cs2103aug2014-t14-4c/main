@@ -1,13 +1,31 @@
 //****************************************************************************
-//A Task is the most fundamental component 
-//within WhatToDo and is responsible for storing 
-//important details of a task such as its start time, 
-//end time, deadline, name, tags and status (done 
-//or not done). In additional, a Task has two 
-//additional functions – firstly it is able to check if 
-//two Tasks overlap, and secondly it is able to 
-//check if a Task begins earlier than another Task.
+//Task is the most fundamental component within WhatToDo and is responsible 
+//for storing important details of a task such as its start time, end time, 
+//deadline, name, tags and status (done or not done). In additional, a Task 
+//has two additional functions – firstly it is able to check if two Tasks 
+//overlap, and secondly it is able to check if a Task begins earlier than 
+//another Task. A Task also can be defined in many types:
+//	1)Floating Tasks - no start date time, no end date time and no deadline
+//  2)Deadline Tasks
+//		a) All Day - Meaning that the entire day is demarketed as the deadline
+//		b) Time - Meaning that the deadline has a specific time
+//	3)Fixed Tasks
+//		a) All Day - Meaning that one entire day is demarketed for the Task
+//		b) Start - Meaning that the start time is specified without any end
+//		   datetime
+//		c) Time Within Day - Meaning that the start time and end time are
+//		   specified within a single day
+//		d) Time Across Day - Meaning that the start time and end time are
+//		   specified over one day
+//		e) Time To Day - Meaning that the start time is specified and the
+//		   end date is specified with no time
+//		f) Day To Time - Meaning that the start date is specified wih no time
+//		   and the end date time is specified
+//		g) Day To Day - Meaning that the start and end dates are both specified
+//		   with no times specified
 //
+//*Note: datetimes which are "All day" are marked with 1 second 
+//		(000001 in HHMMSS)
 //@author A0110873L
 //****************************************************************************
 
@@ -26,6 +44,7 @@ using namespace boost::posix_time;
 using namespace boost::gregorian;
 
 const int NUM_OF_COMP_FUNCTIONS = 8;
+const int MARKED_AS_FULL_DAY = 1;
 const string MSG_ERR_INVALID_FUNCTION_CALL = "INVALID_ARGUMENT: Function called does not exist\n";
 
 class Task{
@@ -68,9 +87,11 @@ class Task{
 		bool getTaskIsDone();
 		
 		//Operations
-		bool hasStartTime();
-		bool hasEndTime();
+		bool hasStartDateTime();
+		bool hasEndDateTime();
 		bool hasDeadline();
+		bool isFullDay(ptime dateTimeToCheck);
+		bool isStartDateEqualEndDate();
 		bool isTaskOverlapWith(Task myTask);
 		bool isEarlierThan(Task myTask);
 		bool isTaskSortedBefore(Task firstTask, Task secondTask);
@@ -88,12 +109,14 @@ class Task{
 
 		//Enumeration
 		enum TaskType{
-			 FLOATING = 1, DEADLINE_TIME, DEADLINE_ALLDAY, FIXED_TIME, FIXED_START, FIXED_ALLDAY
+			 FLOATING = 1, DEADLINE_TIME, DEADLINE_ALLDAY, FIXED_TIME_WITHIN_DAY, FIXED_TIME_ACROSS_DAY,
+			 FIXED_TIME_TO_DAY, FIXED_DAY_TO_TIME, FIXED_DAY_TO_DAY, FIXED_START, FIXED_ALLDAY
 		};
 
+		//Compare Functions are arranged in order of precedence from greatest priority starting from 1.
 		enum CompareType{
-			COMPARE_FLOAT = 1, COMPARE_DATETIME, COMPARE_DEADLINEALLDAY, COMPARE_DEADLINETIME,
-			COMPARE_FIXEDALLDAY, COMPARE_FIXEDSTART, COMPARE_FIXEDTIME, COMPARE_FIXEDTIMEANDSTART
+			COMPARE_FLOAT = 1, COMPARE_DATETIME, COMPARE_DEADLINE_ALLDAY, COMPARE_DEADLINE_TIME,
+			COMPARE_FIXED_ALLDAY, COMPARE_FIXED_START, COMPARE_FIXED_TIME_WITHIN_DAY, COMPARE_FIXED_TIME_START
 		};
 
 };
@@ -104,7 +127,12 @@ class Task{
 //FIXED_TIME Tasks have StartDateTimes and EndDateTimes which only use HHMM, SS are not touched
 //FIXED_ALLDAY Tasks have StartDateTime, no EndDateTime, and it's StartDateTime is marked with time 000001
 //FIXED_START Tasks have StartDateTime, no EndDateTime
-//FIXED_
+//New
+//FIXED_TIME_WITHIN_DAY
+//FIXED_TIME_TO_DAY , SS for EndDateTime should be 01
+//FIXED_TIME_ACROSS_DAY, SS for EndDateTime should remain 0
+//FIXED_DAY_TO_TIME, SS for StartDateTime should be 01 and SS for EndDateTime should remain 0
+//FIXED_DAY_TO_DAY, SS for StartDateTime and EndDateTime should be 01.
 
 
 #endif

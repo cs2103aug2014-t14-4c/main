@@ -61,7 +61,7 @@ void State::clearAllTasks(){
 	_entireListOfTasks.clear();
 }
 
-vector<Task> State::getAllTasks(){
+void State::sortAllTasks(){
 	int i,j;
 	Task swapTask;
 
@@ -74,16 +74,25 @@ vector<Task> State::getAllTasks(){
 			}
 		}
 	}
+}
+
+vector<Task> State::getAllTasks(){
+	sortAllTasks();
 	return _entireListOfTasks;
 }
 
 vector<Task> State::getTimedTasks(){
 	vector<Task> timedTasks;
+	sortAllTasks();
 
 	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
 		if(((_entireListOfTasks[i]).getTaskType() == Task::FIXED_ALLDAY) || 
 			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_START) || 
-			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_TIME)) {
+			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_TIME_WITHIN_DAY) ||
+			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_TIME_ACROSS_DAY) ||
+			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_TIME_TO_DAY) ||
+			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_DAY_TO_TIME) ||
+			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_DAY_TO_DAY)) {
 			timedTasks.push_back(_entireListOfTasks[i]);
 		}
 	}
@@ -92,6 +101,7 @@ vector<Task> State::getTimedTasks(){
 
 vector<Task> State::getDeadlineTasks(){
 	vector<Task> deadlineTasks;
+	sortAllTasks();
 
 	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
 		if(((_entireListOfTasks[i]).getTaskType() == Task::DEADLINE_TIME) || 
@@ -104,6 +114,7 @@ vector<Task> State::getDeadlineTasks(){
 
 vector<Task> State::getFloatingTasks(){
 	vector<Task> floatingTasks;
+	sortAllTasks();
 
 	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
 		if((_entireListOfTasks[i]).getTaskType() == Task::FLOATING){

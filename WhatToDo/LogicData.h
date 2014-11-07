@@ -1,3 +1,25 @@
+//****************************************************************************
+//LogicData is responsible for holding the current State, view State and
+//initial State. It also keeps track of the commands that are executed from 
+//the time that WhatToDo is executed. This allows for easy redoing and undoing
+//from caller methods such as Command::Undo and Command::Redo. Also, LogicData
+//supports Command::Filter as well, it is able to support filters such as:
+//	1) Status
+//		a) Done & Undone
+//		b) Done only
+//		c) Undone Only
+//	2) Task type
+//		a) All types
+//		b) Fixed Timed
+//		c) Deadline
+//	3) Date
+//
+//Furthermore, LogicData support the logging of functions called and errors 
+//from within. 
+//
+//@author A0110873L
+//****************************************************************************
+
 #ifndef LOGICDATA_H
 #define LOGICDATA_H
 
@@ -7,8 +29,8 @@
 #include "State.h"
 #include "StorageExecutor.h"
 
-enum Done{
-	DONE_NOT_SET = -1, DONE_BOTH, ONLY_DONE, ONLY_UNDONE
+enum Status{
+	STATUS_NOT_SET = -1, DONE_BOTH, ONLY_DONE, ONLY_UNDONE
 };
 
 enum Type{
@@ -95,6 +117,15 @@ class LogicData {
 		static const string STRING_EMPTY;
 
 		static const string INITIAL_VALUE_LOG_FILE_NAME;
+		static const string LOG_MSG_CURRENT_STATE_SET;
+		static const string LOG_MSG_VIEW_STATE_SET;
+		static const string LOG_MSG_DONE_FILTER_SET;
+		static const string LOG_MSG_TYPE_FILTER_SET;
+		static const string LOG_MSG_DATE_FILTER_SET;
+		static const string LOG_MSG_COMMAND_HISTORY_RESET;
+		static const string LOG_MSG_COMMAND_HISTORY_ADDED;
+		static const string LOG_MSG_RESET;
+		static const string LOG_MSG_LOAD;
 };
 
 #endif
