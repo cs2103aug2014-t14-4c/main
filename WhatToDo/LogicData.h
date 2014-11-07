@@ -2,6 +2,7 @@
 #define LOGICDATA_H
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include "State.h"
 #include "StorageExecutor.h"
@@ -19,6 +20,7 @@ class Command;
 class LogicData {
 
 	private:
+		//Attributes for LogicData
 		static State _currentState;
 		static State _viewState;
 		static State _initialState;
@@ -28,6 +30,11 @@ class LogicData {
 		static int _typeFilter;
 		static date _startDateFilter;
 		static date _endDateFilter;
+
+		//Attributes for Logging
+		static string _logFileName;
+		static bool _loggingModeOn;
+		static char buffer[255];
 
 	public:
 		//Constructor
@@ -65,20 +72,29 @@ class LogicData {
 		static string changeMonthToMonthOfYear(int month);
 		static string getDisplayDay(ptime myTime);
 
-		static string ABBREV_MONTH_JAN;
-		static string ABBREV_MONTH_FEB;
-		static string ABBREV_MONTH_MAR;
-		static string ABBREV_MONTH_APR;
-		static string ABBREV_MONTH_MAY;
-		static string ABBREV_MONTH_JUN;
-		static string ABBREV_MONTH_JUL;
-		static string ABBREV_MONTH_AUG;
-		static string ABBREV_MONTH_SEP;
-		static string ABBREV_MONTH_OCT;
-		static string ABBREV_MONTH_NOV;
-		static string ABBREV_MONTH_DEC;
-		static string STRING_SPACE_CHAR;
-		static string STRING_EMPTY;
+		//Logging
+		static void log(string stringToLog);
+		static bool isLoggingModeOn();
+		static void setLoggingModeOff();
+		static void setLoggingModeOn();
+
+		//Constants
+		static const string ABBREV_MONTH_JAN;
+		static const string ABBREV_MONTH_FEB;
+		static const string ABBREV_MONTH_MAR;
+		static const string ABBREV_MONTH_APR;
+		static const string ABBREV_MONTH_MAY;
+		static const string ABBREV_MONTH_JUN;
+		static const string ABBREV_MONTH_JUL;
+		static const string ABBREV_MONTH_AUG;
+		static const string ABBREV_MONTH_SEP;
+		static const string ABBREV_MONTH_OCT;
+		static const string ABBREV_MONTH_NOV;
+		static const string ABBREV_MONTH_DEC;
+		static const string STRING_SPACE_CHAR;
+		static const string STRING_EMPTY;
+
+		static const string INITIAL_VALUE_LOG_FILE_NAME;
 };
 
 #endif

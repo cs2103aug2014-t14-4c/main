@@ -1,8 +1,22 @@
+//****************************************************************************
+//A State is responsible for storing a list of Tasks. State is able to return
+//the caller a list of specified Tasks based on their Task types:
+//1) Timed 
+//2) Deadline
+//3) Floating
+//
+//
+//@author A0110873L
+//****************************************************************************
+
 #ifndef STATE_H
 #define STATE_H
 
 #include "Task.h"
 using namespace std;
+
+const int UNSPECIFIED_INDEX = -1;
+const bool UNSPECIFIED_USER_COMMAND = false;
 
 class State{
 	private:
@@ -18,9 +32,10 @@ class State{
 		State();
 
 		//Operations
-		void addTask(Task taskToAdd, bool isUserCommand = false, int specifiedIndex = -1);
-		void deleteTask(int taskIndexToDelete, bool isUserCommand = false);
-		void doneTask(int taskIndexToDo, bool isUserCommand = false);
+		void addTask(Task taskToAdd, bool isUserCommand = UNSPECIFIED_USER_COMMAND, 
+			int specifiedIndex = UNSPECIFIED_INDEX);
+		void deleteTask(int taskIndexToDelete, bool isUserCommand = UNSPECIFIED_USER_COMMAND);
+		void doneTask(int taskIndexToDo, bool isUserCommand = UNSPECIFIED_USER_COMMAND);
 		void clearAllTasks();
 		vector<Task> getAllTasks();
 		vector<Task> getTimedTasks();
@@ -36,7 +51,6 @@ class State{
 		string getUserMessage();
 		string getActionMessage();
 		
-
 		enum actionType { NONE = 1, CHANGED, DELETED };
 };
 
