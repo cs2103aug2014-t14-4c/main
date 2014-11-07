@@ -25,7 +25,7 @@ void CommandFilter::execute() {
 
 void CommandFilter::performFilterOperation() {
 	
-	if(_doneFilter != Done::DONE_NOT_SET) {
+	if(_doneFilter != Status::DONE_NOT_SET) {
 		LogicData::setDoneFilter(_doneFilter);
 	}
 	if(_typeFilter != Type::TYPE_NOT_SET) {
