@@ -11,17 +11,19 @@ void CalendarCanvas::Init(){
 	ptime now = second_clock::local_time();
 	changeStartingDate(now.date());
 
-	font.loadFromFile("UI Files/NotoSansHant-Black.otf");
-	font_time.loadFromFile("UI Files/NotoSansHant-Light.otf");
-	bg_texture.loadFromFile("UI Files/image.jpg");
+	font.loadFromFile("UI_Files/NotoSansHant-Black.otf");
+	font_time.loadFromFile("UI_Files/NotoSansHant-Light.otf");
+	bg_texture.loadFromFile("UI_Files/image.jpg");
 	bg_sprite.setTexture(bg_texture);
 
 	createEmptyTable();
 
 	//background for dates
 	seperate_line.setSize(sf::Vector2f(100, 9999.f));
-	seperate_line.setFillColor(sf::Color(0, 0, 0, 180));
+	seperate_line.setFillColor(sf::Color(0, 0, 0, 240));
 	seperate_line.setPosition(0.f, -5000.f);
+	seperate_line.setOutlineThickness(-2);
+	seperate_line.setOutlineColor(sf::Color(255, 255, 255, 180));
 
 	popup = new taskpopup(this);
 	popup->init(this);
@@ -68,7 +70,8 @@ void CalendarCanvas::readFromState(State state){
 	for (unsigned i = 0; i < all_task_vtr.size(); i++){
 		//cout << "[Task: " << i << "] " << all_calendar_task_vtr[i].task.getTaskName() << endl;
 		if (all_task_vtr[i].getTaskType() == Task::DEADLINE_TIME ||
-			all_task_vtr[i].getTaskType() == Task::FIXED_TIME ||
+			all_task_vtr[i].getTaskType() == Task::FIXED_TIME_WITHIN_DAY ||
+			all_task_vtr[i].getTaskType() == Task::FIXED_TIME_ACROSS_DAY ||
 			all_task_vtr[i].getTaskType() == Task::FIXED_START){
 			Calendar_task suitable_task;
 			suitable_task.task = all_task_vtr[i];
@@ -134,7 +137,7 @@ void CalendarCanvas::jumpToTask(int index){	//using index in all_calendar_task_v
 		changeStartingDate(all_calendar_task_vtr[index].task.getTaskDeadline().date());
 
 
-	sf::Vector2f target_pos = all_calendar_task_vtr[index].calendarTasksBlk.getPosition();
+	sf::Vector2f target_pos = all_calendar_task_vtr[index].calendarTasksBlk[0].getPosition();
 	target_pos.x = target_pos.x + viewTasksCalendar.getSize().x / 2 - 100;
 	target_pos.y = target_pos.y + viewTasksCalendar.getSize().y / 2 - 100;
 
@@ -182,13 +185,14 @@ void CalendarCanvas::jumpToTask(int index){	//using index in all_calendar_task_v
 void CalendarCanvas::drawTasks(){
 	draw(calendarBackground[0]);
 
-	for (unsigned i = 0; i < calendarTableHorizontal_vtr.size(); i++)	
+	for (unsigned i = 0; i < calendarTableHorizontal_vtr.size(); i++)
 		draw(calendarTableHorizontal_vtr[i]);//draw horizontal lines
 
-	for (unsigned i = 0; i < all_calendar_task_vtr.size(); i++)	
-		draw(all_calendar_task_vtr[i].calendarTasksBlk);//draw tasks blocks
-
-	for (unsigned i = 0; i < calendarTasksName_vtr.size(); i++) 
+	for (unsigned i = 0; i < all_calendar_task_vtr.size(); i++){
+		draw(all_calendar_task_vtr[i].calendarTasksBlk[0]);//draw tasks blocks
+		draw(all_calendar_task_vtr[i].calendarTasksBlk[1]);//draw tasks blocks
+	}
+	for (unsigned i = 0; i < calendarTasksName_vtr.size(); i++)
 		draw(calendarTasksName_vtr[i]);//draw tasks names
 }
 
@@ -215,7 +219,7 @@ void CalendarCanvas::createEmptyTable(){
 	//Background dim rectangle
 	sf::RectangleShape darkbg_task;
 	darkbg_task.setSize(sf::Vector2f(9999.f, 9999.f));
-	darkbg_task.setFillColor(sf::Color(0, 0, 0, 50));
+	darkbg_task.setFillColor(sf::Color(196, 244, 255, 140));
 	darkbg_task.setPosition(-5000, -5000);
 	calendarBackground.push_back(darkbg_task);
 
@@ -237,7 +241,7 @@ void CalendarCanvas::createEmptyTable(){
 	sf::RectangleShape verticalLine[26];
 	for (unsigned i = 0; i < 26; i++){
 		verticalLine[i].setSize(sf::Vector2f(2.f, 9999.f));
-		verticalLine[i].setFillColor(sf::Color(0, 0, 0, 120));
+		verticalLine[i].setFillColor(sf::Color(0, 0, 0, 60));
 		verticalLine[i].setPosition(VERTICAL_LINE_INTERVAL * i, 0.f);
 		calendarTableVertical_vtr.push_back(verticalLine[i]);
 
@@ -266,10 +270,18 @@ void CalendarCanvas::createEmptyTable(){
 	for (unsigned i = 0; i < 23; i++){
 		//horizontal lines
 		horizontalLine[i].setSize(sf::Vector2f(9999.f, 2.f));
-		horizontalLine[i].setFillColor(sf::Color(0, 0, 0, 170));
+		horizontalLine[i].setFillColor(sf::Color(0, 0, 0, 60));
 		horizontalLine[i].setPosition(-5000, BLOCK_HEIGHT * i);
+		ptime now = second_clock::local_time();
+		if (today + days(i) == now.date()){
+			calendarTableHorizontal_vtr.push_back(horizontalLine[i]);
+			horizontalLine[i].setSize(sf::Vector2f(9999.f, 50.f));
+			horizontalLine[i].setFillColor(sf::Color(0, 0, 0, 20));
+		}
 		if (i == 22){
+			calendarTableHorizontal_vtr.push_back(horizontalLine[i]);
 			horizontalLine[i].setSize(sf::Vector2f(9999.f, 200.f));
+			horizontalLine[i].setFillColor(sf::Color(0, 0, 0, 255));
 		}
 		calendarTableHorizontal_vtr.push_back(horizontalLine[i]);
 
@@ -291,19 +303,20 @@ sf::RectangleShape CalendarCanvas::createTaskBlockRectangle(sf::Vector2f size, s
 	block.setSize(size);
 	block.setFillColor(colour);
 	block.setPosition(position);
+	block.setOutlineThickness(-2);
 	block.setOutlineColor(BLOCK_OUTLINE_COLOUR);
 	return block;
 }
 
-void CalendarCanvas::createTaskBlock(int block_index,Task task){
+void CalendarCanvas::createTaskBlock(int block_index, Task task){
 	sf::Text name;
 	name.setFont(font);
 	name.setColor(sf::Color::White);
 	name.setCharacterSize(14);
 	float block_width = VERTICAL_LINE_INTERVAL * (task.getTaskDuration().hours()) + VERTICAL_LINE_INTERVAL * (task.getTaskDuration().minutes()) / 60;
-	
+
 	//checking whether the block can fully display the task name
-	if (block_width / 15 >= task.getTaskName().size()){	
+	if (block_width / 15 >= task.getTaskName().size()){
 		name.setString(task.getTaskName());	//can display full name
 	}
 	else{
@@ -316,36 +329,47 @@ void CalendarCanvas::createTaskBlock(int block_index,Task task){
 
 	//Creating the rectangluar block
 	date today = calendar_starting_date;
-	
+
 	//Only display DEADLINE_TIME, FIXED_TIME, FIXED_START,
 	if (task.getTaskType() == Task::DEADLINE_TIME){
-		all_calendar_task_vtr[block_index].calendarTasksBlk =
-		createTaskBlockRectangle(sf::Vector2f(15.f, BLOCK_HEIGHT), BLOCK_DEADLINE_POS, BLOCK_DEADLINE_BG_COLOUR);
+		all_calendar_task_vtr[block_index].calendarTasksBlk[0] =
+			createTaskBlockRectangle(sf::Vector2f(15.f, BLOCK_HEIGHT), BLOCK_DEADLINE_POS, BLOCK_DEADLINE_BG_COLOUR);
 
-		name.setPosition(all_calendar_task_vtr[block_index].calendarTasksBlk.getPosition().x + 3,
-			all_calendar_task_vtr[block_index].calendarTasksBlk.getPosition().y + 3);
+		name.setPosition(all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().x + 3,
+			all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().y + 3);
 	}
-	else if (task.getTaskType() == Task::FIXED_TIME){
-		all_calendar_task_vtr[block_index].calendarTasksBlk = createTaskBlockRectangle(
-			sf::Vector2f(block_width, BLOCK_HEIGHT),BLOCK_FIXED_POS,BLOCK_BG_COLOUR);
+	else if (task.getTaskType() == Task::FIXED_TIME_WITHIN_DAY){
+		all_calendar_task_vtr[block_index].calendarTasksBlk[0] = createTaskBlockRectangle(
+			sf::Vector2f(block_width, BLOCK_HEIGHT), BLOCK_FIXED_POS, BLOCK_BG_COLOUR);
 
-		name.setPosition(all_calendar_task_vtr[block_index].calendarTasksBlk.getPosition().x + 3,
-						 all_calendar_task_vtr[block_index].calendarTasksBlk.getPosition().y + 3);
+		name.setPosition(all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().x + 3,
+			all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().y + 3);
 	}
 	else if (task.getTaskType() == Task::FIXED_START){
-		all_calendar_task_vtr[block_index].calendarTasksBlk = createTaskBlockRectangle(
-			sf::Vector2f(15.f, BLOCK_HEIGHT), BLOCK_FIXED_POS,BLOCK_BG_COLOUR);
+		all_calendar_task_vtr[block_index].calendarTasksBlk[0] = createTaskBlockRectangle(
+			sf::Vector2f(15.f, BLOCK_HEIGHT), BLOCK_FIXED_POS, BLOCK_BG_COLOUR);
 
-		name.setPosition(all_calendar_task_vtr[block_index].calendarTasksBlk.getPosition().x + 3,
-			all_calendar_task_vtr[block_index].calendarTasksBlk.getPosition().y + 3);
+		name.setPosition(all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().x + 3,
+			all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().y + 3);
+	}
+	else if (task.getTaskType() == Task::FIXED_TIME_ACROSS_DAY){
+		all_calendar_task_vtr[block_index].calendarTasksBlk[0] = createTaskBlockRectangle(
+			sf::Vector2f(block_width, BLOCK_HEIGHT), BLOCK_FIXED_POS, BLOCK_BG_COLOUR);
+		all_calendar_task_vtr[block_index].calendarTasksBlk[1] = createTaskBlockRectangle(
+			sf::Vector2f(block_width, BLOCK_HEIGHT),
+			sf::Vector2f(task.getTaskStartTime().time_of_day().hours() * VERTICAL_LINE_INTERVAL + VERTICAL_LINE_INTERVAL * task.getTaskStartTime().time_of_day().minutes() / 60 + 2, (task.getTaskStartTime().date() - today - days(1)).days() * BLOCK_HEIGHT + 2)
+			, BLOCK_BG_COLOUR);
+
+		name.setPosition(all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().x + 3,
+			all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().y + 3);
 	}
 	//done task
 	if (all_calendar_task_vtr[block_index].task.getTaskIsDone()){
-		all_calendar_task_vtr[block_index].calendarTasksBlk.setFillColor(sf::Color(0, 255, 0, 180));
+		all_calendar_task_vtr[block_index].calendarTasksBlk[0].setFillColor(sf::Color(0, 255, 0, 180));
 	}
 	//deleting task
 	if (lastActionType != State::CHANGED && lastActionType != State::NONE && all_calendar_task_vtr[block_index].task.getTaskIndex() == lastActionTaskIndex){
-		all_calendar_task_vtr[block_index].calendarTasksBlk.setFillColor(sf::Color(100, 0, 0, 80));
+		all_calendar_task_vtr[block_index].calendarTasksBlk[0].setFillColor(sf::Color(100, 0, 0, 80));
 	}
 	calendarTasksName_vtr.push_back(name);
 }
@@ -361,12 +385,16 @@ int CalendarCanvas::clickingOn(sf::Vector2i mouse, sf::View currentView){
 	int result = -1;
 	//cout << mapPixelToCoords(mouse, viewTasksCalendar).x << " " << mapPixelToCoords(mouse, viewTasksCalendar).y << endl;
 	for (unsigned i = 0; i < all_calendar_task_vtr.size(); i++){
-		all_calendar_task_vtr[i].calendarTasksBlk.setOutlineColor(BLOCK_OUTLINE_COLOUR);
-		if (all_calendar_task_vtr[i].calendarTasksBlk.getGlobalBounds().contains(mapPixelToCoords(mouse, viewTasksCalendar))){
+		all_calendar_task_vtr[i].calendarTasksBlk[0].setOutlineColor(BLOCK_OUTLINE_COLOUR);
+		all_calendar_task_vtr[i].calendarTasksBlk[1].setOutlineColor(BLOCK_OUTLINE_COLOUR);
+		if (all_calendar_task_vtr[i].calendarTasksBlk[0].getGlobalBounds().contains(mapPixelToCoords(mouse, viewTasksCalendar)) || all_calendar_task_vtr[i].calendarTasksBlk[1].getGlobalBounds().contains(mapPixelToCoords(mouse, viewTasksCalendar))){
 			cout << "calendarTasksBlk_vtr: " << all_calendar_task_vtr[i].task.getTaskName() << endl;
-			all_calendar_task_vtr[i].calendarTasksBlk.setOutlineColor(BLOCK_HIGHLIGHT_OUTLINE_COLOUR);
 			result = i;
 		}
+	}
+	if (result != -1){
+		all_calendar_task_vtr[result].calendarTasksBlk[0].setOutlineColor(BLOCK_HIGHLIGHT_OUTLINE_COLOUR);
+		all_calendar_task_vtr[result].calendarTasksBlk[1].setOutlineColor(BLOCK_HIGHLIGHT_OUTLINE_COLOUR);
 	}
 	return result;
 }
@@ -380,6 +408,7 @@ void CalendarCanvas::keyPressEvent(QKeyEvent *event){
 		jumpToTask(0);
 	}
 }
+
 
 void CalendarCanvas::eventHandler(){
 	sf::Event event;
@@ -412,7 +441,7 @@ void CalendarCanvas::eventHandler(){
 					dragging_start = sf::Mouse::getPosition();
 					b_dragging = true;
 				}
-				else if (all_calendar_task_vtr[task_no].task.getTaskType() == Task::FIXED_TIME){ //is clicking on a task, show popup
+				else if (all_calendar_task_vtr[task_no].task.getTaskType() == Task::FIXED_TIME_WITHIN_DAY){ //is clicking on a task, show popup
 					popup->updateInfo(all_calendar_task_vtr[task_no].task.getTaskIndex(),
 						all_calendar_task_vtr[task_no].task.getTaskIsDone(),
 						(sf::Vector2f)sf::Mouse::getPosition(*this),
@@ -440,6 +469,16 @@ void CalendarCanvas::eventHandler(){
 						);
 					popup->setActive(true);
 				}
+				else if (all_calendar_task_vtr[task_no].task.getTaskType() == Task::FIXED_TIME_ACROSS_DAY){ //is clicking on a task, show popup
+					popup->updateInfo(all_calendar_task_vtr[task_no].task.getTaskIndex(),
+						all_calendar_task_vtr[task_no].task.getTaskIsDone(),
+						(sf::Vector2f)sf::Mouse::getPosition(*this),
+						all_calendar_task_vtr[task_no].task.getTaskName(),
+						all_calendar_task_vtr[task_no].task.getTaskStartTime(),
+						all_calendar_task_vtr[task_no].task.getTaskEndTime()
+						);
+					popup->setActive(true);
+				}
 			}
 			break;
 
@@ -454,24 +493,24 @@ void CalendarCanvas::eventHandler(){
 
 bool CalendarCanvas::ableToMove(ENUM_DIR dir, int extra_dist){
 	switch (dir){
-		case(RIGHT):
-			if (viewTasksCalendarTimeLine.getCenter().x + extra_dist < RIGHT_BOUNDARY)
-				return true;
-			break;
-		case(LEFT):
-			if (viewTasksCalendarTimeLine.getCenter().x + extra_dist > LEFT_BOUNDARY)
-				return true;
-			break;
-		case(DOWN) :
-			if (viewTasksCalendarDateLine.getCenter().y + extra_dist < BOT_BOUNDARY)
-				return true;
-			break;
-		case(UP) :
-			if (viewTasksCalendarDateLine.getCenter().y + extra_dist > TOP_BOUNDARY)
-				return true;
-			break;
-		default:
-			return false;
+	case(RIGHT) :
+		if (viewTasksCalendarTimeLine.getCenter().x + extra_dist < RIGHT_BOUNDARY)
+			return true;
+		break;
+	case(LEFT) :
+		if (viewTasksCalendarTimeLine.getCenter().x + extra_dist > LEFT_BOUNDARY)
+			return true;
+		break;
+	case(DOWN) :
+		if (viewTasksCalendarDateLine.getCenter().y + extra_dist < BOT_BOUNDARY)
+			return true;
+		break;
+	case(UP) :
+		if (viewTasksCalendarDateLine.getCenter().y + extra_dist > TOP_BOUNDARY)
+			return true;
+		break;
+	default:
+		return false;
 	}
 	return false;
 }
@@ -481,31 +520,33 @@ void CalendarCanvas::viewMove(ENUM_DIR dir, int distance){
 	//cout << "viewTasksCalendarTimeLine: " << viewTasksCalendarTimeLine.getCenter().x << endl;
 	if (ableToMove(dir, distance)){
 		switch (dir){
-			case(RIGHT) :
-				viewTasksCalendarTimeLine.move(distance, 0);
-				viewTasksCalendar.move(distance, 0);
-				break;
-			case(LEFT) :
-				viewTasksCalendarTimeLine.move(distance, 0);
-				viewTasksCalendar.move(distance, 0);
-				break;
-			case(DOWN) :
-				viewTasksCalendarDateLine.move(0, distance);
-				viewTasksCalendar.move(0, distance);
-				break;
-			case(UP) :
-				viewTasksCalendarDateLine.move(0, distance);
-				viewTasksCalendar.move(0, distance);
-				break;
-			default:
-				return;
+		case(RIGHT) :
+			viewTasksCalendarTimeLine.move(distance, 0);
+			viewTasksCalendar.move(distance, 0);
+			break;
+		case(LEFT) :
+			viewTasksCalendarTimeLine.move(distance, 0);
+			viewTasksCalendar.move(distance, 0);
+			break;
+		case(DOWN) :
+			viewTasksCalendarDateLine.move(0, distance);
+			viewTasksCalendar.move(0, distance);
+			break;
+		case(UP) :
+			viewTasksCalendarDateLine.move(0, distance);
+			viewTasksCalendar.move(0, distance);
+			break;
+		default:
+			return;
 		}
 	}
 }
 
 void CalendarCanvas::changeStartingDate(date Date){
-	calendar_starting_date = Date;
+	calendar_starting_date = Date - days(1);
 	//readFromState(state);
+	createEmptyTable();
+	createTaskOnTable();
 }
 
 

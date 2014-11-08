@@ -8,7 +8,7 @@
 
 taskpopup::taskpopup(CalendarCanvas* canvas_ptr_){
 	canvas_ptr = canvas_ptr_;
-	font.loadFromFile("UI FIles/NotoSansHant-Black.otf");
+	font.loadFromFile("UI_Files/NotoSansHant-Black.otf");
 	taskpopup_display.text_info.setCharacterSize(18);
 	taskpopup_display.text_info.setFont(font);
 	taskpopup_display.text_info.setColor(sf::Color(255, 255, 255, taskpopup_display.alpha_value));
