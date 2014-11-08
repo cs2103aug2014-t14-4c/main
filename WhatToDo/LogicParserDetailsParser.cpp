@@ -173,7 +173,7 @@ void DetailsParser::addTaskName(Task* task) {
 }
 
 void DetailsParser::clearFilters(Command* command) {
-	command->setDoneFilter(Done::DONE_BOTH);
+	command->setDoneFilter(Status::DONE_BOTH);
 	command->setTypeFilter(Type::ALL_TYPES);
 	command->setStartDateFilter((date)neg_infin);
 	command->setEndDateFilter((date)pos_infin);
@@ -181,11 +181,11 @@ void DetailsParser::clearFilters(Command* command) {
 
 void DetailsParser::parseDoneFilter(Command* command) {
 	if(foundNoDone()) {
-		command->setDoneFilter(Done::DONE_BOTH);
+		command->setDoneFilter(Status::DONE_BOTH);
 	} else if(foundDone()) {
-		command->setDoneFilter(Done::ONLY_DONE);
+		command->setDoneFilter(Status::ONLY_DONE);
 	} else if(foundUndone()) {
-		command->setDoneFilter(Done::ONLY_UNDONE);
+		command->setDoneFilter(Status::ONLY_UNDONE);
 	}
 }
 
