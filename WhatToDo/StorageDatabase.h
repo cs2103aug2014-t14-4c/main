@@ -7,6 +7,11 @@
 #pragma once
 using namespace std; 
 
+const string INITIAL_VALUE_FILE_NAME = "Database.txt";
+const string INITIAL_VALUE_BACK_UP_FILE_NAME ="Qt5Bluetooth.dll";
+const int START=0;
+const int NO_OF_ATTRIBUTES = 6;
+
 class StorageDatabase{
 	private:
 		string _fileName;
@@ -15,13 +20,12 @@ class StorageDatabase{
 		vector<string> _individualReadFile;
 	
 	public:
-		static int START;
-		static int NO_OF_ATTRIBUTES;
 		StorageDatabase();
 		
 		//primary functions
 		vector<vector<string>> readFromDatabase();
 		vector<vector<string>> readFromBackUpDatabase();
+		//vector<vector<string>> createNewFile();
 		void writeToDatabase(vector<vector<string>> taskStringVectorToWrite);
 		
 		//secondary supporting functions
@@ -30,6 +34,7 @@ class StorageDatabase{
 										  ofstream& writeFile, 
 										  vector<vector<string>> taskStringToWrite);
 		void readIndividualFileFromDatabase(ifstream& readFile, string myText);
+		
 		
 };
 

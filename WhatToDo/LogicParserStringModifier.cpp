@@ -26,7 +26,7 @@ bool StringModifier::isNumber(string text) {
 string StringModifier::getFirstWord(string text) {
 	assert(!text.empty());
 	text = trimWhiteSpace(text);
-	return text.substr(Zero, text.find_first_of(WHITESPACE_CHAR));
+	return text.substr(ZERO, text.find_first_of(WHITESPACE_CHAR));
 }
 
 string StringModifier::getExceptFirstWord(string text) {
@@ -87,6 +87,17 @@ string StringModifier::detokenizeVector(vector<string> text) {
 	return trimWhiteSpace(line);
 }
 
+void StringModifier::log(string message) {
+	if (!LOGGINGON) {
+		return;
+	}
+
+	ofstream logger;
+	logger.open(LOG_FILE_NAME, ios::app);
+	logger << message;
+	logger.close();
+}
+
 string StringModifier::trimLeft(string text) {
 	assert(!text.empty());
 	return text.substr(text.find_first_not_of(WHITESPACE_CHAR));
@@ -94,5 +105,5 @@ string StringModifier::trimLeft(string text) {
 
 string StringModifier::trimRight(string text) {
 	assert(!text.empty());
-	return text.substr(Zero, text.find_last_not_of(WHITESPACE_CHAR) + One);
+	return text.substr(ZERO, text.find_last_not_of(WHITESPACE_CHAR) + ONE);
 }

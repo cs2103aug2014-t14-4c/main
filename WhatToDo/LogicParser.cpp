@@ -25,5 +25,5 @@ Command* LogicParser::getCommandFromUserInput(string userInput) {
 
 bool LogicParser::isEmptyInput(string userInput) {
 	return (userInput.empty() 
-		|| userInput.find_first_not_of(WHITESPACE_CHAR) == string::npos);
+		 || userInput.find_first_not_of(WHITESPACE_CHAR) == string::npos);
 }

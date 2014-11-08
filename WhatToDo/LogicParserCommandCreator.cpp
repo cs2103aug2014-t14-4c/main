@@ -131,6 +131,9 @@ bool CommandCreator::isUndoneCommand(void) {
 }
 
 Command* CommandCreator::createAddCommand(void) {
+	sprintf_s(logBuffer, LOG_CREATE_ADD.c_str());
+	log(logBuffer);
+
 	Command* addCommand = new CommandAdd;
 	addCommand->setParsedStatus(true);
 
@@ -140,16 +143,24 @@ Command* CommandCreator::createAddCommand(void) {
 }
 
 Command* CommandCreator::createClearCommand(void) {
+	sprintf_s(logBuffer, LOG_CREATE_CLEAR.c_str());
+	log(logBuffer);
+
 	Command* clearCommand = new CommandClear;
 	clearCommand->setParsedStatus(hasNoParameters());
 
 	if(!clearCommand->getParsedStatus()) {
 		clearCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_CLEAR);
+		sprintf_s(logBuffer, LOG_ERROR_PARAMETER_NUMBER.c_str());
+		log(logBuffer);
 	}
 	return clearCommand;
 }
 
 Command* CommandCreator::createDeleteCommand(void) {
+	sprintf_s(logBuffer, LOG_CREATE_DELETE.c_str());
+	log(logBuffer);
+
 	Command* deleteCommand = new CommandDelete;
 	deleteCommand->setParsedStatus(hasParameters());
 
@@ -158,11 +169,16 @@ Command* CommandCreator::createDeleteCommand(void) {
 		details.deleteExistingTask(deleteCommand);
 	} else {
 		deleteCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_DELETE);
+		sprintf_s(logBuffer, LOG_ERROR_PARAMETER_NUMBER.c_str());
+		log(logBuffer);
 	}
 	return deleteCommand;
 }
 
 Command* CommandCreator::createDoneCommand(void) {
+	sprintf_s(logBuffer, LOG_CREATE_DONE.c_str());
+	log(logBuffer);
+
 	Command* doneCommand = new CommandDone;
 	doneCommand->setParsedStatus(hasParameters());
 
@@ -171,11 +187,16 @@ Command* CommandCreator::createDoneCommand(void) {
 		details.markTaskAsDone(doneCommand);
 	} else {
 		doneCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_DONE);
+		sprintf_s(logBuffer, LOG_ERROR_PARAMETER_NUMBER.c_str());
+		log(logBuffer);
 	}
 	return doneCommand;
 }
 
 Command* CommandCreator::createEditCommand(void) {
+	sprintf_s(logBuffer, LOG_CREATE_EDIT.c_str());
+	log(logBuffer);
+
 	Command* editCommand = new CommandEdit;
 	editCommand->setParsedStatus(hasParameters());
 
@@ -184,11 +205,16 @@ Command* CommandCreator::createEditCommand(void) {
 		details.editExistingTask(editCommand);
 	} else {
 		editCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_EDIT);
+		sprintf_s(logBuffer, LOG_ERROR_PARAMETER_NUMBER.c_str());
+		log(logBuffer);
 	}
 	return editCommand;
 }
 
 Command* CommandCreator::createFilterCommand(void) {
+	sprintf_s(logBuffer, LOG_CREATE_FILTER.c_str());
+	log(logBuffer);
+
 	Command* filterCommand = new CommandFilter;
 	filterCommand->setParsedStatus(hasParameters());
 
@@ -197,31 +223,46 @@ Command* CommandCreator::createFilterCommand(void) {
 		details.filterExistingTasks(filterCommand);
 	} else {
 		filterCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_FILTER);
+		sprintf_s(logBuffer, LOG_ERROR_PARAMETER_NUMBER.c_str());
+		log(logBuffer);
 	}
 	return filterCommand;
 }
 
 Command* CommandCreator::createLoadCommand(void) {
+	sprintf_s(logBuffer, LOG_CREATE_LOAD.c_str());
+	log(logBuffer);
+
 	Command* loadCommand = new CommandLoad;
 	loadCommand->setParsedStatus(hasNoParameters());
 
 	if(!loadCommand->getParsedStatus()) {
 		loadCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_LOAD);
+		sprintf_s(logBuffer, LOG_ERROR_PARAMETER_NUMBER.c_str());
+		log(logBuffer);
 	}
 	return loadCommand;
 }
 
 Command* CommandCreator::createRedoCommand(void) {
+	sprintf_s(logBuffer, LOG_CREATE_REDO.c_str());
+	log(logBuffer);
+	
 	Command* redoCommand = new CommandRedo;
 	redoCommand->setParsedStatus(hasNoParameters());
 	
 	if(!redoCommand->getParsedStatus()) {
 		redoCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_CLEAR);
+		sprintf_s(logBuffer, LOG_ERROR_PARAMETER_NUMBER.c_str());
+		log(logBuffer);
 	}
 	return redoCommand;
 }
 
 Command* CommandCreator::createSearchCommand(void) {
+	sprintf_s(logBuffer, LOG_CREATE_SEARCH.c_str());
+	log(logBuffer);
+
 	Command* searchCommand = new CommandSearch;
 	searchCommand->setParsedStatus(hasParameters());
 
@@ -230,21 +271,31 @@ Command* CommandCreator::createSearchCommand(void) {
 		details.searchForTask(searchCommand);
 	} else {
 		searchCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_SEARCH);
+		sprintf_s(logBuffer, LOG_ERROR_PARAMETER_NUMBER.c_str());
+		log(logBuffer);
 	}
 	return searchCommand;
 }
 
 Command* CommandCreator::createUndoCommand(void) {
+	sprintf_s(logBuffer, LOG_CREATE_UNDO.c_str());
+	log(logBuffer);
+
 	Command* undoCommand = new CommandUndo;
 	undoCommand->setParsedStatus(hasNoParameters());
 		
 	if(!undoCommand->getParsedStatus()) {
 		undoCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_CLEAR);
+		sprintf_s(logBuffer, LOG_ERROR_PARAMETER_NUMBER.c_str());
+		log(logBuffer);
 	}
 	return undoCommand;
 }
 
 Command* CommandCreator::createUndoneCommand(void) {
+	sprintf_s(logBuffer, LOG_CREATE_UNDONE.c_str());
+	log(logBuffer);
+	
 	Command* undoneCommand = new CommandDone;
 	undoneCommand->setParsedStatus(hasParameters());
 
@@ -253,6 +304,8 @@ Command* CommandCreator::createUndoneCommand(void) {
 		details.markTaskAsUndone(undoneCommand);
 	} else {
 		undoneCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_UNDONE);
+		sprintf_s(logBuffer, LOG_ERROR_PARAMETER_NUMBER.c_str());
+		log(logBuffer);
 	}
 	return undoneCommand;
 }

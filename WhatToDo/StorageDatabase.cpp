@@ -4,12 +4,9 @@
 
 using namespace std;
 
-int StorageDatabase::START=0;
-int StorageDatabase::NO_OF_ATTRIBUTES = 6;
-
 StorageDatabase::StorageDatabase(){
-	_fileName = "Database.txt";
-	_backUpFileName = "backupDatabase.txt";
+	_fileName = INITIAL_VALUE_FILE_NAME;
+	_backUpFileName = INITIAL_VALUE_BACK_UP_FILE_NAME;
 	_stringToRead.clear();
 
 }
@@ -67,7 +64,7 @@ void StorageDatabase::readIndividualFileFromDatabase(ifstream &readFile, string 
 	_individualReadFile.clear();
 	_stringToRead.clear();
 	while(readFile.peek()!=EOF){
-		for(int i = START; i<NO_OF_ATTRIBUTES; i++){
+		for(int i = START; i < NO_OF_ATTRIBUTES; i++){
 			getline(readFile,myText);
 			_individualReadFile.push_back(myText);
 		}
@@ -85,7 +82,7 @@ void StorageDatabase::writeIndivdualFileToDatabase(vector<vector<string>>::itera
 	
 	fileIterator = taskStringToWrite.begin();
 	while(fileIterator != taskStringToWrite.end()){
-		for(int i = START; i< NO_OF_ATTRIBUTES; i++){
+		for(int i = START; i < NO_OF_ATTRIBUTES; i++){
 			writeFile << (*fileIterator)[i] << endl;
 		}
 		writeFile << endl; 
@@ -93,3 +90,15 @@ void StorageDatabase::writeIndivdualFileToDatabase(vector<vector<string>>::itera
 	}
 	return;
 }
+
+//vector<vector<string>> StorageDatabase::createNewFile(){
+//
+//	ifstream readFile(_fileName);
+//	assert(&readFile!=NULL);
+//	string myText; 
+//	readIndividualFileFromDatabase(readFile, myText);
+//
+//	readFile.close();
+//
+//	return _stringToRead; 
+//}

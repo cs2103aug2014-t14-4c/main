@@ -11,6 +11,9 @@ DetailsParser::~DetailsParser(void) {
 }
 
 void DetailsParser::addNewTask(Command* command) {
+	sprintf_s(logBuffer, LOG_ADD_TASK.c_str());
+	log(logBuffer);
+
 	try {
 		DatetimeParser datetime;
 		Task* task = new Task;
@@ -31,12 +34,17 @@ void DetailsParser::addNewTask(Command* command) {
 }
 
 void DetailsParser::deleteExistingTask(Command* command) {
+	sprintf_s(logBuffer, LOG_DELETE_TASK.c_str());
+	log(logBuffer);
+
 	try {
 		if(!hasOnlyIndex()) {
+			sprintf_s(logBuffer, LOG_ERROR_NO_INDEX.c_str());
+			log(logBuffer);
+
 			throw invalid_argument(USERMESSAGE_INVALID_DELETE);
 		}
 		setTaskIndex(command);
-		command->setIsDoneStatus(true);
 	} catch(const invalid_argument& e) {
 		command->setUserMessage(e.what());
 		command->setParsedStatus(false);
@@ -44,8 +52,14 @@ void DetailsParser::deleteExistingTask(Command* command) {
 }
 
 void DetailsParser::markTaskAsDone(Command* command) {
+	sprintf_s(logBuffer, LOG_MARK_DONE.c_str());
+	log(logBuffer);
+
 	try {
 		if(!hasOnlyIndex()) {
+			sprintf_s(logBuffer, LOG_ERROR_NO_INDEX.c_str());
+			log(logBuffer);
+
 			throw invalid_argument(USERMESSAGE_INVALID_DONE);
 		}
 		setTaskIndex(command);
@@ -57,8 +71,14 @@ void DetailsParser::markTaskAsDone(Command* command) {
 }
 
 void DetailsParser::markTaskAsUndone(Command* command) {
+	sprintf_s(logBuffer, LOG_MARK_UNDONE.c_str());
+	log(logBuffer);
+
 	try {
 		if(!hasOnlyIndex()) {
+			sprintf_s(logBuffer, LOG_ERROR_NO_INDEX.c_str());
+			log(logBuffer);
+
 			throw invalid_argument(USERMESSAGE_INVALID_UNDONE);
 		}
 		setTaskIndex(command);
@@ -70,10 +90,19 @@ void DetailsParser::markTaskAsUndone(Command* command) {
 }
 
 void DetailsParser::editExistingTask(Command* command) {
+	sprintf_s(logBuffer, LOG_EDIT_TASK.c_str());
+	log(logBuffer);
+
 	try {
 		if(!hasIndex()) {
+			sprintf_s(logBuffer, LOG_ERROR_NO_INDEX.c_str());
+			log(logBuffer);
+
 			throw invalid_argument(USERMESSAGE_INVALID_EDIT_NO_INDEX);
 		} else if(!hasEditedTask()) {
+			sprintf_s(logBuffer, LOG_ERROR_NO_TASK.c_str());
+			log(logBuffer);
+
 			throw invalid_argument(USERMESSAGE_INVALID_EDIT_NO_TASK);
 		}
 		setTaskIndex(command);
@@ -86,25 +115,26 @@ void DetailsParser::editExistingTask(Command* command) {
 }
 
 void DetailsParser::filterExistingTasks(Command* command) {
-	try {
-		_parameters = transformToLowercase(_parameters);
-		_tokens = tokenizeString(_parameters);
+	sprintf_s(logBuffer, LOG_FILTER_TASKS.c_str());
+	log(logBuffer);
+
+	_parameters = transformToLowercase(_parameters);
+	_tokens = tokenizeString(_parameters);
+	if(foundClear()) {
+		clearFilters(command);
+	} else {
 		parseDoneFilter(command);
 		parseTypeFilter(command);
 		parseDateFilter(command);
-	} catch(const invalid_argument& e) {
-		command->setUserMessage(e.what());
-		command->setParsedStatus(false);
 	}
 }
 
 void DetailsParser::searchForTask(Command* command) {
-	try {
-		formatForSearch();
-		command->setSearchKeyword(_parameters);
-	} catch(const exception&) {
-		command->setParsedStatus(false);
-	}
+	sprintf_s(logBuffer, LOG_SEARCH_TASKS.c_str());
+	log(logBuffer);
+
+	formatForSearch();
+	command->setSearchKeyword(_parameters);
 }
 
 void DetailsParser::setTaskIndex(Command* command) {
@@ -131,6 +161,9 @@ void DetailsParser::addTaskTags(Task* task) {
 void DetailsParser::addTaskName(Task* task) {
 	try {
 		if(_parameters.empty()) {
+			sprintf_s(logBuffer, LOG_ERROR_NO_NAME.c_str());
+			log(logBuffer);
+
 			throw invalid_argument(USERMESSAGE_NO_TASK_NAME);
 		}
 		task->setTaskName(_parameters);
@@ -139,47 +172,42 @@ void DetailsParser::addTaskName(Task* task) {
 	}
 }
 
+void DetailsParser::clearFilters(Command* command) {
+	command->setDoneFilter(Status::DONE_BOTH);
+	command->setTypeFilter(Type::ALL_TYPES);
+	command->setStartDateFilter((date)neg_infin);
+	command->setEndDateFilter((date)pos_infin);
+}
+
 void DetailsParser::parseDoneFilter(Command* command) {
-	try {
-		if(foundNoDone()) {
-			command->setDoneFilter(Done::DONE_BOTH);
-		} else if(foundDone()) {
-			command->setDoneFilter(Done::ONLY_DONE);
-		} else if(foundUndone()) {
-			command->setDoneFilter(Done::ONLY_UNDONE);
-		}
-	} catch(const invalid_argument&) {
-		throw;
+	if(foundNoDone()) {
+		command->setDoneFilter(Status::DONE_BOTH);
+	} else if(foundDone()) {
+		command->setDoneFilter(Status::ONLY_DONE);
+	} else if(foundUndone()) {
+		command->setDoneFilter(Status::ONLY_UNDONE);
 	}
 }
 
 void DetailsParser::parseTypeFilter(Command* command) {
-	try {
-		if(foundNoType()) {
-			command->setTypeFilter(Type::ALL_TYPES);
-		} else if(foundDue()) {
-			command->setTypeFilter(Type::ONLY_DUE);
-		} else if(foundFixed()) {
-			command->setTypeFilter(Type::ONLY_FIXED);
-		}
-	} catch(const invalid_argument&) {
-		throw;
+	if(foundNoType()) {
+		command->setTypeFilter(Type::ALL_TYPES);
+	} else if(foundDue()) {
+		command->setTypeFilter(Type::ONLY_DUE);
+	} else if(foundFixed()) {
+		command->setTypeFilter(Type::ONLY_FIXED);
 	}
 }
 
 void DetailsParser::parseDateFilter(Command* command) {
 	try {
 		if(foundNoDate()) {
-			date positiveInfinity(pos_infin);
-			date negativeInfinity(neg_infin);
-			command->setStartDateFilter(negativeInfinity);
-			command->setEndDateFilter(positiveInfinity);
+			command->setStartDateFilter((date)neg_infin);
+			command->setEndDateFilter((date)pos_infin);
 		} else {
 			DatetimeParser datetime;
 			datetime.addFilterDate(command, _parameters);
 		}
-	} catch(const invalid_argument&) {
-		throw;
 	} catch(const out_of_range& e) {
 		command->setUserMessage(e.what());
 		command->setParsedStatus(false);
@@ -199,7 +227,16 @@ bool DetailsParser::hasEditedTask() {
 }
 
 bool DetailsParser::isTag(string word) {
-	return (word.find_first_of(IDENTIFIER_TAG) == Zero);
+	return (word.find_first_of(IDENTIFIER_TAG) == ZERO);
+}
+
+bool DetailsParser::foundClear(void) {
+	for(auto iter = _tokens.begin(); iter != _tokens.end(); ++iter) {
+		if(*iter == FILTER_CLEAR) {
+			return true;
+		}
+	}
+	return false;
 }
 
 bool DetailsParser::foundDone(void) {
@@ -283,5 +320,6 @@ void DetailsParser::formatForSearch() {
 			searchWords += *iter + SPACE;
 		}
 	}
+
 	_parameters = trimWhiteSpace(searchWords) + searchTags;
 }

@@ -1,42 +1,71 @@
-//****************************************************************************
 //@author A0110655N
+//****************************************************************************
 //DatetimeParser is responsible for the parsing of date and/or time tokens in
-//the user input, if any. It takes in a Task pointer and a string reference to
-//the parameters that is to be parsed.
+//the user input, if any. It serves two main functions:
+//	1) Parsing the datetimes for new tasks added/tasks that are to be edited
+//	2) Parsing the date/date range required for filters.
 //
-//If any of the start/end/deadline datetimes are found, the tokens describing 
-//the datetimes will be removed from the parameters. The end result is a task
-//which contains the relevant datetimes and a parameter that should only have
-//the task name remaining. Note that DatetimeParser removes or changes
-//whitespace character(s) between tokens in the original parameter to a single
-//space in the result.
+//1) addTaskDatetime - Parsing datetimes for CommandAdd/CommandEdit
+//addTaskDatetime takes in a Task pointer and a reference to a string, in order
+//to set the Start/End/Deadline datetimes in the task to dates found in the
+//string parameters given.
 //
-//DatetimeParser works sequentially. As such, if there is more than one 
-//particular datetime specified for a single field (eg, task by friday 5pm 
-//due 14 dec 2014), only the first datetime will be read. Subsequent datetimes
-//will be added to the name of the task.
+//It does so by breaking up the parameters given into individual tokens and 
+//searching for instances of date and/or time tokens. If any of the datetimes]
+//are found, the relevant tokens will be removed. Finally, the parameters
+//string is reconstructed such that it can be used again by the calling 
+//function (to be set as the task name). Note that in the process, the
+//whitespace character(s) between tokens in the original paramters are all
+//replaced by a single space.
+//
+//addTaskDatetime adds deadlines and end datetimes through the use of key
+//identifier words as listed below. These identifiers are required for 
+//deadline and end datetimes, but not for start datetimes. As such, a datetime
+//token without a identifier will be automatically recognised as a start
+//datetime.
+//
+//addTaskDatetime will throw an out_of_range exception if a "valid datetime",
+//after parsing, is found to be non-existent (eg, 30 Feb 2014). It will NOT
+//throw exceptions if invalid datetime tokens are encountered (eg, 32 Dec),
+//but will instead retain them in the parameters string supplied.
+//
+//2) addFilterDate - Parsing date/date ranges for CommandFilter
+//addFilterDate takes in a Command pointer and a string to parse the date
+// or date range filtering options for the filter command.
+//
+//Similarly to addTaskDatetime, addFilterDate breaks the parameters string
+//into tokens to look for instances of date tokens. However, as the parameters
+//need not be updated for further use, it is not reconstructed or returned.
+//
+//addFilterDate requires identifiers to recognise end date filters, but will
+//add start date filters regardless of identifiers.
+//
+//Exception handling procedures are identical the addTaskDatetime, as stated
+//above.
+//
 //
 //DatetimeParser currently supports the following formats for input:
 //Date - 
-//1) Day Month Year - 15 Nov|November 14|2014
-//2) Day Month - 15 Nov|November (Sets the year as the current year)
-//3) This Weekday - this fri|friday (Sets the date as the friday this week,
-//									 regardless of the day today.)
-//4) Next Weekday - next thur (Sets the date as the thursday this week, 
-//							   regardless of the day today.)
-//5) DDMM - 0103 (Can be delimited by ".", "/", or "-", eg 01/03. Sets the
-//				  year as the current year.)
-//6) DDMMYY - 010314 (As above, can be delimited by ".", "/", or "-".)
-//7) DDMMYYYY  -01032014 (As above, can be delimited by ".", "/", or "-".)
-//8) Weekday - fri|friday (Sets the date as the nearest friday, not counting
-//						   today.)
-//9) Special - today|tomorrow
+//	1) Day Month Year - 15 Nov|November 14|2014
+//	2) Day Month - 15 Nov|November (Sets the year as the current year)
+//	3) This Weekday - this fri|friday (Sets the date as the friday this week,
+//									   regardless of the day today.)
+//	4) Next Weekday - next thur (Sets the date as the thursday this week, 
+//								 regardless of the day today.)
+//	5) DDMM - 0103 (Can be delimited by ".", "/", or "-", eg 01/03. Sets the
+//				    year as the current year.)
+//	6) DDMMYY - 010314 (As above, can be delimited by ".", "/", or "-".)
+//	7) DDMMYYYY  -01032014 (As above, can be delimited by ".", "/", or "-".)
+//	8) Weekday - fri|friday (Sets the date as the nearest friday, not counting
+//							 today.)
+//	9) Special - today|tomorrow
 //
 //Time - 
-//1) 12 Hours - 12pm, 1245AM (Can be delimited by "." or ":", eg 12:00a.m.)
-//2) 24 Hours - 0845, 2359 (As above, can be delimited by "." or ":", eg 23.59)
+//	1) 12 Hours - 12pm, 1245AM (Can be delimited by "." or ":", eg 12:00a.m.)
+//	2) 24 Hours - 0845, 2359 (Can be delimited by "." or ":", eg 23.59)
 //
 //All above input formats are case insensitive.
+//
 //DatetimeParser inherits string modification functions from StringModifier.
 //
 //Sample usage:
@@ -111,8 +140,7 @@ const array<string, 12> MONTHS_LONG =
 	"july", "august", "september", "october", "november", "december"};
 
 const string USERMESSAGE_DATETIME_NOT_PARSED = 
-	"Incorrect date/time input format, please check your date input."
-	" Use DDMMYYYY and HHMM for the best results.";
+	"You've entered a non-existent date!";
 
 class DatetimeParser : public StringModifier {
 public:
@@ -120,7 +148,7 @@ public:
 	~DatetimeParser(void);
 
 	void addTaskDatetime(Task* task, string& parameters);
-	void addFilterDate(Command* command, string& parameters);
+	void addFilterDate(Command* command, string parameters);
 
 private:
 	vector<string> _parameters;
@@ -137,18 +165,14 @@ private:
 	
 	void setParameters(string parameters);
 	string getParameters(void);
+	void combineDatetime(void);
 	void setFoundDatetime(Task* task);
 	void setFilterDatetime(Command* command);
 	void eraseWord(vector<string>::iterator& iter);
+	void addDate(vector<string>::iterator iter, date& date, time_duration& time);
+	void addTime(vector<string>::iterator iter, date& date, time_duration& time);
 
-	void addDate(vector<string>::iterator iter, 
-				 date& date, 
-				 time_duration& time);
-	void addTime(vector<string>::iterator iter, 
-				 date& date, 
-				 time_duration& time);
-
-	//StartDatetime
+	//Functions to parse the start datetime of the task
 	void addStartDatetime(void);
 	bool hasStartDatetime(void);
 	bool hasStartDate(void);
@@ -158,7 +182,7 @@ private:
 	bool isStartIdentifier(string word);
 	void combineStartDatetime(void);
 
-	//EndDatetime
+	//Functions to parse the end datetime of the task
 	void addEndDatetime(void);
 	bool hasEndDatetime(void);
 	bool hasEndDate(void);
@@ -167,7 +191,7 @@ private:
 	bool isEndIdentifier(string word);
 	void combineEndDatetime(void);
 
-	//DeadlineDatetime
+	//Functions to parse the deadline datetime of the task
 	void addDeadlineDatetime(void);
 	bool hasDeadlineDatetime(void);
 	bool hasDeadlineDate(void);
@@ -176,7 +200,7 @@ private:
 	bool isDeadlineIdentifier(string word);
 	void combineDeadlineDatetime(void);
 
-	//Time Parsing FunctionsS
+	//Time Parsing Functions
 	bool isATime(vector<string>::iterator iter);
 	time_duration parseTime(vector<string>::iterator iter);
 
@@ -188,7 +212,9 @@ private:
 	bool isAm(string word);
 	bool isPm(string word);
 
+	//Handles the parsing for military (or 24 hour) time.
 	void parseMilitaryTime(string word, int& hours, int& minutes);
+	//Handles the parsing for AM/PM (or 12 hour) time.
 	void parseAmPmTime(string word, int& hours, int& minutes);
 
 	void removeTimeDelimiters(string& word);
