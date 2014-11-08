@@ -5,29 +5,65 @@ State::State(){
 	maxIndex = 0;
 }
 
-//Operations
+//Setters
+void State::setAllTasks(vector<Task> tasksToSet){
+	_entireListOfTasks = tasksToSet;
+}
 
-/*
-   This function will need to create a unique index for task
-**/
+void State::setUserMessage(string stringToSet){
+	_userMessage = stringToSet;
+}
+
+void State::setActionMessage(string stringToSet){
+	_actionMessage = stringToSet;
+}
+
+void State::setLastActionType(int actionTypeToSet) {
+	_lastActionType = actionTypeToSet;
+	return;
+}
+
+void State::setLastActionTaskIndex(int actionTaskIndexToSet) {
+	_lastActionTaskIndex = actionTaskIndexToSet;
+	return;
+}
+
+//Getters
+string State::getUserMessage(){
+	return _userMessage;
+}
+
+string State::getActionMessage(){
+	return _actionMessage;
+}
+
+int State::getLastActionType() {
+	return _lastActionType;
+}
+
+int State::getLastActionTaskIndex() {
+	return _lastActionTaskIndex;
+}
+
+//Operations
 void State::addTask(Task taskToAdd, bool isUserCommand, int specifiedIndex){
 	if (specifiedIndex == UNSPECIFIED_INDEX) {
 		taskToAdd.setTaskIndex(maxIndex);
 		if (isUserCommand) {
-			_lastActionType = CHANGED;
+			_lastActionType = actionType::CHANGED;
 			_lastActionTaskIndex = maxIndex;
 		} else {
-			_lastActionType = NONE;
+			_lastActionType = actionType::NONE;
 		}
 		maxIndex++;
 		_entireListOfTasks.push_back(taskToAdd);
 	} else {
 		taskToAdd.setTaskIndex(specifiedIndex);
 		if (isUserCommand) {
-			_lastActionType = CHANGED;
+			_lastActionType = actionType::CHANGED;
 			_lastActionTaskIndex = specifiedIndex;
 		} else {
-			_lastActionType = NONE;
+			_lastActionType = actionType::NONE;
 		}
 		_entireListOfTasks.push_back(taskToAdd);
 	}
@@ -37,10 +73,10 @@ void State::deleteTask(int taskIndexToDelete, bool isUserCommand){
 	for(unsigned int i=0; i< _entireListOfTasks.size();i++){
 		if(_entireListOfTasks[i].getTaskIndex() == taskIndexToDelete){
 			if (isUserCommand) {
-				_lastActionType = DELETED;
+				_lastActionType = actionType::DELETED;
 				_lastActionTaskIndex = taskIndexToDelete;
 			} else {
-				_lastActionType = NONE;
+				_lastActionType = actionType::NONE;
 			}
 			_entireListOfTasks.erase(_entireListOfTasks.begin() + i);
 		}
@@ -51,7 +87,7 @@ void State::doneTask(int taskIndexToDo, bool isUserCommand) {
 	for(unsigned int i=0; i< _entireListOfTasks.size();i++){
 		if(_entireListOfTasks[i].getTaskIndex() == taskIndexToDo){
 			_entireListOfTasks[i].setTaskIsDone(isUserCommand);
-			_lastActionType = CHANGED;
+			_lastActionType = actionType::CHANGED;
 			_lastActionTaskIndex = taskIndexToDo;
 		}
 	}
@@ -124,40 +160,3 @@ vector<Task> State::getFloatingTasks(){
 	return floatingTasks;
 }
 
-int State::getLastActionType() {
-	return _lastActionType;
-}
-
-void State::setLastActionType(int actionTypeToSet) {
-	_lastActionType = actionTypeToSet;
-	return;
-}
-
-void State::setLastActionTaskIndex(int actionTaskIndexToSet) {
-	_lastActionTaskIndex = actionTaskIndexToSet;
-	return;
-}
-
-int State::getLastActionTaskIndex() {
-	return _lastActionTaskIndex;
-}
-
-void State::setAllTasks(vector<Task> tasksToSet){
-	_entireListOfTasks = tasksToSet;
-}
-
-void State::setUserMessage(string stringToSet){
-	_userMessage = stringToSet;
-}
-
-void State::setActionMessage(string stringToSet){
-	_actionMessage = stringToSet;
-}
-
-string State::getUserMessage(){
-	return _userMessage;
-}
-
-string State::getActionMessage(){
-	return _actionMessage;
-}

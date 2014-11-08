@@ -3,10 +3,11 @@
 //State is responsible for storing a list of Tasks. State primarily deals with
 //the adding, deleting of Tasks to itself. Also, when a Task is completed,
 //State is able to set the Task as done. Other than this, State can return
-//the caller a list of specified Tasks based on their Task types:
-//	1) Timed 
-//	2) Deadline
-//	3) Floating
+//the caller a list of specified Tasks based on these specifications:
+//	1) Timed - Contain information such as StartDate or EndDate, but does not
+//     have a deadline
+//	2) Deadline - Specifically has a deadline
+//	3) Floating - No StartDate and deadline
 //
 //****************************************************************************
 
@@ -32,6 +33,19 @@ class State{
 		//Constructor
 		State();
 
+		//Setters
+		void setAllTasks(vector<Task> tasksToSet);
+		void setUserMessage(string stringToSet);
+		void setActionMessage(string stringToSet);
+		void setLastActionType(int actionTypeToSet);
+		void setLastActionTaskIndex(int actionTaskIndexToSet);
+		
+		//Getters
+		string getUserMessage();
+		string getActionMessage();
+		int getLastActionType();
+		int getLastActionTaskIndex();
+
 		//Operations
 		void addTask(Task taskToAdd, bool isUserCommand = UNSPECIFIED_USER_COMMAND, 
 			int specifiedIndex = UNSPECIFIED_INDEX);
@@ -43,16 +57,8 @@ class State{
 		vector<Task> getTimedTasks();
 		vector<Task> getDeadlineTasks();
 		vector<Task> getFloatingTasks();
-		int getLastActionType();
-		int getLastActionTaskIndex();
-		void setAllTasks(vector<Task> tasksToSet);
-		void setUserMessage(string stringToSet);
-		void setActionMessage(string stringToSet);
-		void setLastActionType(int actionTypeToSet);
-		void setLastActionTaskIndex(int actionTaskIndexToSet);
-		string getUserMessage();
-		string getActionMessage();
-		
+
+		//Enumeration
 		enum actionType { NONE = 1, CHANGED, DELETED };
 };
 
