@@ -10,19 +10,22 @@
 //		a) All Day - Meaning that the entire day is demarketed as the deadline
 //		b) Time - Meaning that the deadline has a specific time
 //	3)Fixed Tasks
-//		a) All Day - Meaning that one entire day is demarketed for the Task
+//		a) Day
+//			i) All Day - Meaning that one entire day is demarketed for the Task
+//		   ii) Day To Time - Meaning that the start date is specified wih no time
+//		       and the end date time is specified
+//		  iii) Day To Day - Meaning that the start and end dates are both 
+//		       specified with no times specified	
 //		b) Start - Meaning that the start time is specified without any end
 //		   datetime
-//		c) Time Within Day - Meaning that the start time and end time are
-//		   specified within a single day
-//		d) Time Across Day - Meaning that the start time and end time are
-//		   specified over one day
-//		e) Time To Day - Meaning that the start time is specified and the
-//		   end date is specified with no time
-//		f) Day To Time - Meaning that the start date is specified wih no time
-//		   and the end date time is specified
-//		g) Day To Day - Meaning that the start and end dates are both specified
-//		   with no times specified
+//		c) Time 
+//			i) Time Within Day - Meaning that the start time and end time are
+//		       specified within a single day
+//		   ii) Time Across Day - Meaning that the start time and end time are
+//		       specified over one day
+//		  iii) Time To Day - Meaning that the start time is specified and the
+//		       end date is specified with no time
+//
 //
 //*Note: datetimes which are "All day" are marked with 1 second 
 //		(000001 in HHMMSS)
@@ -92,6 +95,8 @@ class Task{
 		bool hasDeadline();
 		bool isFullDay(ptime dateTimeToCheck);
 		bool isStartDateEqualEndDate();
+		bool isTaskTypeFixedDay(Task myTask);
+		bool isTaskTypeFixedTime(Task myTask);
 		bool isTaskOverlapWith(Task myTask);
 		bool isEarlierThan(Task myTask);
 		bool isTaskSortedBefore(Task firstTask, Task secondTask);
@@ -99,10 +104,10 @@ class Task{
 
 		//Level 2 Operations
 		bool compareByFloat(Task firstTask, Task secondTask, bool *orderConfirmed);
-		bool compareByDateTime(Task firstTask, Task secondTask, bool *orderConfirmed);
+		bool compareByDate(Task firstTask, Task secondTask, bool *orderConfirmed);
 		bool compareByDeadlineAllDay(Task firstTask, Task secondTask, bool *orderConfirmed);
 		bool compareByDeadlineTime(Task firstTask, Task secondTask, bool *orderConfirmed);
-		bool compareByFixedAllDay(Task firstTask, Task secondTask, bool *orderConfirmed);
+		bool compareByFixedDay(Task firstTask, Task secondTask, bool *orderConfirmed);
 		bool compareByFixedStart(Task firstTask, Task secondTask, bool *orderConfirmed);
 		bool compareByFixedTime(Task firstTask, Task secondTask, bool *orderConfirmed);
 		bool compareByFixedTimeAndStart(Task firstTask, Task secondTask, bool *orderConfirmed);
@@ -115,8 +120,8 @@ class Task{
 
 		//Compare Functions are arranged in order of precedence from greatest priority starting from 1.
 		enum CompareType{
-			COMPARE_FLOAT = 1, COMPARE_DATETIME, COMPARE_DEADLINE_ALLDAY, COMPARE_DEADLINE_TIME,
-			COMPARE_FIXED_ALLDAY, COMPARE_FIXED_START, COMPARE_FIXED_TIME_WITHIN_DAY, COMPARE_FIXED_TIME_START
+			COMPARE_FLOAT = 1, COMPARE_DATE, COMPARE_DEADLINE_ALLDAY, COMPARE_DEADLINE_TIME,
+			COMPARE_FIXED_DAY, COMPARE_FIXED_START, COMPARE_FIXED_TIME, COMPARE_FIXED_TIME_START
 		};
 
 };
