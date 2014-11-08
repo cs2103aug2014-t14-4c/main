@@ -3,34 +3,38 @@
 using namespace std; 
 
 StorageExecutor::StorageExecutor(void){
+	_logFileName == LOG_FILE_NAME; 
+	_loggingModeOn = true; 
 }
 
+//loadFromStorage reads file, converts string into task
+//packs tasks into a State and return as a state
 State StorageExecutor::loadFromStorage(){
-	
+
 	readFileAndConvertString();
-	//pack tasks into state and return as state
 	vector<Task>::iterator taskIterator = _convertedTaskVector.begin();
 	assert(&taskIterator!=NULL);
 	_stateToLoad = processTaskAddition(taskIterator);
-
+	
 	return _stateToLoad;
 }
 
+//saveToStorage first gets all tasks from state
+//convert tasks to vector<string>
+//write to databas the string
 void StorageExecutor::saveToStorage(State stateToSave){
-	//first get all task for a given State and returns a vector of Tasks
 	assert(&stateToSave!=NULL);
-	
 	_taskToStore = stateToSave.getAllTasks(); 
 
-	//for each task, convert to string using string converter
 	vector<Task>::iterator myTaskIterator = _taskToStore.begin();
 	convertAllTaskToString(myTaskIterator);
-	//send to StorageDatabase for writing of file
 	_storageDatabaseObj.writeToDatabase(_convertedStringStorage);
 	
 	return;
 }
 
+//conversion from vector<string> to Task
+//exception handling when conversion isn't successful
 void StorageExecutor::processVectorStringToTaskConversion(vector<vector<string>>::iterator vIterator){
 	//convert string to task
 	try{
@@ -41,14 +45,16 @@ void StorageExecutor::processVectorStringToTaskConversion(vector<vector<string>>
 		}
 		return;
 	} catch(exception&){
-		//catch errors from conversion
+		compileErrorMessage(FUNCTION_VECTOR_STRING_TO_TASK_CONVERSION,MSG_CONVERSION_ERROR);
+		logErrorMessage(_logErrorMessage); 
 		throw;
 	}
 }
 
+//adds converted Tasks into a State 
+//returns the State after all Tasks are added
 State StorageExecutor::processTaskAddition(vector<Task>::iterator taskIterator){
 
-	//adding task for loading by state
 	while(taskIterator!= _convertedTaskVector.end()){
 		_stateToLoad.addTask(*taskIterator); 
 		taskIterator++; 
@@ -56,34 +62,60 @@ State StorageExecutor::processTaskAddition(vector<Task>::iterator taskIterator){
 	return _stateToLoad;
 }
 
+//converts Tasks to strings
+//store the converted string into a vector of strings
 void StorageExecutor::convertAllTaskToString(vector<Task>::iterator taskIterator){
 
 	_convertedStringStorage.clear();
 	while(taskIterator!=_taskToStore.end()){
-		_individualConvertedTask = _storageConverterObj.convertTaskToString(*taskIterator);
-		//store the converted string into a vector of strings
+		_individualConvertedTask = _storageConverterObj.convertTaskToString(*taskIterator);	
 		_convertedStringStorage.push_back(_individualConvertedTask);
 		taskIterator++;
 	}
-
 	return;
 }
 
+//read from database
+//convert each string into task using storageConverter
+//if any exceptions were caught during the conversion process
+//errors could be from any of the sub-conversion functions
+//conversions have failed and will be load from backup file
+//if backup also fails, a new file will be created
 void StorageExecutor::readFileAndConvertString(){
-
-	//convert each string into task using storageConverterdddd
 	try{
 		_storageToConvert = _storageDatabaseObj.readFromDatabase();
-		assert(&_storageToConvert != NULL);
-		//cannot read a null pointer
 		vector<vector<string>>::iterator myStorageIterator = _storageToConvert.begin();
 		processVectorStringToTaskConversion(myStorageIterator);
 	} catch(exception&){
-		//load from backupfile
-		//log message " loading from backup";
+		compileErrorMessage(FUNCTION_LOAD_FROM_STORAGE,MSG_DATABASE_ERROR);
+		logErrorMessage(_logErrorMessage);
 		_storageToConvert.clear();
 		_storageToConvert = _storageDatabaseObj.readFromBackUpDatabase();
 		vector<vector<string>>::iterator myStorageIterator = _storageToConvert.begin();
 		processVectorStringToTaskConversion(myStorageIterator);
 	}
+}
+	 
+void StorageExecutor::logErrorMessage(string errorMessage){
+	if(LOGGING_MODE_ON == true){
+		ofstream writeToLogFile;
+		string currentTime = to_simple_string(second_clock::local_time());
+		writeToLogFile.open(LOG_FILE_NAME, ios::app);
+		writeToLogFile << currentTime << endl << errorMessage << endl;
+		writeToLogFile.close();
+	} 
+
+	return;
+}
+
+void StorageExecutor::compileErrorMessage(string errorMessageLocation, string errorMessage){
+	
+	sprintf_s(_logErrorMessage, LOGGING_TEMPLATE.c_str(), errorMessageLocation.c_str(), errorMessage.c_str());
+
+	return;
+}
+
+State StorageExecutor::loadNewFile(){
+	State newState;
+	return newState;  
 }
