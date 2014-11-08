@@ -1,5 +1,5 @@
-//****************************************************************************
 //@author A0110655N
+//****************************************************************************
 //This is the interface class to the entire Parser component. When called with 
 //the getCommandFromUserInput(string) method, it is guaranteed to return a 
 //pointer to a concrete Command object (such as CommandAdd, CommandEdit, etc).

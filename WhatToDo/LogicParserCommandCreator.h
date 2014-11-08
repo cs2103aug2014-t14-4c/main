@@ -1,14 +1,15 @@
-//****************************************************************************
 //@author A0110655N
+//****************************************************************************
 //CommandCreator is the class responsible for the creation of pointers to each
-//concrete Command subclass, based on the parsed user input in comparison to 
-//the arrays of valid command inputs as listed below. 
+//concrete Command subclass, based on the user input in comparison to the
+//valid command inputs as listed below. 
 //
 //In the process of validating the command, CommandCreator checks the presence
 //of the accomapanying parameters. In particular, it ensures that
-//1) No parameter is given for {CommandClear, CommandRedo, CommandUndo}.
-//2) Parameter(s) are given for {CommandAdd, CommandDelete, CommandDone,
-//								 CommandEdit, CommandSearch}.
+//	1) No parameter is given for {CommandClear, CommandRedo, CommandUndo}.
+//	2) Parameter(s) are given for {CommandAdd, CommandDelete, CommandDone,
+//								   CommandEdit, CommandFilter, CommandSearch}.
+
 //Note that the validity of the parameters are not checked by CommandCreator.
 //
 //If unnecessary or insufficient parameters are given, the Command
@@ -69,6 +70,32 @@ const string USERMESSAGE_INVALID_COMMAND_UNDO =
 const string USERMESSAGE_INVALID_COMMAND_UNDONE =
 	"Type /undone <index> to mark the task at <index> as not done.";
 
+const string LOG_CREATE_ADD = 
+	"CommandCreator - Creating an Add Command.\n";
+const string LOG_CREATE_CLEAR = 
+	"CommandCreator - Creating a Clear Command.\n";
+const string LOG_CREATE_DELETE = 
+	"CommandCreator - Creating an Delete Command.\n";
+const string LOG_CREATE_DONE = 
+	"CommandCreator - Creating a Done Command.\n";
+const string LOG_CREATE_EDIT = 
+	"CommandCreator - Creating an Edit Command.\n";
+const string LOG_CREATE_FILTER = 
+	"CommandCreator - Creating a Filter Command.\n";
+const string LOG_CREATE_LOAD = 
+	"CommandCreator - Creating a Load Command.\n";
+const string LOG_CREATE_REDO = 
+	"CommandCreator - Creating a Redo Command.\n";
+const string LOG_CREATE_SEARCH = 
+	"CommandCreator - Creating a Search Command.\n";
+const string LOG_CREATE_UNDO = 
+	"CommandCreator - Creating an Undo Command.\n";
+const string LOG_CREATE_UNDONE = 
+	"CommandCreator - Creating an Undone Command.\n";
+const string LOG_ERROR_PARAMETER_NUMBER = 
+	"CommandCreator - Error - Command not parsed correctly. Unexpected number"
+	"of parameters supplied.\n";
+
 class CommandCreator : public StringModifier {
 public:
 	CommandCreator(void);
@@ -77,10 +104,7 @@ public:
 	Command* createCommand(string userInput);
 
 private:
-	string _userInput;
-	string _userCommand;
 	void setUserInput(string userInput);
-
 	string getUserCommand(void);
 	string getParameters(void);
 	bool hasParameters(void);
@@ -114,4 +138,7 @@ private:
 	Command* createSearchCommand(void);
 	Command* createUndoCommand(void);
 	Command* createUndoneCommand(void);
+
+	string _userInput;
+	string _userCommand;
 };

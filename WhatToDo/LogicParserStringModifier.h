@@ -1,15 +1,18 @@
-//****************************************************************************
 //@author A0110655N
+//****************************************************************************
 //StringModifier is the class containing the common string manipulation and 
-//modification methods used throughout the Parser component.
+//modification methods used throughout the Parser component. In addition, it
+//also provides the logging function that is shared between the sub-classes
+//of the LogicParser component.
 //
 //Sample usage:
 //	StringModifier stringMod;
-//	string output = stringMod.transformToLowercase("One");
+//	string output = stringMod.transformToLowercase("ONE");
 //  //output == "one"
 //****************************************************************************
 
 #pragma once
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -22,12 +25,15 @@
 using namespace std;
 
 enum ConstInt {
-	Zero, One, Two, Three
+	ZERO, ONE, TWO, THREE
 };
 
 const string SPACE = " ";
 const string EMPTY_STRING = "";
 const string WHITESPACE_CHAR = " \f\n\r\t\v";
+
+const string LOG_FILE_NAME = "ParserLog.txt";
+const bool LOGGINGON = true;
 
 class StringModifier {
 public:
@@ -44,7 +50,7 @@ public:
 	string getFirstWord(string text);
 
 	//Gets the string given with the first word removed. Returns an empty
-	//string if the given string consistly only of one word.
+	//string if the given string consists of only one word.
 	string getExceptFirstWord(string text);
 
 	//Trims the starting and ending whitespace characters around the given
@@ -58,6 +64,10 @@ public:
 	//Sequentially concatenates a vector of strings into a single string,
 	//with each token separated by a space.
 	string detokenizeVector(vector<string> text);
+
+	//Logging function and buffer
+	void log(string message);
+	char logBuffer[1000];
 
 private:
 	string trimLeft(string text);

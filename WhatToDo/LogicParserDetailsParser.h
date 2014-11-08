@@ -1,11 +1,11 @@
-//****************************************************************************
 //@author A0110655N
+//****************************************************************************
 //DetailsParser is concerned with the parsing of parameters for Command 
 //subclasses which require them, specifically {CommandAdd, CommandDelete, 
-//CommandDone, CommandEdit, CommandSearch}. It firstly checks the validity
-//of the parameters supplied. In particular, it ensures that
-//1) Only an integer parameter is given for {CommandDelete, CommandDone}.
-//2) An integer followed by a string parameter is given for {CommandEdit}.
+//CommandDone, CommandEdit, CommandFilter, CommandSearch}. It firstly checks 
+//the validity of the parameters supplied. In particular, it ensures that
+//	1) Only an integer parameter is given for {CommandDelete, CommandDone}.
+//	2) An integer followed by a string parameter is given for {CommandEdit}.
 //
 //DetailsParser further ensures that all details are formatted and placed
 //in their respective fields. Tasks created for {CommandAdd, CommandEdit} are
@@ -28,6 +28,7 @@ using namespace std;
 
 const string IDENTIFIER_TAG = "#";
 
+const string FILTER_CLEAR = "clear";
 const string FILTER_DONE_ALL = "nodone";
 const string FILTER_DONE_DONE = "done";
 const string FILTER_DONE_UNDONE = "undone";
@@ -49,42 +50,47 @@ const string USERMESSAGE_INVALID_EDIT_NO_INDEX =
 const string USERMESSAGE_INVALID_EDIT_NO_TASK = 
 	"You must add changed task details to edit a task!";
 
+const string LOG_ADD_TASK = 
+	"DetailsParser - Adding new task.\n";
+const string LOG_DELETE_TASK = 
+	"DetailsParser - Deleteing task.\n";
+const string LOG_MARK_DONE = 
+	"DetailsParser - Marking task as done.\n";
+const string LOG_MARK_UNDONE = 
+	"DetailsParser - Marking task as undone.\n";
+const string LOG_EDIT_TASK = 
+	"DetailsParser - Editing task.\n";
+const string LOG_FILTER_TASKS = 
+	"DetailsParser - Filtering tasks.\n";
+const string LOG_SEARCH_TASKS = 
+	"DetailsParser - Searching tasks.\n";
+
+const string LOG_ERROR_NO_INDEX = 
+	"DetailsParser - Error - No index supplied.\n";
+const string LOG_ERROR_NO_TASK = 
+	"DetailsParser - Error - No task supplied.\n";
+const string LOG_ERROR_NO_NAME = 
+	"DetailsParser - Error - No task name supplied.\n";
+
 class DetailsParser : public StringModifier {
 public:
 	DetailsParser(string parameters);
 	~DetailsParser(void);
 
-	//Command pointer will have its _currentTask set with parameters as
-	//specified by the user input.
 	void addNewTask(Command* command);
-
-	//Command pointer will have its _commandTaskIndex set to the index given.
 	void deleteExistingTask(Command* command);
-
-	//Command pointer will have its _commandTaskIndex set to the index given.
 	void markTaskAsDone(Command* command);
-
-	//Command pointer will have its _commandTaskIndex set to the index given.
 	void markTaskAsUndone(Command* command);
-
-	//Command pointer will have its _commandTaskIndex set to the index given  
-	//and _currentTask set with parameters as specified by the user input.
 	void editExistingTask(Command* command);
-
 	void filterExistingTasks(Command* command);
-
-	//Command pointer will have its _searchKeyword set with parameters as
-	//specified by the user input and formatted in accordance with the 
-	//CommandSearch requirements.
 	void searchForTask(Command* command);
 
 private:
-	string _parameters;
-	vector<string> _tokens;
-
 	void setTaskIndex(Command* command);
 	void addTaskTags(Task* task);
 	void addTaskName(Task* task);
+
+	void clearFilters(Command* command);
 	void parseDoneFilter(Command* command);
 	void parseTypeFilter(Command* command);
 	void parseDateFilter(Command* command);
@@ -94,16 +100,18 @@ private:
 	bool hasEditedTask(void);
 	bool isTag(string word);
 
+	bool foundClear(void);
 	bool foundDone(void);
 	bool foundUndone(void);
 	bool foundNoDone(void);
-
 	bool foundFixed(void);
 	bool foundDue(void);
 	bool foundNoType(void);
-
 	bool foundNoDate(void);
 
 	void removeIndexForEdit(void);	
 	void formatForSearch(void);
+
+	string _parameters;
+	vector<string> _tokens;
 };
