@@ -1,4 +1,5 @@
 //****************************************************************************
+//@author A0110873L
 //State is responsible for storing a list of Tasks. State primarily deals with
 //the adding, deleting of Tasks to itself. Also, when a Task is completed,
 //State is able to set the Task as done. Other than this, State can return
@@ -7,8 +8,6 @@
 //	2) Deadline
 //	3) Floating
 //
-//
-//@author A0110873L
 //****************************************************************************
 
 #ifndef STATE_H

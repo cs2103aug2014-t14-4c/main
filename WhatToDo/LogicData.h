@@ -1,4 +1,5 @@
 //****************************************************************************
+//@author A0110873L
 //LogicData is responsible for holding the current State, view State and
 //initial State. It also keeps track of the commands that are executed from 
 //the time that WhatToDo is executed. This allows for easy redoing and undoing
@@ -16,8 +17,6 @@
 //
 //Furthermore, LogicData support the logging of functions called and errors 
 //from within. 
-//
-//@author A0110873L
 //****************************************************************************
 
 #ifndef LOGICDATA_H
@@ -35,6 +34,11 @@ enum Status{
 
 enum Type{
 	TYPE_NOT_SET = -1, ALL_TYPES, ONLY_FIXED, ONLY_DUE
+};
+
+enum Month{
+	JAN = 1, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT,
+	NOV, DEC
 };
 
 class Command;
@@ -62,29 +66,29 @@ class LogicData {
 		//Constructor
 		LogicData();
 
-		//setters
+		//Setters
 		static void setCurrentState(State stateToSet);
 		static void setViewState(State stateToSet);
 		static void setDoneFilter(int doneFilter);
 		static void setTypeFilter(int typeFilter);
 		static void setDateFilter(date startDateFilter, date endDateFilter);
+		static void setCommandHistoryIndex(int indexToSet);
 
-		//getters
+		//Getters
 		static State getCurrentState();
 		static State getViewState();
+		static vector<Command*> getCommandHistory();
+		static int getCurrentCommandHistoryIndex();
 		static int getDoneFilter();
 		static int getTypeFilter();
 		static date getStartDateFilter();
 		static date getEndDateFilter();
 
-		//operations
+		//Operations
 		static void resetCommandHistory();
-		static vector<Command*> getCommandHistory();
 		static void addCommandToHistory(Command* commandToAdd);
-		static int getCurrentCommandHistoryIndex();
 		static void resetToInitialSettings();
 		static void loadInitialSettings();
-		static void setCommandHistoryIndex(int indexToSet);
 		static void fakeinitiate(State fakestate);
 		static State filterTasks();
 		static bool passDoneFilter(Task task);
@@ -101,6 +105,8 @@ class LogicData {
 		static void setLoggingModeOn();
 
 		//Constants
+		static const int INITIAL_COMMAND_HISTORY_INDEX;
+
 		static const string ABBREV_MONTH_JAN;
 		static const string ABBREV_MONTH_FEB;
 		static const string ABBREV_MONTH_MAR;
@@ -114,7 +120,19 @@ class LogicData {
 		static const string ABBREV_MONTH_NOV;
 		static const string ABBREV_MONTH_DEC;
 		static const string STRING_SPACE_CHAR;
+		static const string STRING_FRONTSLASH_CHAR;
+		static const string STRING_FROM;
+		static const string STRING_TO;
+		static const string STRING_FILTERED_BY;
+		static const string STRING_COLON;
+		static const string STRING_VERTICAL_BAR_CHAR;
 		static const string STRING_EMPTY;
+		static const string STRING_NO_DONE;
+		static const string STRING_DONE;
+		static const string STRING_UNDONE;
+		static const string STRING_ALL_TYPES;
+		static const string STRING_ONLY_FIXED;
+		static const string STRING_ONLY_DUE;
 
 		static const string INITIAL_VALUE_LOG_FILE_NAME;
 		static const string LOG_MSG_CURRENT_STATE_SET;
@@ -126,6 +144,9 @@ class LogicData {
 		static const string LOG_MSG_COMMAND_HISTORY_ADDED;
 		static const string LOG_MSG_RESET;
 		static const string LOG_MSG_LOAD;
+
+		static const string ERR_MSG_INVALID_TASK_TYPE;
+		static const string ERR_MSG_INVALID_STATUS_TYPE;
 };
 
 #endif

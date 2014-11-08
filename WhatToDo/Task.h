@@ -1,4 +1,5 @@
 //****************************************************************************
+//@author A0110873L
 //Task is the most fundamental component within WhatToDo and is responsible 
 //for storing important details of a task such as its start time, end time, 
 //deadline, name, tags and status (done or not done). In additional, a Task 
@@ -12,8 +13,8 @@
 //	3)Fixed Tasks
 //		a) Day
 //			i) All Day - Meaning that one entire day is demarketed for the Task
-//		   ii) Day To Time - Meaning that the start date is specified wih no time
-//		       and the end date time is specified
+//		   ii) Day To Time - Meaning that the start date is specified wih no 
+//		       time and the end date time is specified
 //		  iii) Day To Day - Meaning that the start and end dates are both 
 //		       specified with no times specified	
 //		b) Start - Meaning that the start time is specified without any end
@@ -26,10 +27,8 @@
 //		  iii) Time To Day - Meaning that the start time is specified and the
 //		       end date is specified with no time
 //
-//
 //*Note: datetimes which are "All day" are marked with 1 second 
 //		(000001 in HHMMSS)
-//@author A0110873L
 //****************************************************************************
 
 #ifndef TASK_H
@@ -89,7 +88,7 @@ class Task{
 		vector<string> getTaskTags();
 		bool getTaskIsDone();
 		
-		//Operations
+		//Primary Operations
 		bool hasStartDateTime();
 		bool hasEndDateTime();
 		bool hasDeadline();
@@ -102,7 +101,7 @@ class Task{
 		bool isTaskSortedBefore(Task firstTask, Task secondTask);
 		bool compare(Task firstTask, Task secondTask, bool *orderConfirmed, int functionToCall);
 
-		//Level 2 Operations
+		//Secondary Operations
 		bool compareByFloat(Task firstTask, Task secondTask, bool *orderConfirmed);
 		bool compareByDate(Task firstTask, Task secondTask, bool *orderConfirmed);
 		bool compareByDeadlineAllDay(Task firstTask, Task secondTask, bool *orderConfirmed);
@@ -114,8 +113,9 @@ class Task{
 
 		//Enumeration
 		enum TaskType{
-			 FLOATING = 1, DEADLINE_TIME, DEADLINE_ALLDAY, FIXED_TIME_WITHIN_DAY, FIXED_TIME_ACROSS_DAY,
-			 FIXED_TIME_TO_DAY, FIXED_DAY_TO_TIME, FIXED_DAY_TO_DAY, FIXED_START, FIXED_ALLDAY
+			 FLOATING = 1, DEADLINE_TIME, DEADLINE_ALLDAY, FIXED_ALLDAY, FIXED_DAY_TO_DAY, 
+			 FIXED_DAY_TO_TIME, FIXED_START, FIXED_TIME_WITHIN_DAY, FIXED_TIME_ACROSS_DAY, 
+			 FIXED_TIME_TO_DAY 
 		};
 
 		//Compare Functions are arranged in order of precedence from greatest priority starting from 1.
@@ -123,21 +123,6 @@ class Task{
 			COMPARE_FLOAT = 1, COMPARE_DATE, COMPARE_DEADLINE_ALLDAY, COMPARE_DEADLINE_TIME,
 			COMPARE_FIXED_DAY, COMPARE_FIXED_START, COMPARE_FIXED_TIME, COMPARE_FIXED_TIME_START
 		};
-
 };
-
-//FLOATING Tasks have no StartDateTime and no Deadline
-//DEADLINE_ALLDAY Tasks have deadline time 000001 (HHMMSS)
-//DEADLINE_TIME Tasks have deadline times that are not marked with time 000001
-//FIXED_TIME Tasks have StartDateTimes and EndDateTimes which only use HHMM, SS are not touched
-//FIXED_ALLDAY Tasks have StartDateTime, no EndDateTime, and it's StartDateTime is marked with time 000001
-//FIXED_START Tasks have StartDateTime, no EndDateTime
-//New
-//FIXED_TIME_WITHIN_DAY
-//FIXED_TIME_TO_DAY , SS for EndDateTime should be 01
-//FIXED_TIME_ACROSS_DAY, SS for EndDateTime should remain 0
-//FIXED_DAY_TO_TIME, SS for StartDateTime should be 01 and SS for EndDateTime should remain 0
-//FIXED_DAY_TO_DAY, SS for StartDateTime and EndDateTime should be 01.
-
 
 #endif

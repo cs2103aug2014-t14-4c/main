@@ -117,6 +117,7 @@ bool Task::getTaskIsDone(){
 	return _isDone;
 }
 
+//Primary Operations
 bool Task::hasStartDateTime() {
 	return !(_taskStartDateTime == not_a_date_time);
 }
@@ -139,13 +140,15 @@ bool Task::isStartDateEqualEndDate(){
 
 bool Task::isTaskTypeFixedDay(Task myTask){
 	int myTaskType = myTask.getTaskType();
-	return myTaskType == FIXED_ALLDAY || myTaskType == FIXED_DAY_TO_DAY || 
+	return myTaskType == FIXED_ALLDAY || 
+		myTaskType == FIXED_DAY_TO_DAY || 
 		myTaskType == FIXED_DAY_TO_TIME;
 }
 
 bool Task::isTaskTypeFixedTime(Task myTask){
 	int myTaskType = myTask.getTaskType();
-	return myTaskType == FIXED_TIME_WITHIN_DAY || myTaskType == FIXED_TIME_ACROSS_DAY ||
+	return myTaskType == FIXED_TIME_WITHIN_DAY || 
+		myTaskType == FIXED_TIME_ACROSS_DAY ||
 		myTaskType == FIXED_TIME_TO_DAY;
 }
 
@@ -160,12 +163,16 @@ bool Task::isTaskOverlapWith(Task myTask){
 		   return isOverlap;
 	}
 
-	assert(myTask.getTaskType() == FIXED_TIME_WITHIN_DAY && this->getTaskType() == FIXED_TIME_WITHIN_DAY);
-	if(_taskStartDateTime < myTask.getTaskStartTime() && _taskEndDateTime > myTask.getTaskStartTime()){
+	assert(myTask.getTaskType() == FIXED_TIME_WITHIN_DAY && 
+		this->getTaskType() == FIXED_TIME_WITHIN_DAY);
+	if(_taskStartDateTime < myTask.getTaskStartTime() && 
+		_taskEndDateTime > myTask.getTaskStartTime()){
 		isOverlap = true;
-	}else if(_taskStartDateTime< myTask.getTaskEndTime() && _taskEndDateTime > myTask.getTaskEndTime()){
+	}else if(_taskStartDateTime< myTask.getTaskEndTime() && 
+		_taskEndDateTime > myTask.getTaskEndTime()){
 		isOverlap = true;
-	}else if(_taskStartDateTime == myTask.getTaskStartTime() || _taskEndDateTime == myTask.getTaskEndTime()){
+	}else if(_taskStartDateTime == myTask.getTaskStartTime() || 
+		_taskEndDateTime == myTask.getTaskEndTime()){
 		isOverlap = true;
     }
 	return isOverlap;
@@ -210,6 +217,7 @@ bool Task::compare(Task firstTask, Task secondTask, bool *orderConfirmed, int fu
 	}
 }
 
+//Secondary Operations
 bool Task::compareByFloat(Task firstTask, Task secondTask, bool *orderConfirmed){
 	if ((firstTask.getTaskType() == FLOATING) && (secondTask.getTaskType() == FLOATING)) {
 		*orderConfirmed = true;
@@ -301,9 +309,11 @@ bool Task::compareByFixedDay(Task firstTask, Task secondTask, bool *orderConfirm
 			return false;
 		} else if (firstTask.getTaskType() == FIXED_DAY_TO_DAY) {
 			if(secondTask.getTaskType() == FIXED_DAY_TO_DAY) {
-				if(firstTask.getTaskEndTime().date() < secondTask.getTaskEndTime().date()){
+				if(firstTask.getTaskEndTime().date() < 
+					secondTask.getTaskEndTime().date()){
 					return true;
-				} else if(firstTask.getTaskEndTime().date() > secondTask.getTaskEndTime().date()) {
+				} else if(firstTask.getTaskEndTime().date() > 
+					secondTask.getTaskEndTime().date()) {
 					return false;
 				} else {
 					return firstTask.getTaskIndex() < secondTask.getTaskIndex();
@@ -338,7 +348,8 @@ bool Task::compareByFixedDay(Task firstTask, Task secondTask, bool *orderConfirm
 }
 
 bool Task::compareByFixedStart(Task firstTask, Task secondTask, bool *orderConfirmed){
-	if ((firstTask.getTaskType() == FIXED_START) && (secondTask.getTaskType() == FIXED_START)) {
+	if ((firstTask.getTaskType() == FIXED_START) && 
+		(secondTask.getTaskType() == FIXED_START)) {
 		*orderConfirmed = true;
 		if (firstTask.getTaskStartTime() < secondTask.getTaskStartTime()) {
 			return true;
@@ -374,10 +385,11 @@ bool Task::compareByFixedTimeAndStart(Task firstTask, Task secondTask, bool *ord
 	ptime secondTaskTime;
 	
 	if ((isTaskTypeFixedTime(firstTask)) && (secondTask.getTaskType() == FIXED_START)) {
+		//This step is to prevent the 1s marker in a FIXED_START task to be considered as
+		//later than a FIXED_TIME task that has the same time in terms of just HHMM
 		firstTaskTime = ptime(firstTask.getTaskStartTime().date(), 
 			hours(firstTask.getTaskStartTime().time_of_day().hours()) + 
 			minutes(firstTask.getTaskStartTime().time_of_day().minutes()));
-
 		secondTaskTime = ptime(secondTask.getTaskStartTime().date(), 
 			hours(secondTask.getTaskStartTime().time_of_day().hours()) + 
 			minutes(secondTask.getTaskStartTime().time_of_day().minutes()));
@@ -389,6 +401,8 @@ bool Task::compareByFixedTimeAndStart(Task firstTask, Task secondTask, bool *ord
 			return false;
 		}
 	} else if ((firstTask.getTaskType() == FIXED_START) && (isTaskTypeFixedTime(secondTask))) {
+		//This step is to prevent the 1s marker in a FIXED_START task to be considered as
+		//later than a FIXED_TIME task that has the same time in terms of just HHMM
 		firstTaskTime = ptime(firstTask.getTaskStartTime().date(), 
 			hours(firstTask.getTaskStartTime().time_of_day().hours()) + 
 			minutes(firstTask.getTaskStartTime().time_of_day().minutes()));
