@@ -1,21 +1,11 @@
 ﻿#include "StorageConverter.h"
 
-string StorageConverter::TITLE_TASKSTARTDATETIME = "Start Datetime: ";
-string StorageConverter::TITLE_TASKENDDATETIME = "End Datetime: ";
-string StorageConverter::TITLE_TASKDEADLINE = "Task Deadline: ";
-string StorageConverter::TITLE_TASKNAME = "Task Name: ";
-string StorageConverter::TITLE_TASKTAGS = "Task Tags: ";
-string StorageConverter::TITLE_TASKISDONE = "Task isDone Status: ";
-
-string StorageConverter::NOT_A_DATETIME = "not-a-date-time"; 
-
-//some are commented out as they are not implemented at this moment
-
 StorageConverter::StorageConverter(void){
 	_taskDatetimeString = ""; 
 	_taskName = "";
 	_taskTags = "";
 	_taskIsDone = ""; 
+	_logFileName = LOG_FILE_NAME; 
 }
 
 vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
@@ -144,7 +134,12 @@ vector<string> StorageConverter::convertTaskTagStringToVector(string tagString){
 	vector<string> tagVector;
 	
 	while(tagStringStream>>individualTag){
-		tagVector.push_back(individualTag);
+		if(individualTag[0] != '#'){
+			individualTag = '#' + individualTag;
+			tagVector.push_back(individualTag);
+		} else{
+			tagVector.push_back(individualTag);
+		}
 	}
 
 	return tagVector;
@@ -154,16 +149,20 @@ vector<string> StorageConverter::convertTaskTagStringToVector(string tagString){
 void StorageConverter::convertStringIsdoneToTask(Task& convertedTask){
 	//converting string to boolean
 	try{
-		if(_taskIsDone=="1"){
+		if(_taskIsDone==STRING_TRUE){
 			convertedTask.setTaskIsDone();
-		}else if(_taskIsDone=="0"){
+		}else if(_taskIsDone==STRING_FALSE){
 			
 		}else{
+			compileErrorMessage(FUNCTION_CONVERT_ISDONE,MSG_ISDONE_ERROR);
+			logErrorMessage(_logErrorMessage);
 			throw; 
 		} 
 		return;
 	}
 	catch(exception&){
+		compileErrorMessage(FUNCTION_CONVERT_ISDONE,MSG_ISDONE_ERROR);
+		logErrorMessage(_logErrorMessage);
 		throw; 
 		//log error
 	}
@@ -180,6 +179,8 @@ void StorageConverter::convertStringStartDatetimeToTask(Task& convertedTask){
 		}
 	}
 	catch(exception&){
+		compileErrorMessage(FUNCTION_CONVERT_PTIME_START, MSG_PTIME_START_ERROR);
+		logErrorMessage(_logErrorMessage);
 		throw;
 		//log error
 	}
@@ -196,6 +197,8 @@ void StorageConverter::convertStringEndDatetimeToTask(Task& convertedTask){
 		}
 	}
 	catch(const out_of_range&){
+		compileErrorMessage(FUNCTION_CONVERT_PTIME_END,MSG_PTIME_END_ERROR);
+		logErrorMessage(_logErrorMessage);
 		throw;
 		//throw outofrange error message
 	}
@@ -212,6 +215,8 @@ void StorageConverter::convertStringDeadlineToTask(Task& convertedTask){
 		}
 		return;
 	} catch(...){
+		compileErrorMessage(FUNCTION_CONVERT_PTIME_DEADLINE,MSG_PTIME_DEADLINE_ERROR);
+		logErrorMessage(_logErrorMessage);
 		throw;
 		//log error message
 	}
@@ -224,4 +229,22 @@ void StorageConverter::convertStringTasktagToTask(Task& convertedTask){
 	convertedTask.setTaskTags(taskTagVector);
 
 	return; 
+}
+
+void StorageConverter::logErrorMessage(string errorMessage){
+	if(LOGGING_MODE_ON == true){
+		ofstream writeToLogFile;
+		string currentTime = to_simple_string(second_clock::local_time());
+		writeToLogFile.open(LOG_FILE_NAME, ios::app);
+		writeToLogFile << currentTime << endl << errorMessage << endl;
+		writeToLogFile.close();
+	} 
+	return;
+}
+
+void StorageConverter::compileErrorMessage(string errorMessageLocation, string errorMessage){
+	
+	sprintf_s(_logErrorMessage, LOGGING_TEMPLATE.c_str(), errorMessageLocation.c_str(), errorMessage.c_str());
+
+	return;
 }
