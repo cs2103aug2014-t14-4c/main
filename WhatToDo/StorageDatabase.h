@@ -1,4 +1,22 @@
 //@author A0116278B
+//****************************************************************************
+//StorageDatabase is the class responsible for reading and writing of file
+//to Database. Files will be saved as .txt file format in local database 
+//such that the user can directly edit the .txt file even before openning the
+//programme. 
+
+//StorageDatabase comprises of 2 main functions which are
+//1)read from database 
+//2)write to database 
+//StorageDatabase also writes a copy of the schedule to a backup database
+//in the event that the user accidentally deleted the database or corrupted
+//the file that deem it unreadable. The user would however, be refrained from
+//editting the backup copy.
+
+//sample usage:
+//storageDatabaseObj.writeToDatabase();
+//vector<vector<string>> databaseString = StorageDatabaseObj.readFromDatabase();
+//****************************************************************************
 
 #include <vector>
 #include <string>
@@ -25,10 +43,11 @@ class StorageDatabase{
 		//primary functions
 		vector<vector<string>> readFromDatabase();
 		vector<vector<string>> readFromBackUpDatabase();
-		//vector<vector<string>> createNewFile();
 		void writeToDatabase(vector<vector<string>> taskStringVectorToWrite);
 		
 		//secondary supporting functions
+		void setFileName(string nameToSet); 
+		string getFileName(); 
 		vector<string> readFromDataBaseIndividualTaskString();
 		void writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, 
 										  ofstream& writeFile, 

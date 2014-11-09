@@ -91,14 +91,11 @@ void StorageDatabase::writeIndivdualFileToDatabase(vector<vector<string>>::itera
 	return;
 }
 
-//vector<vector<string>> StorageDatabase::createNewFile(){
+void StorageDatabase::setFileName(string nameToSet){
+	_fileName = nameToSet;
+}
+
 //
-//	ifstream readFile(_fileName);
-//	assert(&readFile!=NULL);
-//	string myText; 
-//	readIndividualFileFromDatabase(readFile, myText);
-//
-//	readFile.close();
-//
-//	return _stringToRead; 
-//}
+string StorageDatabase::getFileName(){
+	return _fileName; 
+}
