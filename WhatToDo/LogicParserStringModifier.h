@@ -32,8 +32,8 @@ const string SPACE = " ";
 const string EMPTY_STRING = "";
 const string WHITESPACE_CHAR = " \f\n\r\t\v";
 
-const string LOG_FILE_NAME = "ParserLog.txt";
-const bool LOGGINGON = true;
+const string PARSER_LOG_FILE_NAME = "ParserLog.txt";
+const bool PARSER_LOGGING_ON = true;
 
 class StringModifier {
 public:

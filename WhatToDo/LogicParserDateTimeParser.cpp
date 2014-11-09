@@ -167,6 +167,7 @@ bool DatetimeParser::isStartIdentifier(string word) {
 
 void DatetimeParser::combineStartDatetime(void) {
 	if(!hasStartTime()) {
+		//Marker for allday tasks
 		time_duration allDay = seconds(ONE);
 		_startTime = allDay;
 	} else if(!hasStartDate()) {
@@ -223,6 +224,7 @@ bool DatetimeParser::isEndIdentifier(string word) {
 
 void DatetimeParser::combineEndDatetime(void) {
 	if(!hasEndTime()) {
+		//Marker for allday tasks
 		time_duration allDay = seconds(ONE);
 		_endTime = allDay;
 	} else if(!hasEndDate()) {
@@ -279,6 +281,7 @@ bool DatetimeParser::isDeadlineIdentifier(string word) {
 
 void DatetimeParser::combineDeadlineDatetime(void) {
 	if(!hasDeadlineTime()) {
+		//Marker for allday tasks
 		time_duration allDay = seconds(ONE);
 		_deadlineTime = allDay;
 	} else if(!hasDeadlineDate()) {

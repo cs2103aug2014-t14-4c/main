@@ -88,12 +88,12 @@ string StringModifier::detokenizeVector(vector<string> text) {
 }
 
 void StringModifier::log(string message) {
-	if (!LOGGINGON) {
+	if (!PARSER_LOGGING_ON) {
 		return;
 	}
 
 	ofstream logger;
-	logger.open(LOG_FILE_NAME, ios::app);
+	logger.open(PARSER_LOG_FILE_NAME, ios::app);
 	logger << message;
 	logger.close();
 }

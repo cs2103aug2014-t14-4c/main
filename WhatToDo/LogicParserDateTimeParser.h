@@ -229,9 +229,11 @@ private:
 
 	bool isDayMonthYear(vector<string>::iterator iter);
 	bool isDayMonth(vector<string>::iterator iter);
+	//Note: A week is defined to start from Sunday ane ends on Saturday.
 	bool isThisNextWeekday(vector<string>::iterator iter);
 	bool isToday(string date);
 	bool isTomorrow(string date);
+	//Note: A week is defined to start from Sunday ane ends on Saturday.
 	bool isWeekday(string date);
 	bool isNumericalDate(string date);
 
@@ -251,11 +253,30 @@ private:
 
 	date parseDayMonthYear(vector<string>::iterator iter);
 	date parseDayMonth(vector<string>::iterator iter);
+	
+	//"This weekday" assumes that the user is referring to the weekday in
+	//the current week, regardless of whether it has actually passed. As such,
+	//adding a task "this monday" when the current day of the week is Wednesday
+	//will add the task to 2 days prior.
 	date parseThisWeekday(string weekday);
+
+	//"Next weekday" assumes that the user is referring to the weekday in the 
+	//week following the current one. As such, adding a task "next friday" when
+	//the current day of the week is monday will add the task 11 days later.
+	//Note that since the week starts on Sunday, adding a task "next Sunday"
+	//will always add the task to the Sunday nearest the current day, except in
+	//the case where the current day is Sunday.
 	date parseNextWeekday(string weekday);
+	
 	date parseToday(void);
 	date parseTomorrow(void);
+	//"Weekday" assumes that the user is referring to the next approaching
+	//day of the week specified, except for the current day. As such, adding
+	//a task on "friday" when the current day is Wednesday will add the task
+	//2 days from today, but adding the the task on "wednesday" in the same 
+	//situation will add it to a week later.
 	date parseComingWeekday(string weekday);
+
 	date parseNumericalDate(string date);
 	date parseDDMM(int intDate);
 	date parseDDMMYY(int intDate);
