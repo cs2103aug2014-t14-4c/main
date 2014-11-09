@@ -165,8 +165,10 @@ bool Task::isTaskOverlapWith(Task myTask) {
 		   return isOverlap;
 	}
 
-	assert(myTask.getTaskType() == FIXED_TIME_WITHIN_DAY && 
-		this->getTaskType() == FIXED_TIME_WITHIN_DAY);
+	assert(( myTask.getTaskType() == FIXED_TIME_WITHIN_DAY || 
+		myTask.getTaskType() == FIXED_TIME_ACROSS_DAY) &&
+		(this->getTaskType() == FIXED_TIME_WITHIN_DAY ||
+		this->getTaskType() == FIXED_TIME_ACROSS_DAY));
 	if(_taskStartDateTime < myTask.getTaskStartTime() && 
 		_taskEndDateTime > myTask.getTaskStartTime()){
 		isOverlap = true;
@@ -211,15 +213,33 @@ bool Task::isTaskSortedBefore(Task firstTask, Task secondTask) {
 
 bool Task::compare(Task firstTask, Task secondTask, bool *orderConfirmed, int functionToCall) {
 	switch(functionToCall){
-		case COMPARE_FLOAT: return compareByFloat(firstTask, secondTask, orderConfirmed);
-		case COMPARE_DATE: return compareByDate(firstTask, secondTask, orderConfirmed);
-		case COMPARE_DEADLINE_ALLDAY: return compareByDeadlineAllDay(firstTask, secondTask, orderConfirmed);
-		case COMPARE_DEADLINE_TIME: return compareByDeadlineTime(firstTask, secondTask, orderConfirmed);
-		case COMPARE_FIXED_DAY: return compareByFixedDay(firstTask, secondTask, orderConfirmed);
-		case COMPARE_FIXED_START: return compareByFixedStart(firstTask, secondTask, orderConfirmed);
-		case COMPARE_FIXED_TIME: return compareByFixedTime(firstTask, secondTask, orderConfirmed);
-		case COMPARE_FIXED_TIME_START: return compareByFixedTimeAndStart(firstTask, secondTask, orderConfirmed);
-		default: throw invalid_argument(MSG_ERR_INVALID_FUNCTION_CALL);
+		case COMPARE_FLOAT: {
+			return compareByFloat(firstTask, secondTask, orderConfirmed);
+		}
+		case COMPARE_DATE: {
+			return compareByDate(firstTask, secondTask, orderConfirmed);
+		}
+		case COMPARE_DEADLINE_ALLDAY: {
+			return compareByDeadlineAllDay(firstTask, secondTask, orderConfirmed);
+		}
+		case COMPARE_DEADLINE_TIME: {
+			return compareByDeadlineTime(firstTask, secondTask, orderConfirmed);
+		}
+		case COMPARE_FIXED_DAY: {
+			return compareByFixedDay(firstTask, secondTask, orderConfirmed);
+		}
+		case COMPARE_FIXED_START: {
+			return compareByFixedStart(firstTask, secondTask, orderConfirmed);
+		}
+		case COMPARE_FIXED_TIME: {
+			return compareByFixedTime(firstTask, secondTask, orderConfirmed);
+		}
+		case COMPARE_FIXED_TIME_START: {
+			return compareByFixedTimeAndStart(firstTask, secondTask, orderConfirmed);
+		}
+		default: {
+			throw invalid_argument(MSG_ERR_INVALID_FUNCTION_CALL);
+		}
 	}
 }
 
