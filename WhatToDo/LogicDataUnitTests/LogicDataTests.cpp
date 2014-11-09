@@ -351,6 +351,13 @@ namespace testLogicDataComponent {
 
 	TEST_CLASS(TestLogicData) {
 		public:
+			enum Status {
+				STATUS_NOT_SET = -1, DONE_BOTH, ONLY_DONE, ONLY_UNDONE
+			};
+
+			enum Type {
+				TYPE_NOT_SET = -1, ALL_TYPES, ONLY_FIXED, ONLY_DUE
+			};
 
 			TEST_METHOD(testInitialisation) {
 				LogicData myLogicData;
@@ -408,7 +415,7 @@ namespace testLogicDataComponent {
 			TEST_METHOD(testUndoneFilter) {
 				LogicData myLogicData;
 
-				myLogicData.setDoneFilter(LogicData::Status::ONLY_UNDONE);
+				myLogicData.setDoneFilter(Status::ONLY_UNDONE);
 
 				State myState;
 				Task temp;
@@ -445,7 +452,7 @@ namespace testLogicDataComponent {
 
 			TEST_METHOD(testDeadlineFilter) {
 				LogicData myLogicData;
-				myLogicData.setTypeFilter(LogicData::Type::ONLY_DUE);
+				myLogicData.setTypeFilter(Type::ONLY_DUE);
 
 				State myState;
 				vector<Task> expectedTasks, actualTasks;
@@ -486,7 +493,7 @@ namespace testLogicDataComponent {
 			TEST_METHOD(testFixedFilter) {
 				LogicData myLogicData;
 
-				myLogicData.setTypeFilter(LogicData::Type::ONLY_FIXED);
+				myLogicData.setTypeFilter(Type::ONLY_FIXED);
 
 				State myState;
 				vector<Task> expectedTasks, actualTasks;
@@ -505,13 +512,13 @@ namespace testLogicDataComponent {
 				fixedTask.setTaskStartTime(ptime (date(2014,Dec,10), time_duration(14,30,0)));
 				fixedTask.setTaskEndTime(ptime (date(2014,Dec,12), time_duration(16,30,0)));
 				myState.addTask(fixedTask);
-				expectedTasks.push_back(deadlineTask);
+				expectedTasks.push_back(fixedTask);
 
 				fixedTask.setTaskName("Go and LOL");
 				fixedTask.setTaskStartTime(ptime (date(2014,Dec,11), time_duration(14,30,0)));
 				fixedTask.setTaskEndTime(ptime (date(2014,Dec,12), time_duration(16,30,0)));
 				myState.addTask(fixedTask);
-				expectedTasks.push_back(deadlineTask);
+				expectedTasks.push_back(fixedTask);
 
 				myLogicData.setViewState(myState);
 				State myfilteredState;
