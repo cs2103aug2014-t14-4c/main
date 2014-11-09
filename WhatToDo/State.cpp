@@ -110,7 +110,7 @@ void State::sortAllTasks() {
 			for (secondaryIndex = primaryIndex + TO_THE_RIGHT_BY_ONE; 
 				unsigned(secondaryIndex) < _entireListOfTasks.size(); 
 				secondaryIndex++) {
-			if (swapTask.isTaskSortedBefore(_entireListOfTasks[primaryIndex], 
+			if (!swapTask.isTaskSortedBefore(_entireListOfTasks[primaryIndex], 
 				_entireListOfTasks[secondaryIndex])) {
 				swapTask = _entireListOfTasks[secondaryIndex];
 				_entireListOfTasks[secondaryIndex] = _entireListOfTasks[primaryIndex];

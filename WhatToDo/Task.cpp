@@ -131,7 +131,9 @@ bool Task::hasDeadline() {
 }
 
 bool Task::isFullDay(ptime dateTimeToCheck) {
-	return dateTimeToCheck.time_of_day().seconds() == MARKED_AS_FULL_DAY;
+	return dateTimeToCheck.time_of_day().hours() == 0 &&
+		dateTimeToCheck.time_of_day().minutes() == 0 && 
+		dateTimeToCheck.time_of_day().seconds() == MARKED_AS_FULL_DAY;
 }
 
 bool Task::isStartDateEqualEndDate() {
