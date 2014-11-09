@@ -1,5 +1,5 @@
 //****************************************************************************
-//@Poh Zhi Chao A0110648L
+//@author A0110648L
 //
 // This is the concrete CommandFilter class, which is reponsible for executing 
 // an "filter" command specified by the user.
@@ -29,10 +29,30 @@ const string LOGGING_MSG_EXECUTE_COMMAND_FILTER =
 class CommandFilter: public Command {
 	public:
 		CommandFilter(void);
+		
+		/*
+		// This API function executes the Filter Command when called.
+		//
+		// Pre-conditions:
+		//     (i) The _isParsedCorrectly variable in the command 
+		//     should be true.
+		//
+		// Post-Conditions:
+		//     (i) The done, type, and date filters in LogicData will
+		//     be changed according to the _doneFilter, _typeFilter, 
+		//     _startDateFilter, and _endDateFilter values in the Command
+		//     instance.
+		//
+		// Sample usage:
+		//     CommandFilter* aFilterCommand = new CommandFilter;
+		//     aFilterCommand->setDoneFilter(LogicData::DONE_BOTH);
+		//     aFilterCommand->execute();
+		*/
+		
 		void execute();
 
 	protected:
-		// CommandFilter Functions For Execution
+		// Functions For Execution
 
 		void performFilterOperation();
 };

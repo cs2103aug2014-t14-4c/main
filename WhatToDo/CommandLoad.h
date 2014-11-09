@@ -1,5 +1,5 @@
 //****************************************************************************
-//@Poh Zhi Chao A0110648L
+//@author A0110648L
 //
 // This is the concrete CommandLoad class, which is reponsible for executing 
 // an "load" command.
@@ -27,6 +27,23 @@ const string MSG_LOGGING_LOAD_LOGIC_DATA_SETTINGS =
 class CommandLoad: public Command {
 	public:
 		CommandLoad(void);
+		
+		/*
+		// This API function executes the Load Command when called.
+		//
+		// Pre-conditions: 
+		//     (i) The _isParsedCorrectly variable in the command 
+		//     should be true.
+		//
+		// Post-Conditions:
+		//     (i) The loadInitialSettings() function in LogicData will 
+		//     be called
+		//
+		// Sample usage:
+		//     CommandLoad* aLoadCommand = new CommandLoad;
+		//     aLoadCommand->execute();
+		*/
+		
 		void execute();
 
 	protected:
@@ -34,5 +51,6 @@ class CommandLoad: public Command {
 		// Functions For Execution
 
 		void loadLogicDataSettings();
+		void resetLastActionType();
 };
 

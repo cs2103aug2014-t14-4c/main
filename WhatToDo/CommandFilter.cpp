@@ -1,3 +1,6 @@
+//****************************************************************************
+//@author A0110648L
+
 #include "CommandFilter.h"
 
 CommandFilter::CommandFilter(void) {
@@ -17,7 +20,9 @@ void CommandFilter::execute() {
 	}
 	catch (string errorMsg) {
 		_userMessage = errorMsg;
+		retrieveExistingViewState();
 		addUserMessageToCurrentState();
+		setNewViewState();
 	}
 
 	return;
@@ -25,7 +30,7 @@ void CommandFilter::execute() {
 
 void CommandFilter::performFilterOperation() {
 	
-	if(_doneFilter != Status::DONE_NOT_SET) {
+	if(_doneFilter != Status::STATUS_NOT_SET) {
 		LogicData::setDoneFilter(_doneFilter);
 	}
 	if(_typeFilter != Type::TYPE_NOT_SET) {

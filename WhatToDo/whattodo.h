@@ -1,5 +1,5 @@
 //****************************************************************************
-//@Poh Zhi Chao A0110648L
+//@author A0110648L
 //
 // This is the main GUI logic / event handler class.
 // 
@@ -199,21 +199,53 @@ class WhatToDo : public QMainWindow
 	public:
 		WhatToDo(string exeDirectory, QWidget *parent = 0);
 		~WhatToDo();
-		void handleCalendarCommands(string command); //calling updateGUIWithCommandString(string)
+
+		// This event handler handles commands which are given by the
+		// user through the calendar.
+
+		void handleCalendarCommands(string command);
 		void updateCalendarView();
 
 	public slots:
 		
-		// All public event handlers triggered when various events
+		/*
+		// All public event handlers are triggered when various events
 		// occur within the GUI according to the user's interactions
-		// with the program.
+		// with the program, and changes to the GUI have to be made via
+		// these event handlers.
+		*/
+
+		// This event handler is called when the "Return" key is 
+		// pressed for a widget with the KeyPressEater installed. In the
+		// case where the "Return" key is pressed for the command entry 
+		// field, this event handler will update the GUI accordingly 
+		// depending on the user's command.
 
 		void handleKeyPressEvents(QObject* obj);
-		void handleEntryIntoSearchBar();
+
+		// This event handler is called when the "Tab" key is 
+		// pressed for a widget with the KeyPressEater installed. This
+		// event handler will alternate between the search bar and the command 
+		// entry field when the "Tab" key is pressed.
+
 		void handleEntryFieldTab();
-		void handleToggleTab();
-		void handleMinimize();
+
+		// This event handler is called when the search bar is entered through 
+		// a hotkey event. This event handler will highlight all the text in the
+		// search bar.
+
+		void handleEntryIntoSearchBar();
+
+		// This event handler is called when the user changes the contents of the
+		// search bar, and it will update the GUI according to the user's 
+		// desired search contents.
+
 		void handleSearchBarChange();
+
+		// These event handlers are called when hotkeys are pressed by the user.
+		// The event handler titles should be self-explanatory.
+
+		void handleHotkeyMinimize();
 		void handleHotkeyEdit();
 		void handleHotkeyDelete();
 		void handleHotkeyDone();
@@ -221,12 +253,17 @@ class WhatToDo : public QMainWindow
 		void handleHotkeyFilter();
 		void handleHotkeyClear();
 		void handleHotkeyHelp();
+
+		// These event handlers are called when buttons are pressed by 
+		// the user. The event handler titles should be self-explanatory.
+
 		void handleButtonUndo();
 		void handleButtonRedo();
 		void handleButtonToggleCalendar();
 		void handleButtonToggleAgenda();
 		void handleButtonCalendarPrev();
 		void handleButtonCalendarNext();
+
 	private:
 		
 		// Attributes For Execution
@@ -236,13 +273,16 @@ class WhatToDo : public QMainWindow
 		State _currState;
 		State _tempFutureState;
 		string _exeDirectory;
-		CalendarCanvas* SFMLView;
-		bool b_calender_init_complete;
+		CalendarCanvas* _SFMLView;
+		bool _b_calender_init_complete;
 
 		enum userCommandType { 
 			COMMAND_OTHERS = 1, COMMAND_EDIT, 
-			COMMAND_DONE_WITH_REAL_INDEX, COMMAND_UNDONE_WITH_REAL_INDEX, COMMAND_DELETE_WITH_REAL_INDEX,
-			COMMAND_DONE, COMMAND_UNDONE, 	COMMAND_DELETE, COMMAND_HELP, 
+			COMMAND_DONE_WITH_REAL_INDEX, 
+			COMMAND_UNDONE_WITH_REAL_INDEX, 
+			COMMAND_DELETE_WITH_REAL_INDEX,
+			COMMAND_DONE, COMMAND_UNDONE, 
+			COMMAND_DELETE, COMMAND_UNDO, COMMAND_HELP, 
 			COMMAND_HELP_ADD, COMMAND_HELP_EDIT, 
 			COMMAND_HELP_DELETE, COMMAND_HELP_DONE, 
 			COMMAND_HELP_SEARCH, COMMAND_HELP_CLEAR, 
@@ -250,41 +290,113 @@ class WhatToDo : public QMainWindow
 			COMMAND_HELP_FILTER
 		};
 
-		// These functions set up the GUI and get it up and running
-		// at startup
+		/*
+		// These functions set up the GUI at startup by loading the
+		// relevant graphic and information configurations to get it up
+		// and running at startup. The function names should be self-
+		// explanatory.
+		*/
 
+		void setupCalendar();
+		void setupKeyPressEater();
+		void setupOtherUIConfigs();
 		void connectAllOtherSignalAndSlots();
 		void defineAllHotkeys();
 		void loadSavedSettings();
-		void setupOtherUIConfigs();
-		void setupKeyPressEater();
 
+		void setupInitialGUIFocusConfigs();
+		void setupInitialGUISizeConfigs();
+		void setupMessageBoxConfigs();
+		void setupTextSizeConfigs();
+
+		/*
 		// These functions handle the updating of GUI elements when there
 		// are changes such as (i) user messages to display; or (ii) new view
 		// states to display because the user made an action.
+		*/
 
-		void updateGUIFromSearchBar();
-		void updateGUIFromCommandLine();
-		void updateGUIWithCommandString(string commandString);
-		void updateAgendaView();
-		//void updateCalendarView();
+		// These functions update the GUI when there are new popup messages or
+		// status bar messages to display to the user
+		
 		void showLogicUserFeedback();
 		void showGUIUserFeedback(string guiUserFeedback);
+		
+		// These function updates the entire GUI according to the current 
+		// contents in the search bar.
+
+		void updateGUIFromSearchBar();
+
+		// These function updates the entire GUI according to the current 
+		// contents in the command entry field.
+
+		void updateGUIFromCommandLine();
+
+		// These function updates the GUI according to a command string
+		// 
+		// Pre-condition: 
+		//     (i) the parameter commandString passed in must be 
+		//     a valid command according to the checkIsUserCommandInputValid()
+		//     function.
+
+		void updateGUIWithCommandString(string commandString);
+
+		// These functions update the agenda view in the GUI according to
+		// the current state within this particular whattodo instance.
+
+		void updateAgendaView();
+		void markLastActionForUser(int timedViewScrollPos, int floatViewScrollPos);
+
+		// This function refreshes the current state and temporary future states
+		// within this particular whattodo instance according to the given
+		// commandString.
+		//
+		// Pre-conditions: 
+		//     (i) the parameter commandString passed in must be 
+		//     a valid command according to the checkIsUserCommandInputValid()
+		//     function.
+		//     (ii) if the command implied by the parameter commandString is
+		//     contains a task index, it should be the actual task index instead
+		//     of the display index in the GUI
+		//
+
 		void refreshCurrStateWithCommand(string commandString);
-		void markLastActionForUser(int timedViewScrollPos, 
-			int floatViewScrollPos);
+
+		// This function checks if a given command string is considered 
+		// valid user input 
+		//
+		// Pre-conditions: none
+		// Post-conditions: 
+		//     (i) returns true if the user input does not contain unwanted
+		//     characters and is non-empty (not counting newline characters).
 
 		bool checkIsUserCommandInputValid(string usercommandString);
+
+		// This function determines and returns the user's command type given
+		// a command string.
+
 		int determineCommandType(string usercommandString);
+
+		// The following functions execute the user's command string accordingly.
+		//
+		// Pre-conditions: 
+		//     (i) the parameter commandString passed in should be a valid command
+		//     according to the checkIsUserCommandInputValid() function.
+		//     (ii) the parameter commandString passed in should be a command
+		//     corresponding to the function name. For instance, the processCommandEdit()
+		//     function should only be called to handle a commandString for an 
+		//     edit command.
+
 		void processCommandEdit(string commandString);
 		void processCommandDone(string commandString, bool b_usingRealIndex);
 		void processCommandUndone(string commandString, bool b_usingRealIndex);
 		void processCommandDelete(string commandString, bool b_usingRealIndex);
 		void processCommandOthers(string commandString);
 
-		// Functions that facilitate the construction of html tags
-		// for display of the current state in the QWebView element
+		/*
+		// These are functions that facilitate the construction of html tags
+		// for display of the current state in the agenda view which is
 		// to be shown to the user.
+		*/
 
 		string getAgendaTimedViewHtml();
 		string getAgendaFloatViewHtml();
@@ -296,22 +408,24 @@ class WhatToDo : public QMainWindow
 		string getLastActionTextIndexHtml(Task taskToProcess);
 		string getHtmlPreTaskTags(Task taskToProcess);
 
+		/*
 		// Other low-level functions which generally deal with formatting
 		// issues and text conversions.
+		*/
 
 		ptime getTaskOrderingDate(Task myTask);
 		string getDisplayTime(ptime myTime);
 		string getDisplayDay(ptime myTime);
 		string getDisplayDayWithoutTime(ptime myTime);
 		string removeUnwantedChars(string stringToProcess);
-		bool checkIsContainStrangeChars(string stringToProcess);
 		string changeDayToDayOfWeek(int day);
 		string changeMonthToMonthOfYear(int year);
 		string convertTaskToEditText(Task taskToConvert);
 		string getTaskDateAsEditText(Task taskToConvert);
 		string convertDateTimeToEditText(ptime timeToConvert);
 		string convertDateToEditText(ptime timeToConvert);
-		
+		bool checkIsContainStrangeChars(string stringToProcess);
+		bool checkIsCurrentStateEmpty();
 };
 
 #endif // WHATTODO_H

@@ -1,3 +1,6 @@
+//****************************************************************************
+//@author A0110648L
+
 #include "CommandRedo.h"
 
 CommandRedo::CommandRedo(void) {
@@ -14,6 +17,7 @@ void CommandRedo::execute() {
 		assert(_currentCommandHistoryIndex >= 0);
 		assert(_currentCommandHistoryIndex <= 
 			_commandHistory.size());
+
 		checkIsCommandValid();
 		resetLogicDataSettings();
 		runAllRelevantCommandsAgain();

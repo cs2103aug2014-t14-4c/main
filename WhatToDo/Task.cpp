@@ -154,6 +154,14 @@ bool Task::isTaskTypeFixedTime(Task myTask) {
 		myTaskType == FIXED_TIME_TO_DAY;
 }
 
+bool Task::isTaskHasStartAndEnd() {
+	return ((this->getTaskType() == FIXED_TIME_WITHIN_DAY) 
+		|| (this->getTaskType() == FIXED_TIME_ACROSS_DAY) 
+		|| (this->getTaskType() == FIXED_DAY_TO_DAY) 
+		|| (this->getTaskType() == FIXED_DAY_TO_TIME) 
+		|| (this->getTaskType() == FIXED_TIME_TO_DAY));
+}
+
 bool Task::isTaskOverlapWith(Task myTask) {
 	bool isOverlap = false;
 	assert(myTask.getTaskType() != FLOATING && this->getTaskType() != FLOATING);

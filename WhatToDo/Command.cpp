@@ -1,3 +1,7 @@
+//****************************************************************************
+//@author A0110648L
+
+
 #include "Command.h"
 
 Command::Command(void) {
@@ -12,7 +16,7 @@ Command::Command(void) {
 	_currentState = NULL;
 	_logFileName = INITIAL_VALUE_LOG_FILE_NAME;
 	_loggingModeOn = INITIAL_VALUE_LOGGING_MODE_ON;
-	_doneFilter = Done::DONE_NOT_SET;
+	_doneFilter = Status::STATUS_NOT_SET;
 	_typeFilter = Type::TYPE_NOT_SET;
 }
 
@@ -112,7 +116,6 @@ void Command::setEndDateFilter(date endDateFilter) {
 bool Command::checkIsParsedCorrectly() {
 	if (!_isParsedCorrectly) {
 		throw _userMessage;
-		_isParsedCorrectly = false;
 	}
 
 	sprintf_s(buffer, MSG_LOGGING_CHECK_IS_PARSED_CORRECTLY.c_str(), 

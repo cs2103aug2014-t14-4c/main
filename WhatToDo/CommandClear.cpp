@@ -1,3 +1,6 @@
+//****************************************************************************
+//@author A0110648L
+
 #include "CommandClear.h"
 
 CommandClear::CommandClear(void) {
@@ -10,8 +13,8 @@ void CommandClear::execute() {
 	try {
 		checkIsParsedCorrectly();
 		retrieveExistingCurrentState();
-		_currentState->setLastActionType(State::NONE);
-		_currentState->setUserMessage(STRING_EMPTY);
+		resetLastActionType();
+		resetUserMessage();
 		setNewViewState();
 	}
 	catch (string errorMsg) {
@@ -21,5 +24,15 @@ void CommandClear::execute() {
 		setNewViewState();
 	}
 
+	return;
+}
+
+void CommandClear::resetLastActionType() {
+	_currentState->setLastActionType(State::NONE);
+	return;
+}
+
+void CommandClear::resetUserMessage() {
+	_currentState->setUserMessage(STRING_EMPTY);
 	return;
 }

@@ -1,5 +1,5 @@
 //****************************************************************************
-//@Poh Zhi Chao A0110648L
+//@author A0110648L
 //
 // This is the concrete CommandRedo class, which is reponsible for executing 
 // a "redo" command specified by the user.
@@ -29,6 +29,27 @@ const string MSG_ERROR_CANNOT_REDO_ANYMORE =
 class CommandRedo: public CommandUndo {
 	public:
 		CommandRedo(void);
+		
+		/*
+		// This API function executes the Redo Command when called.
+		//
+		// Pre-conditions: 
+		//     (i) LogicData's command history index must be between
+		//     one and the size of the command history vector (LogicData
+		//     must store a valid command history index.
+		//     (ii) The _isParsedCorrectly variable in the command 
+		//     should be true.
+		//
+		// Post-Conditions:
+		//     (i) The latest undone action in LogicData's command history 
+		//     will be redone. If there is no such action, redo will 
+		//     not be performed.
+		//
+		// Sample usage:
+		//     CommandRedo* aRedoCommand = new CommandRedo;
+		//     aRedoCommand->execute();
+		*/
+		
 		void execute();
 
 	protected:

@@ -1,3 +1,6 @@
+//****************************************************************************
+//@author A0110648L
+
 #include "CommandSearch.h"
 
 CommandSearch::CommandSearch(void) {
@@ -12,8 +15,6 @@ void CommandSearch::execute() {
 		checkIsParsedCorrectly();
 		retrieveExistingCurrentState();
 		performSearchOperation();
-		_currentState->setLastActionType(State::NONE);
-		_currentState->setUserMessage(STRING_EMPTY);
 		setNewViewState();
 	}
 	catch (string errorMsg) {
@@ -31,6 +32,8 @@ void CommandSearch::performSearchOperation() {
 	getNameToSearchFor();
 	getListOfTaskIndexesNotMatchingSearch();
 	deleteListOfTaskIndexesNotMatchingSearch();
+	_currentState->setLastActionType(State::NONE);
+	_currentState->setUserMessage(STRING_EMPTY);
 	return;
 }
 
@@ -113,9 +116,9 @@ bool CommandSearch::checkIsFitsTagSearchCriteria(Task taskToCheck) {
 
 	for (j=0; unsigned(j)<_tagsToSearchFor.size(); j++) {
 		for (i=0; unsigned(i)<listOfTagsForTask.size(); i++) {
-				taskTag = listOfTagsForTask[i];
-			if (_myPowerSearch->checkIsFound(convertToLower(taskTag), 
-					_tagsToSearchFor[j])) {
+			taskTag = listOfTagsForTask[i];
+			if (convertToLower(taskTag).find(_tagsToSearchFor[j]) 
+					!= string::npos) {
 				currentTagFound = true;
 			}
 		}

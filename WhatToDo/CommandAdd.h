@@ -1,5 +1,5 @@
 //****************************************************************************
-//@Poh Zhi Chao A0110648L
+//@author A0110648L
 //
 // This is the concrete CommandAdd class, which is reponsible for executing 
 // an "add" command specified by the user.
@@ -46,6 +46,27 @@ const string MSG_ACTION_ADDED = "Task Added!";
 class CommandAdd: public Command {
 	public:
 		CommandAdd(void);
+
+		/*
+		// This API function executes the Add Command when called.
+		//
+		// Pre-conditions:
+		//     (i) There should be a proper task set as the current
+		//     task in the command instance before execute is called.
+		//     (ii) The _isParsedCorrectly variable in the command 
+		//     should be true.
+		//
+		// Post-Conditions:
+		//     (i) The specified task will be added to LogicData unless
+		//     there are logic errors with the task (such as if the
+		//     specified task start time is after the end time)
+		//
+		// Sample usage:
+		//     CommandAdd* anAddCommand = new CommandAdd;
+		//     anAddCommand->setCurrentTask(taskToAdd);
+		//     anAddCommand->execute();
+		*/
+
 		void execute();
 
 	protected:

@@ -1,5 +1,5 @@
 //****************************************************************************
-//@Poh Zhi Chao A0110648L
+//@author A0110648L
 // 
 // This is the KeyPressEater class, which is reponsible for intercepting all 
 // key events for certain QWidgets for which it is installed, and determining if

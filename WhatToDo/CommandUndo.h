@@ -1,5 +1,5 @@
 //****************************************************************************
-//@Poh Zhi Chao A0110648L
+//@author A0110648L
 // 
 // This is the concrete CommandUndo class, which is reponsible for executing 
 // a "undo" command specified by the user.
@@ -47,6 +47,27 @@ const string MSG_ERROR_CANNOT_UNDO_ANYMORE =
 class CommandUndo: public Command {
 	public:
 		CommandUndo(void);
+		
+		/*
+		// This API function executes the Undo Command when called.
+		//
+		// Pre-conditions: 
+		//     (i) LogicData's command history index must be between
+		//     one and the size of the command history vector (LogicData
+		//     must store a valid command history index.
+		//     (ii) The _isParsedCorrectly variable in the command 
+		//     should be true.
+		//
+		// Post-Conditions:
+		//     (i) The latest done action in LogicData's command history 
+		//     will be undone. If there is no such action, undo will 
+		//     not be performed.
+		//
+		// Sample usage:
+		//     CommandUndo* aUndoCommand = new CommandUndo;
+		//     aUndoCommand->execute();
+		*/
+		
 		void execute();
 
 	protected:

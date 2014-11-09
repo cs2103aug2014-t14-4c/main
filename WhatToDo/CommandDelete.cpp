@@ -1,3 +1,6 @@
+//****************************************************************************
+//@author A0110648L
+
 #include "CommandDelete.h"
 
 CommandDelete::CommandDelete(void) {
@@ -10,9 +13,13 @@ void CommandDelete::execute() {
 	try {
 		checkIsParsedCorrectly();
 		assert(_commandTaskIndex >= 0);
+
 		retrieveExistingCurrentState();
+
 		performDeleteOperation();
 		addThisCommandToHistory(this);
+
+		addUserMessageToCurrentState();
 		addActionMessageToCurrentState();
 		setNewCurrentState();
 		setNewViewState();

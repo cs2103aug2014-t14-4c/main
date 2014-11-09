@@ -1,3 +1,6 @@
+//****************************************************************************
+//@author A0110648L
+
 #include "CommandEdit.h"
 
 CommandEdit::CommandEdit(void) {
@@ -11,11 +14,14 @@ void CommandEdit::execute() {
 		checkIsParsedCorrectly();
 		assert(_currentTask != NULL);
 		assert(_commandTaskIndex >= 0);
+
 		retrieveExistingCurrentState();
+
 		checkIsCommandValid();
 		deleteExistingTask();
 		performAddOperation();
 		addThisCommandToHistory(this);
+
 		addUserMessageToCurrentState();
 		addActionMessageToCurrentState();
 		setNewCurrentState();

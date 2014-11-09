@@ -1,3 +1,6 @@
+//****************************************************************************
+//@author A0110648L
+
 #include "whattodo.h"
 #include <QtWidgets/QApplication>
 #include <string>

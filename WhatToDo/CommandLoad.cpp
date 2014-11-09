@@ -1,3 +1,6 @@
+//****************************************************************************
+//@author A0110648L
+
 #include "CommandLoad.h"
 
 CommandLoad::CommandLoad(void) {
@@ -11,7 +14,7 @@ void CommandLoad::execute() {
 		checkIsParsedCorrectly();
 		loadLogicDataSettings();
 		retrieveExistingCurrentState();
-		_currentState->setLastActionType(State::NONE);
+		resetLastActionType();
 		setNewViewState();
 	}
 	catch (string errorMsg) {
@@ -28,5 +31,10 @@ void CommandLoad::loadLogicDataSettings() {
 	LogicData::loadInitialSettings();
 	sprintf_s(buffer, MSG_LOGGING_LOAD_LOGIC_DATA_SETTINGS.c_str());
 	log(buffer);
+	return;
+}
+
+void CommandLoad::resetLastActionType() {
+	_currentState->setLastActionType(State::NONE);
 	return;
 }

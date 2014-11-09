@@ -1,5 +1,5 @@
 //****************************************************************************
-//@Poh Zhi Chao A0110648L
+//@author A0110648L
 //
 // This is powersearch class, which is reponsible for the more detailed logic 
 // processing steps which are required for advanced search operations in the

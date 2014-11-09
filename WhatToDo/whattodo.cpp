@@ -1,3 +1,6 @@
+//****************************************************************************
+//@author A0110648L
+
 #include "whattodo.h"
 
 
@@ -6,20 +9,11 @@ WhatToDo::WhatToDo(string exeDirectory, QWidget *parent)
 	_exeDirectory = exeDirectory;
 	_ui.setupUi(this);
 	setupOtherUIConfigs();
+	setupCalendar();
 	setupKeyPressEater();
 	defineAllHotkeys();
 	connectAllOtherSignalAndSlots();
 	loadSavedSettings();
-
-	//Calendar setup
-	_ui.calendarframe->move(9999, 9999);
-	_ui.calendarbtn_next->move(9999, 9999);
-	_ui.calendarbtn_prev->move(9999, 9999);
-	_ui.calendarframe->setAttribute(Qt::WA_TransparentForMouseEvents);
-
-	SFMLView = new CalendarCanvas(this, _ui.calendarframe, QPoint(0, 0), QSize(921, 501));
-	SFMLView->show();
-	b_calender_init_complete = true;
 }
 
 WhatToDo::~WhatToDo() {
@@ -37,12 +31,6 @@ void WhatToDo::handleKeyPressEvents(QObject* obj) {
 	return;
 }
 
-void WhatToDo::handleEntryIntoSearchBar() {
-	_ui.commandSearch->setFocus();
-	_ui.commandSearch->selectAll();
-	return;
-}
-
 void WhatToDo::handleEntryFieldTab() {
 	if (_ui.commandLine->hasFocus()) {
 		_ui.commandSearch->setFocus();
@@ -53,13 +41,9 @@ void WhatToDo::handleEntryFieldTab() {
 	return;
 }
 
-void WhatToDo::handleToggleTab() {
-
-	return;
-}
-
-void WhatToDo::handleMinimize() {
-	this->showMinimized();
+void WhatToDo::handleEntryIntoSearchBar() {
+	_ui.commandSearch->setFocus();
+	_ui.commandSearch->selectAll();
 	return;
 }
 
@@ -68,11 +52,23 @@ void WhatToDo::handleSearchBarChange() {
 	return;
 }
 
+
+void WhatToDo::handleHotkeyMinimize() {
+	this->showMinimized();
+	return;
+}
+
 void WhatToDo::handleHotkeyEdit() {
 	_ui.commandLine->setFocus();
+
+	// Add the command parameter into the command entry field
+
 	_ui.commandLine->setPlainText(
 		QString::fromStdString(COMMAND_PARAM_EDIT + 
 		STRING_SPACE_CHAR));
+	
+	// Move cursor to the end of the command entry field
+
 	QTextCursor cursor = _ui.commandLine->textCursor();
 	cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
 	_ui.commandLine->setTextCursor(cursor);
@@ -81,11 +77,15 @@ void WhatToDo::handleHotkeyEdit() {
 
 void WhatToDo::handleHotkeyDelete() {
 	_ui.commandLine->setFocus();
+
+	// Add the command parameter into the command entry field
+
 	_ui.commandLine->setPlainText(
 		QString::fromStdString(COMMAND_PARAM_DELETE + 
 		STRING_SPACE_CHAR));
-	string commandContents = 
-		_ui.commandLine->toPlainText().toStdString();
+	
+	// Move cursor to the end of the command entry field
+
 	QTextCursor cursor = _ui.commandLine->textCursor();
 	cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
 	_ui.commandLine->setTextCursor(cursor);
@@ -94,11 +94,15 @@ void WhatToDo::handleHotkeyDelete() {
 
 void WhatToDo::handleHotkeyDone() {
 	_ui.commandLine->setFocus();
+	
+	// Add the command parameter into the command entry field
+
 	_ui.commandLine->setPlainText(
 		QString::fromStdString(COMMAND_PARAM_DONE + 
 		STRING_SPACE_CHAR));
-	string commandContents = 
-		_ui.commandLine->toPlainText().toStdString();
+	
+	// Move cursor to the end of the command entry field
+
 	QTextCursor cursor = _ui.commandLine->textCursor();
 	cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
 	_ui.commandLine->setTextCursor(cursor);
@@ -107,11 +111,15 @@ void WhatToDo::handleHotkeyDone() {
 
 void WhatToDo::handleHotkeyUndone() {
 	_ui.commandLine->setFocus();
+	
+	// Add the command parameter into the command entry field
+
 	_ui.commandLine->setPlainText(
 		QString::fromStdString(COMMAND_PARAM_UNDONE + 
 		STRING_SPACE_CHAR));
-	string commandContents = 
-		_ui.commandLine->toPlainText().toStdString();
+	
+	// Move cursor to the end of the command entry field
+
 	QTextCursor cursor = _ui.commandLine->textCursor();
 	cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
 	_ui.commandLine->setTextCursor(cursor);
@@ -120,11 +128,15 @@ void WhatToDo::handleHotkeyUndone() {
 
 void WhatToDo::handleHotkeyFilter() {
 	_ui.commandLine->setFocus();
+	
+	// Add the command parameter into the command entry field
+
 	_ui.commandLine->setPlainText(
 		QString::fromStdString(COMMAND_PARAM_FILTER + 
 		STRING_SPACE_CHAR));
-	string commandContents = 
-		_ui.commandLine->toPlainText().toStdString();
+	
+	// Move cursor to the end of the command entry field
+
 	QTextCursor cursor = _ui.commandLine->textCursor();
 	cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
 	_ui.commandLine->setTextCursor(cursor);
@@ -141,6 +153,7 @@ void WhatToDo::handleHotkeyHelp() {
 	return;
 }
 
+
 void WhatToDo::handleButtonUndo() {
 	updateGUIWithCommandString(COMMAND_PARAM_UNDO);
 	return;
@@ -151,12 +164,17 @@ void WhatToDo::handleButtonRedo() {
 	return;
 }
 
-
 void WhatToDo::handleButtonToggleCalendar() {
 	updateCalendarView();
+	
+	// Move the calendar to a viewable position in the GUi
+	
 	_ui.calendarframe->move(20, 70);
 	_ui.calendarbtn_next->move(290, 10);
 	_ui.calendarbtn_prev->move(220, 10);
+
+	// Bring the calendar to the front of all elements in the GUi
+	// so it may be visible to the user
 
 	_ui.calendarframe->raise();
 	_ui.calendarbtn_next->raise();
@@ -165,15 +183,18 @@ void WhatToDo::handleButtonToggleCalendar() {
 }
 
 void WhatToDo::handleButtonCalendarPrev(){
-	SFMLView->prevPage();
+	_SFMLView->prevPage();
 }
 
 void WhatToDo::handleButtonCalendarNext(){
-	SFMLView->nextPage();
+	_SFMLView->nextPage();
 }
 
 void WhatToDo::handleButtonToggleAgenda() {
 	updateAgendaView();
+	
+	// Move the calendar to an out-of-sight position in the GUi
+	
 	_ui.calendarframe->move(9999, 9999);
 	_ui.calendarbtn_next->move(9999, 9999);
 	_ui.calendarbtn_prev->move(9999, 9999);
@@ -183,6 +204,41 @@ void WhatToDo::handleCalendarCommands(string command) {
 	updateGUIWithCommandString(command);
 }
 
+
+
+void WhatToDo::setupCalendar() {
+	
+	// Move the calendar frame to an out-of-sight position 
+	// in the GUi initially
+	
+	_ui.calendarframe->move(9999, 9999);
+	_ui.calendarbtn_next->move(9999, 9999);
+	_ui.calendarbtn_prev->move(9999, 9999);
+	_ui.calendarframe->setAttribute(Qt::WA_TransparentForMouseEvents);
+
+	// Create the calendar view and show it to the user
+
+	_SFMLView = new CalendarCanvas(this, _ui.calendarframe, 
+		QPoint(0, 0), QSize(921, 501));
+	_SFMLView->show();
+	_b_calender_init_complete = true;
+	return;
+}
+
+void WhatToDo::setupKeyPressEater() {
+	_myKeyPressEater = new KeyPressEater();
+	_ui.commandLine->installEventFilter(_myKeyPressEater);
+	_ui.commandSearch->installEventFilter(_myKeyPressEater);
+	return;
+}
+
+void WhatToDo::setupOtherUIConfigs() {
+	setupInitialGUIFocusConfigs();
+	setupInitialGUISizeConfigs();
+	setupMessageBoxConfigs();
+	setupTextSizeConfigs();
+	return;
+}
 
 void WhatToDo::connectAllOtherSignalAndSlots() {
 	QObject* decViewPointer;
@@ -195,25 +251,28 @@ void WhatToDo::connectAllOtherSignalAndSlots() {
 		this, SLOT(handleButtonRedo()));
 	decViewPointer = _ui.buttonAgendaview->rootObject();
 	connect(decViewPointer, SIGNAL(buttonClick()), 
-		this, SLOT(handleButtonToggleCalendar()));
+		this, SLOT(handleButtonToggleAgenda()));
 	decViewPointer = _ui.buttonCalendarview->rootObject();
 	connect(decViewPointer, SIGNAL(buttonClick()), 
-		this, SLOT(handleButtonToggleAgenda()));
+		this, SLOT(handleButtonToggleCalendar()));
 	connect(_myKeyPressEater, SIGNAL(enterPressed(QObject*)), 
 		this, SLOT(handleKeyPressEvents(QObject*)));
 	connect(_myKeyPressEater, SIGNAL(tabPressed()), 
 		this, SLOT(handleEntryFieldTab()));
 	connect(_ui.commandSearch, SIGNAL(textChanged()), 
 		this, SLOT(handleSearchBarChange()));
-
-	connect(_ui.calendarbtn_prev, SIGNAL(released()), this, SLOT(handleButtonCalendarPrev()));
-	connect(_ui.calendarbtn_next, SIGNAL(released()), this, SLOT(handleButtonCalendarNext()));
+	connect(_ui.calendarbtn_prev, SIGNAL(released()),
+		this, SLOT(handleButtonCalendarPrev()));
+	connect(_ui.calendarbtn_next, SIGNAL(released()),
+		this, SLOT(handleButtonCalendarNext()));
 
 	return;
 }
 
 void WhatToDo::defineAllHotkeys() {
 	
+	// Define the QAction objects used to define hotkeys
+
 	QAction *hotkeyUndo = new QAction(this);
 	QAction *hotkeyRedo = new QAction(this);
 	QAction *hotkeyFind = new QAction(this);
@@ -226,6 +285,8 @@ void WhatToDo::defineAllHotkeys() {
 	QAction *hotkeyFilter = new QAction(this);
 	QAction *hotkeyClear = new QAction(this);
 	QAction *hotkeyHelp = new QAction(this);
+
+	// Define the hotkeys available to the user
 
 	hotkeyUndo->setShortcut(Qt::Key_S | Qt::CTRL | Qt::SHIFT);
 	hotkeyRedo->setShortcut(Qt::Key_D | Qt::CTRL | Qt::SHIFT);
@@ -240,6 +301,8 @@ void WhatToDo::defineAllHotkeys() {
 	hotkeyClear->setShortcut(Qt::Key_Escape);
 	hotkeyHelp->setShortcut(Qt::Key_H | Qt::CTRL);
 
+	// Connect the defined hotkeys to the relevant event handlers
+
 	connect(hotkeyUndo, SIGNAL(triggered()), 
 		this, SLOT(handleButtonUndo()));
 	connect(hotkeyRedo, SIGNAL(triggered()), 
@@ -249,7 +312,7 @@ void WhatToDo::defineAllHotkeys() {
 	connect(hotkeyTabView, SIGNAL(triggered()), 
 		this, SLOT(handleToggleTab()));
 	connect(hotkeyMinimize, SIGNAL(triggered()), 
-		this, SLOT(handleMinimize()));
+		this, SLOT(handleHotkeyMinimize()));
 	connect(hotkeyDelete, SIGNAL(triggered()), 
 		this, SLOT(handleHotkeyDelete()));
 	connect(hotkeyEdit, SIGNAL(triggered()), 
@@ -264,6 +327,8 @@ void WhatToDo::defineAllHotkeys() {
 		this, SLOT(handleHotkeyClear()));
 	connect(hotkeyHelp, SIGNAL(triggered()), 
 		this, SLOT(handleHotkeyHelp()));
+
+	// Add these defined hotkeys to the GUI
 
 	_ui.centralWidget->addAction(hotkeyUndo);
 	_ui.centralWidget->addAction(hotkeyRedo);
@@ -284,33 +349,99 @@ void WhatToDo::defineAllHotkeys() {
 void WhatToDo::loadSavedSettings() {
 	refreshCurrStateWithCommand(COMMAND_PARAM_LOAD);
 	updateAgendaView();
-	//updateCalendarView();
+	updateCalendarView();
 	return;
 }
 
-void WhatToDo::setupOtherUIConfigs() {
+
+void WhatToDo::setupInitialGUIFocusConfigs() {
+	_ui.commandLine->setFocus();
+	return;
+}
+
+void WhatToDo::setupInitialGUISizeConfigs() {
+	this->setFixedSize(GUI_PARAM_SIZE_WIDTH, GUI_PARAM_SIZE_HEIGHT);
+	return;
+}
+
+void WhatToDo::setupMessageBoxConfigs() {
+
+	// Set the message box view as transparent to the user and 
+	// transparent to mouse events
+
 	_ui.messageFeedback->setAttribute(Qt::WA_TranslucentBackground);
 	_ui.messageFeedback->setStyleSheet(
 		QString::fromStdString(QTSTYLESHEET_TRANSPARENT_BACKGROUND));
-	_ui.messageFeedback->setAttribute(
-		Qt::WA_TransparentForMouseEvents);
+	_ui.messageFeedback->setAttribute(Qt::WA_TransparentForMouseEvents);
+	return;
+}
 
-	this->setFixedSize(GUI_PARAM_SIZE_WIDTH, GUI_PARAM_SIZE_HEIGHT);
+void WhatToDo::setupTextSizeConfigs() {
 	_ui.displayAgendaviewFloat->setTextSizeMultiplier(
 		GUI_PARAM_TEXT_MULTIPLIER);
 	_ui.displayAgendaviewTimed->setTextSizeMultiplier(
 		GUI_PARAM_TEXT_MULTIPLIER);
-
 	return;
 }
 
-void WhatToDo::setupKeyPressEater() {
-	_myKeyPressEater = new KeyPressEater();
-	_ui.commandLine->installEventFilter(_myKeyPressEater);
-	_ui.commandSearch->installEventFilter(_myKeyPressEater);
+
+
+void WhatToDo::showLogicUserFeedback() {
+	string userMessage = _currState.getUserMessage();
+	string actionMessage = _currState.getActionMessage();
+
+	// If there is a user-message to display, set the user message
+	// in the popup and start the animation for the popup.
+	//
+	// Otherwise, if there is no user message to display, update the
+	// statusbar with the correct user action message
+
+	if (userMessage != STRING_EMPTY) {
+		QObject* decViewPointer = _ui.messageFeedback->rootObject();
+		decViewPointer->setProperty(
+			GUI_PARAM_POPUP_PROPERTY_MESSAGE.c_str(), 
+			QString::fromStdString(userMessage));
+		decViewPointer->setProperty(
+			GUI_PARAM_POPUP_PROPERTY_OPACITY.c_str(), 1.0);
+		decViewPointer->setProperty(
+			GUI_PARAM_POPUP_PROPERTY_ISANIMATE.c_str(), false);
+		decViewPointer->setProperty(
+			GUI_PARAM_POPUP_PROPERTY_ISANIMATE.c_str(), true);
+		_currState.setUserMessage(STRING_EMPTY);
+		_ui.statusBar->setPlainText(
+			QString::fromStdString(GUI_PARAM_STATUS_TITLE + 
+			userMessage));
+	}
+	else {
+		_ui.statusBar->setPlainText(
+			QString::fromStdString(GUI_PARAM_STATUS_TITLE + 
+			actionMessage));
+	}
 	return;
 }
 
+void WhatToDo::showGUIUserFeedback(string guiUserFeedback) {
+	
+	// Set the user message in the popup and start the animation 
+	// for the popup, taking the input parameter guiUserFeedback
+	// as the user message to be displayed.
+
+	QObject* decViewPointer = _ui.messageFeedback->rootObject();
+	decViewPointer->setProperty(
+		GUI_PARAM_POPUP_PROPERTY_MESSAGE.c_str(), 
+		QString::fromStdString(guiUserFeedback));
+	decViewPointer->setProperty(
+		GUI_PARAM_POPUP_PROPERTY_OPACITY.c_str(), 1.0);
+	decViewPointer->setProperty(
+		GUI_PARAM_POPUP_PROPERTY_ISANIMATE.c_str(), false);
+	decViewPointer->setProperty(
+		GUI_PARAM_POPUP_PROPERTY_ISANIMATE.c_str(), true);
+	_currState.setActionMessage(STRING_EMPTY);
+	_ui.statusBar->setPlainText(
+		QString::fromStdString(
+		GUI_PARAM_STATUS_TITLE + guiUserFeedback));
+	return;
+}
 
 
 void WhatToDo::updateGUIFromSearchBar() {
@@ -321,6 +452,12 @@ void WhatToDo::updateGUIFromSearchBar() {
 		_ui.commandSearch->toPlainText().toStdString();
 	userSearchString = removeUnwantedChars(userSearchString);
 	
+	// Only construct and process a search command for the user 
+	// automatically when the search bar's contents are not empty.
+	//
+	// If the search bar's contents are empty, construct and process
+	// a clear command for the user automatically.
+
 	if (userSearchString == STRING_EMPTY) {
 		logicComandString = COMMAND_PARAM_CLEAR;
 	}
@@ -345,6 +482,9 @@ void WhatToDo::updateGUIFromCommandLine() {
 
 	_ui.commandLine->setHtml(QString::fromStdString(STRING_EMPTY));
 	
+	// Only process the user's command when it is valid. Otherwise,
+	// show any error message that was created because of invalid commands.
+
 	try {
 		checkIsUserCommandInputValid(usercommandString);
 		updateGUIWithCommandString(usercommandString);
@@ -430,6 +570,16 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			}
 			break;
 		}
+		case COMMAND_UNDO: {
+			try {
+				processCommandOthers(commandString);
+				processCommandOthers(COMMAND_PARAM_CLEAR);
+			}
+			catch (string errorMsg) {
+				showGUIUserFeedback(errorMsg);
+			}
+			break;
+		}
 		case COMMAND_OTHERS: {
 			try {
 				processCommandOthers(commandString);
@@ -445,8 +595,6 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
-
-			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_ADD: {
@@ -455,7 +603,6 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
-			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_EDIT: {
@@ -464,7 +611,6 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
-			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_DONE: {
@@ -473,7 +619,6 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
-			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_DELETE: {
@@ -482,7 +627,6 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
-			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_SEARCH: {
@@ -491,7 +635,6 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
-			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_CLEAR: {
@@ -500,7 +643,6 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
-			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_UNDO: {
@@ -509,7 +651,6 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
-			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_REDO: {
@@ -518,7 +659,6 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
-			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 		case COMMAND_HELP_FILTER: {
@@ -527,7 +667,6 @@ void WhatToDo::updateGUIWithCommandString(string commandString) {
 			_ui.displayAgendaviewTimed->load(
 				QUrl::fromLocalFile(
 				QString::fromStdString(fullHelpDirectory)));
-			_ui.displayAgendaviewTimed->raise();
 			break;
 		}
 	}
@@ -539,10 +678,26 @@ void WhatToDo::updateAgendaView() {
 	string newAgendaFloatViewHtml;
 	int timedViewScrollPos;
 	int floatViewScrollPos;
+	
+	// Set the display as the help menu when there are no tasks
+	// to display
+
+	if (checkIsCurrentStateEmpty()) {
+		updateGUIWithCommandString(COMMAND_PARAM_HELP);
+		_ui.displayAgendaviewFloat->setHtml(
+			QString::fromStdString(STRING_EMPTY));
+		return;
+	}
+
+	// Get the new html strings for both agenda views according to the 
+	// current state in this particular whattodo instance.
 
 	newAgendaTimedViewHtml = getAgendaTimedViewHtml();
 	newAgendaFloatViewHtml = getAgendaFloatViewHtml();
 	
+	// Get the initial scroll positions for both the agenda floating 
+	// and agenda timed views
+
 	timedViewScrollPos = 
 		_ui.displayAgendaviewTimed->page()->mainFrame()->
 		scrollBarValue(Qt::Vertical);
@@ -561,14 +716,161 @@ void WhatToDo::updateAgendaView() {
 }
 
 void WhatToDo::updateCalendarView() {
-	if (b_calender_init_complete)
-		SFMLView->readFromState(_currState);
+	if (_b_calender_init_complete)
+		_SFMLView->readFromState(_currState);
+}
+
+void WhatToDo::markLastActionForUser(int timedViewScrollPos, int floatViewScrollPos) {
+	int newtimedViewScrollPos;
+	int newfloatViewScrollPos;
+	int lastActionTaskIndex = _currState.getLastActionTaskIndex();
+	int lastActionType = _currState.getLastActionType();
+	string lastActionElementID;
+	QWebElement theChangedTaskElement;
+	QWebElement tempTaskElement;
+	QWebFrame* floatViewWebFrame = 
+		_ui.displayAgendaviewFloat->page()->mainFrame();
+	QWebFrame* timedViewWebFrame = 
+		_ui.displayAgendaviewTimed->page()->mainFrame();
+	
+	// If there is was no last action to highlight, set the scroll 
+	// bar to the original state it was in before updating the view
+
+	if (lastActionType == State::NONE) {
+		floatViewWebFrame->setScrollBarValue(
+			Qt::Vertical, floatViewScrollPos);
+		timedViewWebFrame->setScrollBarValue(
+			Qt::Vertical, timedViewScrollPos);
+		return;
+	}
+
+	// Otherwise, if there is a last action to highlight, 
+	// continue to highlight the given task.
+
+	else {
+		
+		// Get the scroll positions of the text to highlight so they can
+		// be set later.
+
+		_ui.displayAgendaviewFloat->findText(
+			QString::fromStdString(HTMLTAGS_CHANGED_TASK_TEXT));
+		_ui.displayAgendaviewTimed->findText(
+			QString::fromStdString(HTMLTAGS_CHANGED_TASK_TEXT));
+		newfloatViewScrollPos = 
+			_ui.displayAgendaviewFloat->page()->mainFrame()->
+			scrollBarValue(Qt::Vertical);
+		newtimedViewScrollPos = 
+			_ui.displayAgendaviewTimed->page()->mainFrame()->
+			scrollBarValue(Qt::Vertical);
+		floatViewWebFrame->setScrollBarValue(
+			Qt::Vertical, newfloatViewScrollPos);
+		timedViewWebFrame->setScrollBarValue(
+			Qt::Vertical, newtimedViewScrollPos);
+		
+		// Find the new task which was changed
+
+		tempTaskElement = 
+			floatViewWebFrame->findFirstElement(
+			QString::fromStdString(HTMLTAGS_CHANGED_TASK_ID));
+		
+		if (!tempTaskElement.isNull()) {
+			theChangedTaskElement = tempTaskElement;
+		}
+		else {
+			theChangedTaskElement = 
+				timedViewWebFrame->findFirstElement(
+				QString::fromStdString(HTMLTAGS_CHANGED_TASK_ID));
+		}
+
+		// For the new task which was changed, remove its visible tags
+		// which were added previously for finding its scroll position
+
+		theChangedTaskElement.setAttribute(
+			QString::fromStdString(HTMLTAGS_STYLE_PROPERTY), 
+			QString::fromStdString(HTMLTAGS_STYLE_PROPERTY_HIDE));
+		
+		// Find the new task html tag which was changed
+
+		tempTaskElement = 
+			floatViewWebFrame->findFirstElement(
+			QString::fromStdString(HTMLTAGS_CHANGED_TASK_TEXT_ID));
+		
+		if (!tempTaskElement.isNull()) {
+			theChangedTaskElement = tempTaskElement;
+		}
+		else {
+			theChangedTaskElement = 
+				timedViewWebFrame->findFirstElement(
+				QString::fromStdString(
+				HTMLTAGS_CHANGED_TASK_TEXT_ID));
+		}
+
+		// For the new task html tag which was changed, highlight
+		// it according to the last action which was made.
+
+		if (lastActionType == State::CHANGED) {
+			theChangedTaskElement.setAttribute(
+				QString::fromStdString(HTMLTAGS_STYLE_PROPERTY), 
+				QString::fromStdString(
+				HTMLTAGS_BACKGROUND_CHANGED_TASK));
+		}
+		else {
+			theChangedTaskElement.setAttribute(
+				QString::fromStdString(HTMLTAGS_STYLE_PROPERTY), 
+				QString::fromStdString(
+				HTMLTAGS_BACKGROUND_DELETED_TASK));
+		}
+	}
+
+	return;
+}
+
+void WhatToDo::refreshCurrStateWithCommand(string commandString) {
+	State incomingNewState = 
+		LogicExecutor::getNewState(commandString);
+	int lastActionType = 
+		incomingNewState.getLastActionType();
+	int lastActionTaskIndex = 
+		incomingNewState.getLastActionTaskIndex();
+
+	if ((lastActionType == State::CHANGED) 
+			|| (lastActionType == State::NONE)){
+		_currState = incomingNewState;
+		_tempFutureState = incomingNewState;
+	}
+	else if (lastActionType == State::DELETED) {
+		_currState = _tempFutureState;
+		_currState.setLastActionTaskIndex(
+			incomingNewState.getLastActionTaskIndex());
+		_currState.setLastActionType(
+			incomingNewState.getLastActionType());
+		_currState.setActionMessage(
+			incomingNewState.getActionMessage());
+		_currState.setUserMessage(
+			incomingNewState.getUserMessage());
+		_tempFutureState = incomingNewState;
+		
+		/*
+		incomingNewState = LogicExecutor::getNewState(COMMAND_PARAM_CLEAR);
+		_currState = incomingNewState;
+		_currState.setLastActionTaskIndex(
+			incomingNewState.getLastActionTaskIndex());
+		_currState.setLastActionType(
+			incomingNewState.getLastActionType());
+		_currState.setActionMessage(
+			incomingNewState.getActionMessage());
+		_currState.setUserMessage(
+			incomingNewState.getUserMessage());
+		_tempFutureState = incomingNewState;
+		*/
+	}	
+
+	return;
 }
 
 
 
-bool WhatToDo::checkIsUserCommandInputValid(
-		string usercommandString) {
+bool WhatToDo::checkIsUserCommandInputValid(	string usercommandString) {
 	bool isUserCommandValid = false;
 	usercommandString = removeUnwantedChars(usercommandString);
 
@@ -611,6 +913,9 @@ int WhatToDo::determineCommandType(string usercommandString) {
 	}
 	else if (userCommand == COMMAND_PARAM_DELETE) {
 		return COMMAND_DELETE;
+	}
+	else if (userCommand == COMMAND_PARAM_UNDO) {
+		return COMMAND_UNDO;
 	}
 	else if (userCommand == COMMAND_PARAM_HELP) {
 		
@@ -666,7 +971,16 @@ void WhatToDo::processCommandEdit(string commandString) {
 	assert(commandString != STRING_EMPTY);
 
 	if (inputString >> userCommand >> displayIndexToEdit) {
+		
+		// Update the GUI with the edit command if the user
+		// entered the details of the new task to replace the old one.
+
 		if (getline(inputString, newEditContents)) {
+			
+			// If the user entered a valid display index to edit, 
+			// replace the display index with the actual task index
+			// and update the GUi with the edit command.
+			
 			if ((displayIndexToEdit >= 1) 
 				&& (displayIndexToEdit <= allCurrentTasks.size())) {
 				
@@ -682,10 +996,18 @@ void WhatToDo::processCommandEdit(string commandString) {
 				updateCalendarView();
 				showLogicUserFeedback();
 			}
+			
+			// If the display task index is invalid, throw an error.
+
 			else {
 				throw MSG_ERROR_USER_WRONG_INDEX;
 			}
 		}
+		
+		// If the user did not enter the details of the new task to replace
+		// the old one, fill in the command entry field with details
+		// of the current task.
+
 		else {
 			if ((displayIndexToEdit >= 1) 
 				&& (displayIndexToEdit <= allCurrentTasks.size())) {
@@ -704,6 +1026,9 @@ void WhatToDo::processCommandEdit(string commandString) {
 					QTextCursor::MoveAnchor);
 				_ui.commandLine->setTextCursor(cursor);
 			}
+			
+			// If the display task index is invalid, throw an error.
+
 			else {
 				throw MSG_ERROR_USER_WRONG_INDEX;
 			}
@@ -723,13 +1048,24 @@ void WhatToDo::processCommandDone(string commandString, bool b_usingRealIndex) {
 	assert(commandString != STRING_EMPTY);
 
 	if (inputString >> userCommand >> displayIndexToDone) {
-		if (b_usingRealIndex){
-			commandToPassLogic = COMMAND_PARAM_DONE + STRING_SPACE_CHAR + to_string(displayIndexToDone);
+		
+		// if the done command has been crafted with the true
+		// task index (meaning b_usingRealIndex is true), directly
+		// update the GUi with the task index in the user command.
+		
+		if (b_usingRealIndex) {
+			commandToPassLogic = COMMAND_PARAM_DONE + 
+				STRING_SPACE_CHAR + to_string(displayIndexToDone);
 			refreshCurrStateWithCommand(commandToPassLogic);
 			updateAgendaView();
 			updateCalendarView();
 			showLogicUserFeedback();
 		}
+
+		// if the done command has not been crafted with the true
+		// task index, replace the display task index with the true
+		// task index before sending the command to Logic.
+
 		else if ((displayIndexToDone >= 1) 
 			&& (displayIndexToDone <= allCurrentTasks.size())) {
 			
@@ -744,6 +1080,9 @@ void WhatToDo::processCommandDone(string commandString, bool b_usingRealIndex) {
 			updateCalendarView();
 			showLogicUserFeedback();
 		}
+		
+		// If the display task index is invalid, throw an error.
+
 		else {
 			throw MSG_ERROR_USER_WRONG_INDEX;
 		}
@@ -765,6 +1104,11 @@ void WhatToDo::processCommandUndone(string commandString, bool b_usingRealIndex)
 	assert(commandString != STRING_EMPTY);
 
 	if (inputString >> userCommand >> displayIndexToUndone) {
+		
+		// if the undone command has been crafted with the true
+		// task index (meaning b_usingRealIndex is true), directly
+		// update the GUi with the task index in the user command.
+		
 		if (b_usingRealIndex){
 			commandToPassLogic = COMMAND_PARAM_UNDONE + STRING_SPACE_CHAR + to_string(displayIndexToUndone);
 			refreshCurrStateWithCommand(commandToPassLogic);
@@ -772,6 +1116,11 @@ void WhatToDo::processCommandUndone(string commandString, bool b_usingRealIndex)
 			updateCalendarView();
 			showLogicUserFeedback();
 		}
+
+		// if the undone command has not been crafted with the true
+		// task index, replace the display task index with the true
+		// task index before sending the command to Logic.
+
 		else if ((displayIndexToUndone >= 1) 
 			&& (displayIndexToUndone <= allCurrentTasks.size())) {
 			
@@ -786,6 +1135,9 @@ void WhatToDo::processCommandUndone(string commandString, bool b_usingRealIndex)
 			updateCalendarView();
 			showLogicUserFeedback();
 		}
+		
+		// If the display task index is invalid, throw an error.
+
 		else {
 			throw MSG_ERROR_USER_WRONG_INDEX;
 		}
@@ -807,6 +1159,11 @@ void WhatToDo::processCommandDelete(string commandString, bool b_usingRealIndex)
 	assert(commandString != STRING_EMPTY);
 
 	if (inputString >> userCommand >> displayIndexToDelete) {
+		
+		// if the delete command has been crafted with the true
+		// task index (meaning b_usingRealIndex is true), directly
+		// update the GUi with the task index in the user command.
+		
 		if (b_usingRealIndex){
 			commandToPassLogic = COMMAND_PARAM_DELETE + STRING_SPACE_CHAR + to_string(displayIndexToDelete);
 			refreshCurrStateWithCommand(commandToPassLogic);
@@ -814,6 +1171,11 @@ void WhatToDo::processCommandDelete(string commandString, bool b_usingRealIndex)
 			updateCalendarView();
 			showLogicUserFeedback();
 		}
+
+		// if the delete command has not been crafted with the true
+		// task index, replace the display task index with the true
+		// task index before sending the command to Logic.
+
 		else if ((displayIndexToDelete >= 1) 
 			&& (displayIndexToDelete <= allCurrentTasks.size())) {
 			
@@ -828,6 +1190,9 @@ void WhatToDo::processCommandDelete(string commandString, bool b_usingRealIndex)
 			updateCalendarView();
 			showLogicUserFeedback();
 		}
+		
+		// If the display task index is invalid, throw an error.
+
 		else {
 			throw MSG_ERROR_USER_WRONG_INDEX;
 		}
@@ -848,165 +1213,6 @@ void WhatToDo::processCommandOthers(string commandString) {
 	return;
 }
 
-void WhatToDo::showLogicUserFeedback() {
-	string userMessage = _currState.getUserMessage();
-	string actionMessage = _currState.getActionMessage();
-
-	if (userMessage != STRING_EMPTY) {
-		QObject* decViewPointer = _ui.messageFeedback->rootObject();
-		decViewPointer->setProperty(
-			GUI_PARAM_POPUP_PROPERTY_MESSAGE.c_str(), 
-			QString::fromStdString(userMessage));
-		decViewPointer->setProperty(
-			GUI_PARAM_POPUP_PROPERTY_OPACITY.c_str(), 1.0);
-		decViewPointer->setProperty(
-			GUI_PARAM_POPUP_PROPERTY_ISANIMATE.c_str(), false);
-		decViewPointer->setProperty(
-			GUI_PARAM_POPUP_PROPERTY_ISANIMATE.c_str(), true);
-		_currState.setUserMessage(STRING_EMPTY);
-		_ui.statusBar->setPlainText(
-			QString::fromStdString(GUI_PARAM_STATUS_TITLE + 
-			userMessage));
-	}
-	else {
-		_ui.statusBar->setPlainText(
-			QString::fromStdString(GUI_PARAM_STATUS_TITLE + 
-			actionMessage));
-	}
-	return;
-}
-
-void WhatToDo::showGUIUserFeedback(string guiUserFeedback) {
-	QObject* decViewPointer = _ui.messageFeedback->rootObject();
-	decViewPointer->setProperty(
-		GUI_PARAM_POPUP_PROPERTY_MESSAGE.c_str(), 
-		QString::fromStdString(guiUserFeedback));
-	decViewPointer->setProperty(
-		GUI_PARAM_POPUP_PROPERTY_OPACITY.c_str(), 1.0);
-	decViewPointer->setProperty(
-		GUI_PARAM_POPUP_PROPERTY_ISANIMATE.c_str(), false);
-	decViewPointer->setProperty(
-		GUI_PARAM_POPUP_PROPERTY_ISANIMATE.c_str(), true);
-	_currState.setActionMessage(STRING_EMPTY);
-	_ui.statusBar->setPlainText(
-		QString::fromStdString(
-		GUI_PARAM_STATUS_TITLE + guiUserFeedback));
-	return;
-}
-
-void WhatToDo::refreshCurrStateWithCommand(string commandString) {
-	State incomingNewState = 
-		LogicExecutor::getNewState(commandString);
-	int lastActionType = 
-		incomingNewState.getLastActionType();
-	int lastActionTaskIndex = 
-		incomingNewState.getLastActionTaskIndex();
-
-	if ((lastActionType == State::CHANGED) 
-			|| (lastActionType == State::NONE)){
-		_currState = incomingNewState;
-		_tempFutureState = incomingNewState;
-	}
-	else if (lastActionType == State::DELETED) {
-		_currState = _tempFutureState;
-		_currState.setLastActionTaskIndex(
-			incomingNewState.getLastActionTaskIndex());
-		_currState.setLastActionType(
-			incomingNewState.getLastActionType());
-		_currState.setActionMessage(
-			incomingNewState.getActionMessage());
-		_currState.setUserMessage(
-			incomingNewState.getUserMessage());
-		_tempFutureState = incomingNewState;
-	}	
-
-	return;
-}
-
-void WhatToDo::markLastActionForUser(int timedViewScrollPos, 
-		int floatViewScrollPos) {
-	int newtimedViewScrollPos;
-	int newfloatViewScrollPos;
-	int lastActionTaskIndex = _currState.getLastActionTaskIndex();
-	int lastActionType = _currState.getLastActionType();
-	string lastActionElementID;
-	QWebElement theChangedTaskElement;
-	QWebElement tempTaskElement;
-	QWebFrame* floatViewWebFrame = 
-		_ui.displayAgendaviewFloat->page()->mainFrame();
-	QWebFrame* timedViewWebFrame = 
-		_ui.displayAgendaviewTimed->page()->mainFrame();
-	
-	if (lastActionType == State::NONE) {
-		floatViewWebFrame->setScrollBarValue(
-			Qt::Vertical, floatViewScrollPos);
-		timedViewWebFrame->setScrollBarValue(
-			Qt::Vertical, timedViewScrollPos);
-		return;
-	}
-	else {
-		_ui.displayAgendaviewFloat->findText(
-			QString::fromStdString(HTMLTAGS_CHANGED_TASK_TEXT));
-		_ui.displayAgendaviewTimed->findText(
-			QString::fromStdString(HTMLTAGS_CHANGED_TASK_TEXT));
-		newfloatViewScrollPos = 
-			_ui.displayAgendaviewFloat->page()->mainFrame()->
-			scrollBarValue(Qt::Vertical);
-		newtimedViewScrollPos = 
-			_ui.displayAgendaviewTimed->page()->mainFrame()->
-			scrollBarValue(Qt::Vertical);
-		floatViewWebFrame->setScrollBarValue(
-			Qt::Vertical, newfloatViewScrollPos);
-		timedViewWebFrame->setScrollBarValue(
-			Qt::Vertical, newtimedViewScrollPos);
-		
-		tempTaskElement = 
-			floatViewWebFrame->findFirstElement(
-			QString::fromStdString(HTMLTAGS_CHANGED_TASK_ID));
-		
-		if (!tempTaskElement.isNull()) {
-			theChangedTaskElement = tempTaskElement;
-		}
-		else {
-			theChangedTaskElement = 
-				timedViewWebFrame->findFirstElement(
-				QString::fromStdString(HTMLTAGS_CHANGED_TASK_ID));
-		}
-
-		theChangedTaskElement.setAttribute(
-			QString::fromStdString(HTMLTAGS_STYLE_PROPERTY), 
-			QString::fromStdString(HTMLTAGS_STYLE_PROPERTY_HIDE));
-		tempTaskElement = 
-			floatViewWebFrame->findFirstElement(
-			QString::fromStdString(HTMLTAGS_CHANGED_TASK_TEXT_ID));
-		
-		if (!tempTaskElement.isNull()) {
-			theChangedTaskElement = tempTaskElement;
-		}
-		else {
-			theChangedTaskElement = 
-				timedViewWebFrame->findFirstElement(
-				QString::fromStdString(
-				HTMLTAGS_CHANGED_TASK_TEXT_ID));
-		}
-
-		if (lastActionType == State::CHANGED) {
-			theChangedTaskElement.setAttribute(
-				QString::fromStdString(HTMLTAGS_STYLE_PROPERTY), 
-				QString::fromStdString(
-				HTMLTAGS_BACKGROUND_CHANGED_TASK));
-		}
-		else {
-			theChangedTaskElement.setAttribute(
-				QString::fromStdString(HTMLTAGS_STYLE_PROPERTY), 
-				QString::fromStdString(
-				HTMLTAGS_BACKGROUND_DELETED_TASK));
-		}
-	}
-
-	return;
-}
-
 
 
 string WhatToDo::getAgendaTimedViewHtml() {
@@ -1019,6 +1225,10 @@ string WhatToDo::getAgendaTimedViewHtml() {
 	newAgendaTimedViewHtml += HTMLTAGS_BEGIN;
 
 	for (i=0; unsigned(i)<listOfTasks.size(); i++) {
+		
+		// Only get html for non-floating tasks to only display
+		// non-floating tasks.
+		
 		if (!(listOfTasks[i].getTaskType() == Task::FLOATING)) {
 			nextptime = getTaskOrderingDate(listOfTasks[i]);
 			if (nextptime.date() != currentptime.date()) {
@@ -1048,6 +1258,10 @@ string WhatToDo::getAgendaFloatViewHtml() {
 	newAgendaFloatViewHtml += HTMLTAGS_BEGIN;
 
 	for (i=0; unsigned(i)<listOfTasks.size(); i++) {
+		
+		// Only get html for floating tasks to only display
+		// floating tasks.
+		
 		if (listOfTasks[i].getTaskType() == Task::FLOATING) {
 			if (!isExistFloatingTasks) {
 				newAgendaFloatViewHtml += HTMLTAGS_TITLE_FLOATING;
@@ -1073,6 +1287,9 @@ string WhatToDo::createDateTitleHtml(ptime titleDate){
 	string monthOfYear = 
 		changeMonthToMonthOfYear(titleDate.date().month());
 
+	// If the date is already past, display the title of the date with
+	// a different background.
+
 	if (titleDate.date() < second_clock::local_time().date()) {
 		formattedDate += dayOfWeek;
 		formattedDate += STRING_COMMA_CHAR + STRING_SPACE_CHAR + 
@@ -1083,6 +1300,10 @@ string WhatToDo::createDateTitleHtml(ptime titleDate){
 			HTMLTAGS_BACKGROUND_PAST_PRE + formattedDate + 
 			HTMLTAGS_BACKGROUND_PAST_POST + HTMLTAGS_TITLE_DATE_POST;
 	}
+
+	// If the date is today, display the title of the date with 
+	// an indication that its today's date.
+
 	else if (titleDate.date() == second_clock::local_time().date()) {
 		formattedDate += GUI_PARAM_DISPLAY_DATE_TODAY;
 		formattedDate += STRING_COMMA_CHAR + STRING_SPACE_CHAR + 
@@ -1092,6 +1313,10 @@ string WhatToDo::createDateTitleHtml(ptime titleDate){
 		titleHtml = HTMLTAGS_TITLE_DATE_PRE + formattedDate + 
 			HTMLTAGS_TITLE_DATE_POST;
 	}
+
+	// If the date is in the future, display the day and date of the
+	// date-title.
+
 	else {
 		formattedDate += dayOfWeek;
 		formattedDate += STRING_COMMA_CHAR + STRING_SPACE_CHAR + 
@@ -1118,6 +1343,9 @@ string WhatToDo::createFloatingTaskHtml(Task taskToProcess) {
 	fullTaskHtml += getHtmlPreTaskTags(taskToProcess);
 	fullTaskHtml += getLastActionTextIndexHtml(taskToProcess);
 	
+	// Add the done tag in front of done tasks to indicate that they
+	// are done.
+
 	if (taskToProcess.getTaskIsDone()) {
 		fullTaskHtml += 
 			HTMLTAGS_TASK_DONE_PRE + HTMLTAGS_TASK_DONE_POST + 
@@ -1138,6 +1366,9 @@ string WhatToDo::createNonFloatingTaskHtml(Task taskToProcess) {
 
 	fullTaskHtml += getHtmlPreTaskTags(taskToProcess);
 	fullTaskHtml += getLastActionTextIndexHtml(taskToProcess);
+	
+	// Add the done tag in front of done tasks to indicate that they
+	// are done.
 
 	if (taskToProcess.getTaskIsDone()) {
 		fullTaskHtml += 
@@ -1145,6 +1376,9 @@ string WhatToDo::createNonFloatingTaskHtml(Task taskToProcess) {
 	}
 
 	taskNameTagsHtml = getTaskNameTagsHtml(taskToProcess);
+
+	// Different kinds of tasks will be displayed differently in the 
+	// GUI with different tags.
 
 	if (taskToProcess.getTaskType() == Task::DEADLINE_ALLDAY) {
 		partialTaskHtml = 
@@ -1168,7 +1402,7 @@ string WhatToDo::createNonFloatingTaskHtml(Task taskToProcess) {
 			getDisplayTime(taskFirstDisplayTime) + 
 			HTMLTAGS_TASK_NAMETAGS_POST + taskNameTagsHtml;
 	}
-	else if (taskToProcess.getTaskType() == Task::FIXED_TIME) {
+	else if (taskToProcess.isTaskHasStartAndEnd()) {
 		taskFirstDisplayTime = taskToProcess.getTaskStartTime();
 		taskSecondDisplayTime = taskToProcess.getTaskEndTime();
 		if (taskFirstDisplayTime.date() == taskSecondDisplayTime.date()) {
@@ -1243,6 +1477,9 @@ string WhatToDo::getLastActionTextIndexHtml(Task taskToProcess) {
 	int lastActionType = _currState.getLastActionType();
 	int lastActionTaskIndex = _currState.getLastActionTaskIndex();
 
+	// Add a special text marker to the task if it was changed or
+	// deleted in the previous action.
+
 	if ((lastActionType == State::CHANGED) 
 			|| (lastActionType == State::DELETED)) {
 		if (lastActionTaskIndex == taskToProcess.getTaskIndex()) {
@@ -1292,7 +1529,7 @@ ptime WhatToDo::getTaskOrderingDate(Task myTask) {
 	else if (myTask.getTaskType() == Task::FIXED_START) {
 		return myTask.getTaskStartTime();
 	}
-	else if (myTask.getTaskType() == Task::FIXED_TIME) {
+	else if (myTask.isTaskHasStartAndEnd()) {
 		return myTask.getTaskStartTime();
 	}
 	return not_a_date_time;
@@ -1361,19 +1598,6 @@ string WhatToDo::removeUnwantedChars(string stringToProcess) {
 	boost::replace_all(stringToProcess, 
 		STRING_RETURN_CHAR, STRING_EMPTY);
 	return stringToProcess;
-}
-
-bool WhatToDo::checkIsContainStrangeChars(string stringToProcess) {
-	bool isContainStrangeChars = false;
-	int i;
-	for (i=0; unsigned(i)<stringToProcess.size(); i++) {
-		if ((stringToProcess[i]<GUI_MIN_CHAR) 
-				|| (stringToProcess[i]>GUI_MAX_CHAR)) {
-			isContainStrangeChars = true;
-			break;
-		}
-	}
-	return isContainStrangeChars;
 }
 
 string WhatToDo::changeDayToDayOfWeek(int day) {
@@ -1483,7 +1707,7 @@ string WhatToDo::getTaskDateAsEditText(Task taskToConvert) {
 		taskDateEditText = COMMAND_PARAM_ADD_DATE_TIMED_START + 
 			convertDateTimeToEditText(taskToConvert.getTaskStartTime());
 	}
-	else if (taskToConvert.getTaskType() == Task::FIXED_TIME) {
+	else if (taskToConvert.isTaskHasStartAndEnd()) {
 		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_START + 
 			convertDateTimeToEditText(taskToConvert.getTaskStartTime());
 		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_END + 
@@ -1512,4 +1736,24 @@ string WhatToDo::convertDateToEditText(ptime timeToConvert) {
 		STRING_SPACE_CHAR + to_string(timeToConvert.date().year()) + 
 		STRING_SPACE_CHAR;
 	return dateEditText;
+}
+
+bool WhatToDo::checkIsContainStrangeChars(string stringToProcess) {
+	bool isContainStrangeChars = false;
+	int i;
+	for (i=0; unsigned(i)<stringToProcess.size(); i++) {
+		if ((stringToProcess[i]<GUI_MIN_CHAR) 
+				|| (stringToProcess[i]>GUI_MAX_CHAR)) {
+			isContainStrangeChars = true;
+			break;
+		}
+	}
+	return isContainStrangeChars;
+}
+
+bool WhatToDo::checkIsCurrentStateEmpty() {
+	bool isCurrentStateEmpty = false;
+	vector<Task> listOfTasksInState = _tempFutureState.getAllTasks();
+	isCurrentStateEmpty = listOfTasksInState.empty();
+	return isCurrentStateEmpty;
 }

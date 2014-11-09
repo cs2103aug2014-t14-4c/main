@@ -1,3 +1,6 @@
+//****************************************************************************
+//@author A0110648L
+
 #include "CommandUndo.h"
 
 CommandUndo::CommandUndo(void) {
@@ -13,6 +16,7 @@ void CommandUndo::execute() {
 		checkIsParsedCorrectly();
 		assert(_currentCommandHistoryIndex >= 0);
 		assert(_currentCommandHistoryIndex <= _commandHistory.size());
+
 		checkIsCommandValid();
 		resetLogicDataSettings();
 		runAllRelevantCommandsAgain();
@@ -22,7 +26,6 @@ void CommandUndo::execute() {
 		_userMessage = errorMsg;
 		retrieveExistingViewState();
 		addUserMessageToCurrentState();
-		_currentState->setActionMessage(STRING_EMPTY);
 		setNewViewState();
 	}
 

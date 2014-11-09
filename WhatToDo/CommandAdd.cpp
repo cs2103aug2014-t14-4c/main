@@ -1,3 +1,6 @@
+//****************************************************************************
+//@author A0110648L
+
 #include "CommandAdd.h"
 
 CommandAdd::CommandAdd(void)
@@ -11,11 +14,14 @@ void CommandAdd::execute() {
 	try {
 		checkIsParsedCorrectly();
 		assert(_currentTask != NULL);
+
 		retrieveExistingCurrentState();
+
 		checkIsCommandValid();
 		checkIsInputTimeNotOccupied();
 		performAddOperation();
 		addThisCommandToHistory(this);
+
 		addUserMessageToCurrentState();
 		addActionMessageToCurrentState();
 		setNewCurrentState();
@@ -25,7 +31,6 @@ void CommandAdd::execute() {
 		_userMessage = errorMsg;
 		retrieveExistingViewState();
 		addUserMessageToCurrentState();
-		_currentState->setActionMessage(STRING_EMPTY);
 		setNewViewState();
 	}
 
@@ -40,10 +45,9 @@ bool CommandAdd::checkIsCommandValid() {
 }
 
 bool CommandAdd::checkIfOrderOfDateTimesValid() {
-	int currentTaskType = _currentTask->getTaskType();
 	bool isOrderOfDateTimesValid = true;
 
-	if (currentTaskType == Task::FIXED_TIME) {
+	if (_currentTask->isTaskHasStartAndEnd()) {
 		bool isEndAfterStart = checkIsEndAfterStart();
 		isOrderOfDateTimesValid = isEndAfterStart;
 	}
@@ -73,8 +77,8 @@ bool CommandAdd::checkIsInputTimeNotOccupied() {
 	int i;
 
 	for (i=0; unsigned(i)<listOfTimedTasks.size(); i++) {
-		if ((_currentTask->getTaskType() == Task::FIXED_TIME) 
-			&& (listOfTimedTasks[i].getTaskType() == Task::FIXED_TIME) 
+		if ((_currentTask->isTaskHasStartAndEnd()) 
+			&& (listOfTimedTasks[i].isTaskHasStartAndEnd()) 
 			&& (listOfTimedTasks[i].getTaskIsDone() == false)) {
 
 			if (_currentTask->isTaskOverlapWith(listOfTimedTasks[i])) {

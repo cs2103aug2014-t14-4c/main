@@ -1,5 +1,5 @@
 //****************************************************************************
-//@Poh Zhi Chao A0110648L
+//@author A0110648L
 //
 // This is the concrete CommandDelete class, which is reponsible for executing 
 // a "delete" command specified by the user.
@@ -32,6 +32,26 @@ const string ACTION_MSG_DELETED =
 class CommandDelete: public Command {
 	public:
 		CommandDelete(void);
+		
+		/*
+		// This API function executes the Delete Command when called.
+		//
+		// Pre-conditions:
+		//     (i) There should be a proper task index (and not just a display
+		//     task index set as the current task index in the command instance
+		//     before execute is called.
+		//     (ii) The _isParsedCorrectly variable in the command 
+		//     should be true.
+		//
+		// Post-Conditions:
+		//     (i) The specified task will be deleted to LogicData
+		//
+		// Sample usage:
+		//     CommandDelete* aDeleteCommand = new CommandDelete;
+		//     aDeleteCommand->setTaskIndex(taskIndexToDelete);
+		//     aDeleteCommand->execute();
+		*/
+
 		void execute();
 
 	protected:

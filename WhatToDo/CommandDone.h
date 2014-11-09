@@ -1,5 +1,5 @@
 //****************************************************************************
-//@Poh Zhi Chao A0110648L
+//@author A0110648L
 //
 // This is the concrete CommandDone class, which is reponsible for executing 
 // an "done" command specified by the user.
@@ -34,6 +34,27 @@ const string ACTION_MSG_UNDONE =
 class CommandDone: public Command {
 	public:
 		CommandDone(void);
+		
+		/*
+		// This API function executes the Done Command when called.
+		//
+		// Pre-conditions:
+		//     (i) There should be a proper task index (and not just a display
+		//     task index set as the current task index in the command instance
+		//     before execute is called.
+		//     (ii) The _isParsedCorrectly variable in the command 
+		//     should be true.
+		//
+		// Post-Conditions:
+		//     (i) The specified task will be marked either as done
+		//     or undone in LogicData
+		//
+		// Sample usage:
+		//     CommandDone* aDoneCommand = new CommandDone;
+		//     aDoneCommand->setTaskIndex(taskIndexToDone);
+		//     aDoneCommand->execute();
+		*/
+		
 		void execute();
 
 	protected:

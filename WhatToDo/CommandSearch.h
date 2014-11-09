@@ -1,5 +1,5 @@
 //****************************************************************************
-//@Poh Zhi Chao A0110648L
+//@author A0110648L
 //
 // This is the concrete CommandSearch class, which is reponsible for executing 
 // an "search" command specified by the user.
@@ -29,6 +29,28 @@ const string MSG_LOGGING_EXECUTE_COMMAND_SEARCH =
 class CommandSearch: public Command {
 	public:
 		CommandSearch(void);
+		
+		/*
+		// This API function executes the Search Command when called.
+		//
+		// Pre-conditions: 
+		//     (i) The search keyword should be specified in this particular
+		//     format for the separate search of task names and tags to work
+		//     properly: "homework #one#two".
+		//     (ii) The _isParsedCorrectly variable in the command 
+		//     should be true.
+		//
+		// Post-Conditions:
+		//     (i) The current state in LogicData will be filtered according to
+		//     the search and the filtered state will beplace the view state in
+		//     LogicData.
+		//
+		// Sample usage:
+		//     CommandSearch* aSearchCommand = new CommandSearch;
+		//     aSearchCommand->setSearchKeyword("homework #one#two")
+		//     aSearchCommand->execute();
+		*/
+		
 		void execute();
 
 	private:

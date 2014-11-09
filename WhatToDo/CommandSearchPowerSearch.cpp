@@ -1,3 +1,6 @@
+//****************************************************************************
+//@author A0110648L
+
 #include "CommandSearchPowerSearch.h"
 
 CommandSearchPowerSearch::CommandSearchPowerSearch(void) {
@@ -38,6 +41,10 @@ bool CommandSearchPowerSearch::checkIsFoundbyPowerSearch() {
 	if (checkIsFoundByFuzzySearch(_searchString)) {
 		return true;
 	}
+
+	// If a match was not found by fuzzysearch, continue to search
+	// every token of the search string with acronym search and
+	// shorthand search.
 
 	for (i=0; unsigned(i)<_tokenizedSearchString.size(); i++) {
 		isTokenFound = 
@@ -105,12 +112,19 @@ bool CommandSearchPowerSearch::checkIsFoundByShorthandSearch(
 		for (j=0; unsigned(j)<searchToken.size(); j++) {
 			bool isPartialSearchTokenFound = false;
 
+			// If the first character of each word of the search string is 
+			// found, set the partial search token to be true. 
+
 			if ((j==0) && (searchToken[0] == currentMainToken[0])) {
 				currentMainToken = 
 					currentMainToken.substr(
 					indexPartialShorthandLastFound);
 				isPartialSearchTokenFound = true;
 			}
+
+			// If the non-first character of each word of the search string 
+			// is found, set the partial search token to be true.
+
 			else if ((j!=0) 
 					&& (currentMainToken.find(
 					searchToken[j]) != string::npos)){
@@ -128,6 +142,10 @@ bool CommandSearchPowerSearch::checkIsFoundByShorthandSearch(
 			}
 		}
 		
+		// If a particular word in the search string has been found, 
+		// craft the remaining main string for subsequent searches
+		// and return true as the search token has been found.
+
 		if (isFound) {
 			int k;
 			indexShorthandLastFound = i;
@@ -159,11 +177,19 @@ bool CommandSearchPowerSearch::checkIsFoundByAcronymSearch(
 	int i;
 
 	for (i=0; unsigned(i)<searchToken.size(); i++) {
+		
+		// If a search character is not found, mark isFound 
+		// as false.
+		
 		if (remainingMainStringFirstChars.find(
 				searchToken[i]) == string::npos) {
 			isFound = false;
 			break;
 		}
+
+		// Get the remaining main string first characters to
+		// search within for the next search character.
+
 		charIndex = 
 			remainingMainStringFirstChars.find(searchToken[i]);
 		remainingMainStringFirstChars = 

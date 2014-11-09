@@ -1,5 +1,5 @@
 //****************************************************************************
-//@Poh Zhi Chao A0110648L
+//@author A0110648L
 //
 // This is the concrete CommandClear class, which is reponsible for executing 
 // an "clear" command specified by the user.
@@ -26,6 +26,32 @@ const string MSG_LOGGING_EXECUTE_COMMAND_CLEAR =
 class CommandClear: public Command {
 	public:
 		CommandClear(void);
+
+		/*
+		// This API function executes the Clear Command when called.
+		//
+		// Pre-conditions:
+		//     (i) The LogicData should already be initialized with
+		//     a load command beforehand.
+		//     (ii) The _isParsedCorrectly variable in the command 
+		//     should be true.
+		//
+		// Post-Conditions:
+		//     (i) All the view state in LogicData will be overwritten
+		//     by the current state in LogicData
+		//
+		// Sample usage:
+		//     CommandClear* aClearCommand = new CommandClear;
+		//     aClearCommand->execute();
+		*/
+
 		void execute();
+
+	protected:
+
+		// Functions For Execution
+		
+		void resetLastActionType();
+		void resetUserMessage();
 };
 
