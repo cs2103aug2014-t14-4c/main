@@ -1,3 +1,9 @@
+//****************************************************************************
+//@author A0110873L
+//
+//testLogicData
+//****************************************************************************
+
 #include "stdafx.h"
 #include "CppUnitTest.h"
 
@@ -21,55 +27,73 @@ namespace testLogicDataComponent {
 				Assert::AreEqual(true, myTask.getTaskDeadline().is_not_a_date_time());
 			}
 
-			TEST_METHOD(testTaskType) {
+			TEST_METHOD(testTaskTypeFloating) {
 				//Checking for FLOATING tasks
 				Task floatTask;
 				Assert::AreEqual(int(Task::TaskType::FLOATING), floatTask.getTaskType());
+			}
 
+			TEST_METHOD(testTaskTypeDeadlineTime) {
 				//Checking for DEADLINE_TIME tasks
 				Task deadlineTimeTask;
 				deadlineTimeTask.setTaskDeadline(ptime (date(2014,Dec,10), time_duration(14,30,0)));
 				Assert::AreEqual(int(Task::TaskType::DEADLINE_TIME), deadlineTimeTask.getTaskType());
+			}
 
+			TEST_METHOD(testTaskTypeDeadlineAllDay) {
 				//Checking for DEADLINE_ALLDAY tasks
 				Task deadlineAllDayTask;
 				deadlineAllDayTask.setTaskDeadline(ptime (date(2014,Dec,10), time_duration(0,0,1)));
 				Assert::AreEqual(int(Task::TaskType::DEADLINE_ALLDAY), deadlineAllDayTask.getTaskType());
+			}
 
+			TEST_METHOD(testTaskTypeFixedAllDay) {
 				//Checking for FIXED_ALLDAY tasks
 				Task fixedAllDayTask;
 				fixedAllDayTask.setTaskStartTime(ptime (date(2014,Dec,10), time_duration(0,0,1)));
 				Assert::AreEqual(int(Task::TaskType::FIXED_ALLDAY), fixedAllDayTask.getTaskType());
+			}
 			
+			TEST_METHOD(testTaskTypeFixedDayToDay) {
 				//Checking for FIXED_DAY_TO_DAY tasks
 				Task fixedDayToDayTask;
 				fixedDayToDayTask.setTaskStartTime(ptime (date(2014,Dec,10), time_duration(0,0,1)));
 				fixedDayToDayTask.setTaskEndTime(ptime (date(2014,Dec,15), time_duration(0,0,1)));
 				Assert::AreEqual(int(Task::TaskType::FIXED_DAY_TO_DAY), fixedDayToDayTask.getTaskType());
+			}
 
+			TEST_METHOD(testTaskTypeFixedDayToTime) {
 				//Checking for FIXED_DAY_TO_TIME tasks
 				Task fixedDayToTimeTask;
 				fixedDayToTimeTask.setTaskStartTime(ptime (date(2014,Dec,10), time_duration(0,0,1)));
 				fixedDayToTimeTask.setTaskEndTime(ptime (date(2014,Dec,15), time_duration(10,30,0)));
 				Assert::AreEqual(int(Task::TaskType::FIXED_DAY_TO_TIME), fixedDayToTimeTask.getTaskType());
+			}
 
+			TEST_METHOD(testTaskTypeFixedStart) {
 				//Checking for FIXED_START tasks
 				Task fixedStartTask;
 				fixedStartTask.setTaskStartTime(ptime (date(2014,Dec,10), time_duration(14,30,1)));
 				Assert::AreEqual(int(Task::TaskType::FIXED_START), fixedStartTask.getTaskType());
+			}
 
+			TEST_METHOD(testTaskTypeFixedTimeWithinDay) {
 				//Checking for FIXED_TIME_WITHIN_DAY tasks
 				Task fixedTimeWithinDayTask;
 				fixedTimeWithinDayTask.setTaskStartTime(ptime (date(2014,Dec,10), time_duration(14,30,0)));
 				fixedTimeWithinDayTask.setTaskEndTime(ptime (date(2014,Dec,10), time_duration(16,30,0)));
 				Assert::AreEqual(int(Task::TaskType::FIXED_TIME_WITHIN_DAY), fixedTimeWithinDayTask.getTaskType());
+			}
 
+			TEST_METHOD(testTaskTypeFixedTimeAcrossDay) {
 				//Checking for FIXED_TIME_ACROSS_DAY tasks
 				Task fixedTimeAcrossDayTask;
 				fixedTimeAcrossDayTask.setTaskStartTime(ptime (date(2014,Dec,10), time_duration(14,30,0)));
 				fixedTimeAcrossDayTask.setTaskEndTime(ptime (date(2014,Dec,12), time_duration(16,30,0)));
 				Assert::AreEqual(int(Task::TaskType::FIXED_TIME_ACROSS_DAY), fixedTimeAcrossDayTask.getTaskType());
+			}
 			
+			TEST_METHOD(testTaskTypeFixedTimeToDay) {
 				//Checking for FIXED_TIME_TO_DAY tasks
 				Task fixedTimeToDayTask;
 				fixedTimeToDayTask.setTaskStartTime(ptime (date(2014,Dec,10), time_duration(14,30,0)));
@@ -82,22 +106,22 @@ namespace testLogicDataComponent {
 				Task secondTask;
 
            		//case where first task is earlier than second task (test for 'positive' value segment)
-							//   first task          [   
-							//   second task             [
+				//   first task          [   
+				//   second task             [
 				firstTask.setTaskStartTime(ptime (date(2002,Jan,10), time_duration(1,2,3)));
 				secondTask.setTaskStartTime(ptime (date(2002,Jan,11), time_duration(1,2,3)));
 				Assert::AreEqual(true, firstTask.isEarlierThan(secondTask));
 
 				//case where first task is later than second task (test for 'negative' value segment)
-							//   first task                 [
-							//   second task         [
+				//   first task                 [
+				//   second task         [
 				firstTask.setTaskStartTime(ptime (date(2002,Jan,13), time_duration(1,2,3)));
 				secondTask.setTaskStartTime(ptime (date(2002,Jan,11), time_duration(1,2,3)));
 				Assert::AreEqual(false, firstTask.isEarlierThan(secondTask));
 
 				//case where first task starts the same as second task (test for 'boundary' value segment)
-							//   first task          [
-							//   second task         [
+				//   first task          [
+				//   second task         [
 				firstTask.setTaskStartTime(ptime (date(2002,Jan,11), time_duration(1,2,3)));
 				secondTask.setTaskStartTime(ptime (date(2002,Jan,11), time_duration(1,2,3)));
 				Assert::AreEqual(false, firstTask.isEarlierThan(secondTask));
@@ -118,7 +142,7 @@ namespace testLogicDataComponent {
 
 				//case where end time of second task is between start and end times of first task
 				//   first task          [     ]
-							//   second task      [     ]
+				//   second task      [     ]
  				firstTask.setTaskStartTime(ptime (date(2002,Jan,10), time_duration(1,2,3)));
 				firstTask.setTaskEndTime(ptime (date(2002, Jan, 12), time_duration(1,2,3)));
 				secondTask.setTaskStartTime(ptime (date(2002,Jan,9), time_duration(1,2,3)));
@@ -126,8 +150,8 @@ namespace testLogicDataComponent {
 				Assert::AreEqual(true, firstTask.isTaskOverlapWith(secondTask));
 
 				//case where start time of second task equals the end time of the first task
-							//   first task          [     ]
-							//   second task               [     ]
+				//   first task          [     ]
+				//   second task               [     ]
 				firstTask.setTaskStartTime(ptime (date(2002,Jan,10), time_duration(1,2,3)));
 				firstTask.setTaskEndTime(ptime (date(2002, Jan, 12), time_duration(1,2,3)));
 				secondTask.setTaskStartTime(ptime (date(2002,Jan,12), time_duration(1,2,3)));
@@ -135,8 +159,8 @@ namespace testLogicDataComponent {
 				Assert::AreEqual(false, firstTask.isTaskOverlapWith(secondTask));
 
 				//case where end time of second task equals the start time of the first task
-							//   first task          [     ]
-							//   second task   [     ]
+				//   first task          [     ]
+				//   second task   [     ]
 				firstTask.setTaskStartTime(ptime (date(2002,Jan,10), time_duration(1,2,3)));
 				firstTask.setTaskEndTime(ptime (date(2002, Jan, 12), time_duration(1,2,3)));
 				secondTask.setTaskStartTime(ptime (date(2002,Jan,8), time_duration(1,2,3)));
@@ -144,8 +168,8 @@ namespace testLogicDataComponent {
 				Assert::AreEqual(false, firstTask.isTaskOverlapWith(secondTask));
 
 				//case where end time of second task equals the end time of the first task
-							//    first task         [     ]      
-							//    second task           [  ]
+				//    first task         [     ]      
+				//    second task           [  ]
 				firstTask.setTaskStartTime(ptime (date(2002,Jan,10), time_duration(1,2,3)));
 				firstTask.setTaskEndTime(ptime (date(2002, Jan, 12), time_duration(1,2,3)));
 				secondTask.setTaskStartTime(ptime (date(2002,Jan,11), time_duration(1,2,3)));
@@ -153,8 +177,8 @@ namespace testLogicDataComponent {
 				Assert::AreEqual(true, firstTask.isTaskOverlapWith(secondTask));
 
  				//case where start time of second task equals the start time of the first task
-							//    first task         [     ]      
-							//    second task        [  ]
+				//    first task         [     ]      
+				//    second task        [  ]
 				firstTask.setTaskStartTime(ptime (date(2002,Jan,10), time_duration(1,2,3)));
 				firstTask.setTaskEndTime(ptime (date(2002, Jan, 12), time_duration(1,2,3)));
 				secondTask.setTaskStartTime(ptime (date(2002,Jan,10), time_duration(1,2,3)));
@@ -384,7 +408,6 @@ namespace testLogicDataComponent {
 
 			TEST_METHOD(testDeadlineFilter) {
 				LogicData myLogicData;
-
 				myLogicData.setTypeFilter(LogicData::Type::ONLY_DUE);
 
 				State myState;
