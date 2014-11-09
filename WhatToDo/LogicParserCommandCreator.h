@@ -50,25 +50,25 @@ const string COMMAND_UNDO = "/undo";
 const string COMMAND_UNDONE = "/undone";
 
 const string USERMESSAGE_INVALID_COMMAND_CLEAR = 
-	"Type /clear to clear the search results.";
+	"/clear : clear search results";
 const string USERMESSAGE_INVALID_COMMAND_DELETE =
-	"Type /delete <index> to delete the task at <index>.";
+	"/delete <index> : delete a task";
 const string USERMESSAGE_INVALID_COMMAND_DONE =
-	"Type /done <index> to mark the task at <index> as done.";
+	"/done <index> : mark task as done";
 const string USERMESSAGE_INVALID_COMMAND_EDIT =
-	"Type /edit <index> <edited task> to edit the task at <index>.";
+	"/edit <index> <task> : modify task";
 const string USERMESSAGE_INVALID_COMMAND_FILTER = 
-	"Type /filter <option> to filter tasks by the option specified.";
+	"/filter <option> : filter tasks";
 const string USERMESSAGE_INVALID_COMMAND_LOAD = 
-	"/load is a system command and should not be used.";
+	"/load is a system command";
 const string USERMESSAGE_INVALID_COMMAND_REDO =
-	"Type /redo to redo the last undone action.";
+	"/redo : redo last undone action";
 const string USERMESSAGE_INVALID_COMMAND_SEARCH =
-	"Type /search <keyword> to search for the keyword in your tasks.";
+	"/search <keyword> : search for matching task";
 const string USERMESSAGE_INVALID_COMMAND_UNDO =
-	"Type /undo to undo the last performed action.";
+	"/undo : undo last performed action";
 const string USERMESSAGE_INVALID_COMMAND_UNDONE =
-	"Type /undone <index> to mark the task at <index> as not done.";
+	"/undone <index> : mark task as not done";
 
 const string LOG_CREATE_ADD = 
 	"CommandCreator - Creating an Add Command.\n";

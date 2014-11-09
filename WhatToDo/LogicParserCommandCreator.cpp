@@ -252,7 +252,7 @@ Command* CommandCreator::createRedoCommand(void) {
 	redoCommand->setParsedStatus(hasNoParameters());
 	
 	if(!redoCommand->getParsedStatus()) {
-		redoCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_CLEAR);
+		redoCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_REDO);
 		sprintf_s(logBuffer, LOG_ERROR_PARAMETER_NUMBER.c_str());
 		log(logBuffer);
 	}
@@ -285,7 +285,7 @@ Command* CommandCreator::createUndoCommand(void) {
 	undoCommand->setParsedStatus(hasNoParameters());
 		
 	if(!undoCommand->getParsedStatus()) {
-		undoCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_CLEAR);
+		undoCommand->setUserMessage(USERMESSAGE_INVALID_COMMAND_UNDO);
 		sprintf_s(logBuffer, LOG_ERROR_PARAMETER_NUMBER.c_str());
 		log(logBuffer);
 	}
