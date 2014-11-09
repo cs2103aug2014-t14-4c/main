@@ -131,8 +131,8 @@ bool Task::hasDeadline() {
 }
 
 bool Task::isFullDay(ptime dateTimeToCheck) {
-	return dateTimeToCheck.time_of_day().hours() == 0 &&
-		dateTimeToCheck.time_of_day().minutes() == 0 && 
+	return dateTimeToCheck.time_of_day().hours() == EMPTY &&
+		dateTimeToCheck.time_of_day().minutes() == EMPTY && 
 		dateTimeToCheck.time_of_day().seconds() == MARKED_AS_FULL_DAY;
 }
 
@@ -152,14 +152,6 @@ bool Task::isTaskTypeFixedTime(Task myTask) {
 	return myTaskType == FIXED_TIME_WITHIN_DAY || 
 		myTaskType == FIXED_TIME_ACROSS_DAY ||
 		myTaskType == FIXED_TIME_TO_DAY;
-}
-
-bool Task::isTaskHasStartAndEnd() {
-	return ((this->getTaskType() == FIXED_TIME_WITHIN_DAY) 
-		|| (this->getTaskType() == FIXED_TIME_ACROSS_DAY) 
-		|| (this->getTaskType() == FIXED_DAY_TO_DAY) 
-		|| (this->getTaskType() == FIXED_DAY_TO_TIME) 
-		|| (this->getTaskType() == FIXED_TIME_TO_DAY));
 }
 
 bool Task::isTaskOverlapWith(Task myTask) {

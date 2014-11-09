@@ -4,7 +4,7 @@
 //Task is the most fundamental component within WhatToDo and is responsible 
 //for storing important details of a task such as its start time, end time, 
 //deadline, name, tags and status (done or not done). In additional, a Task 
-//has two additional functions. firstly it is able to check if two Tasks 
+//has two additional functions – firstly it is able to check if two Tasks 
 //overlap, and secondly it is able to check if a Task begins earlier than 
 //another Task. A Task also can be defined in many types:
 //	1)Floating Tasks - no start date time, no end date time and no deadline
@@ -59,7 +59,6 @@ class Task {
 		string _taskDetails; //Not used for now
 		vector<string> _taskTags;
 		int _taskIndex;
-		int _taskType;
 		bool _isDone;
 
 	public:
@@ -97,7 +96,6 @@ class Task {
 		bool isStartDateEqualEndDate();
 		bool isTaskTypeFixedDay(Task myTask);
 		bool isTaskTypeFixedTime(Task myTask);
-		bool isTaskHasStartAndEnd();
 		bool isTaskOverlapWith(Task myTask);
 		bool isEarlierThan(Task myTask);
 		bool isTaskSortedBefore(Task firstTask, Task secondTask);
