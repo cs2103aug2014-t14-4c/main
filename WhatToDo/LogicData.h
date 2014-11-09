@@ -1,5 +1,6 @@
 //****************************************************************************
 //@author A0110873L
+//
 //LogicData is responsible for holding the current State, view State and
 //initial State. It also keeps track of the commands that are executed from 
 //the time that WhatToDo is executed. This allows for easy redoing and undoing
@@ -15,8 +16,9 @@
 //		c) Deadline
 //	3) Date
 //
-//Furthermore, LogicData support the logging of functions called and errors 
-//from within. 
+//Furthermore, LogicData support the logging of functions executed and errors 
+//should they occur. Logging mode can be turned on or off in the constructor
+//based on the developer's requirements
 //****************************************************************************
 
 #ifndef LOGICDATA_H
@@ -28,15 +30,15 @@
 #include "State.h"
 #include "StorageExecutor.h"
 
-enum Status{
+enum Status {
 	STATUS_NOT_SET = -1, DONE_BOTH, ONLY_DONE, ONLY_UNDONE
 };
 
-enum Type{
+enum Type {
 	TYPE_NOT_SET = -1, ALL_TYPES, ONLY_FIXED, ONLY_DUE
 };
 
-enum Month{
+enum Month {
 	JAN = 1, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT,
 	NOV, DEC
 };
@@ -97,6 +99,13 @@ class LogicData {
 		static string getFilterStatus();
 		static string changeMonthToMonthOfYear(int month);
 		static string getDisplayDay(ptime myTime);
+		static string compileStartDateFilterStatus(string dateFilterStatus, 
+			date startDateFilter);
+		static string compileEndDateFilterStatus(string dateFilterStatus, 
+			date endDateFilter);
+		static string compileFilterStatus(string doneFilterStatus,
+			string typeFilterStatus, string dateFilterStatus);
+		static string compileNewActionMessage(State filteredViewState);
 
 		//Logging
 		static void log(string stringToLog);
@@ -134,7 +143,7 @@ class LogicData {
 		static const string STRING_ONLY_FIXED;
 		static const string STRING_ONLY_DUE;
 
-		static const string INITIAL_VALUE_LOG_FILE_NAME;
+		static const string LOG_LOGIC_DATA_FILE_NAME;
 		static const string LOG_MSG_CURRENT_STATE_SET;
 		static const string LOG_MSG_VIEW_STATE_SET;
 		static const string LOG_MSG_DONE_FILTER_SET;

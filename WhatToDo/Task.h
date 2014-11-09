@@ -1,5 +1,6 @@
 //****************************************************************************
 //@author A0110873L
+//
 //Task is the most fundamental component within WhatToDo and is responsible 
 //for storing important details of a task such as its start time, end time, 
 //deadline, name, tags and status (done or not done). In additional, a Task 
@@ -14,20 +15,20 @@
 //		a) Day
 //			i) All Day - Meaning that one entire day is demarketed for the Task
 //		   ii) Day To Time - Meaning that the start date is specified wih no 
-//		       time and the end date time is specified
+//				time and the end date time is specified
 //		  iii) Day To Day - Meaning that the start and end dates are both 
-//		       specified with no times specified	
+//				specified with no times specified	
 //		b) Start - Meaning that the start time is specified without any end
-//		   datetime
+//			datetime
 //		c) Time 
 //			i) Time Within Day - Meaning that the start time and end time are
-//		       specified within a single day
+//				specified within a single day
 //		   ii) Time Across Day - Meaning that the start time and end time are
-//		       specified over one day
+//				specified over one day
 //		  iii) Time To Day - Meaning that the start time is specified and the
-//		       end date is specified with no time
+//				end date is specified with no time
 //
-//*Note: datetimes which are "All day" are marked with 1 second 
+//*Note: datetimes which occupy an entire day are marked with 1 second 
 //		(000001 in HHMMSS)
 //****************************************************************************
 
@@ -49,7 +50,7 @@ const int NUM_OF_COMP_FUNCTIONS = 8;
 const int MARKED_AS_FULL_DAY = 1;
 const string MSG_ERR_INVALID_FUNCTION_CALL = "INVALID_ARGUMENT: Function called does not exist\n";
 
-class Task{
+class Task {
 	private:
 		ptime _taskStartDateTime;
 		ptime _taskEndDateTime;
@@ -112,14 +113,14 @@ class Task{
 		bool compareByFixedTimeAndStart(Task firstTask, Task secondTask, bool *orderConfirmed);
 
 		//Enumeration
-		enum TaskType{
+		enum TaskType {
 			 FLOATING = 1, DEADLINE_TIME, DEADLINE_ALLDAY, FIXED_ALLDAY, FIXED_DAY_TO_DAY, 
 			 FIXED_DAY_TO_TIME, FIXED_START, FIXED_TIME_WITHIN_DAY, FIXED_TIME_ACROSS_DAY, 
-			 FIXED_TIME_TO_DAY 
+			 FIXED_TIME_TO_DAY, NOT_A_TASK_TYPE 
 		};
 
 		//Compare Functions are arranged in order of precedence from greatest priority starting from 1.
-		enum CompareType{
+		enum CompareType {
 			COMPARE_FLOAT = 1, COMPARE_DATE, COMPARE_DEADLINE_ALLDAY, COMPARE_DEADLINE_TIME,
 			COMPARE_FIXED_DAY, COMPARE_FIXED_START, COMPARE_FIXED_TIME, COMPARE_FIXED_TIME_START
 		};

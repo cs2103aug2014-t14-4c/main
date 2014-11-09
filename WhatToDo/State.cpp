@@ -6,15 +6,15 @@ State::State(){
 }
 
 //Setters
-void State::setAllTasks(vector<Task> tasksToSet){
+void State::setAllTasks(vector<Task> tasksToSet) {
 	_entireListOfTasks = tasksToSet;
 }
 
-void State::setUserMessage(string stringToSet){
+void State::setUserMessage(string stringToSet) {
 	_userMessage = stringToSet;
 }
 
-void State::setActionMessage(string stringToSet){
+void State::setActionMessage(string stringToSet) {
 	_actionMessage = stringToSet;
 }
 
@@ -29,11 +29,11 @@ void State::setLastActionTaskIndex(int actionTaskIndexToSet) {
 }
 
 //Getters
-string State::getUserMessage(){
+string State::getUserMessage() {
 	return _userMessage;
 }
 
-string State::getActionMessage(){
+string State::getActionMessage() {
 	return _actionMessage;
 }
 
@@ -46,7 +46,7 @@ int State::getLastActionTaskIndex() {
 }
 
 //Operations
-void State::addTask(Task taskToAdd, bool isUserCommand, int specifiedIndex){
+void State::addTask(Task taskToAdd, bool isUserCommand, int specifiedIndex) {
 	if (specifiedIndex == UNSPECIFIED_INDEX) {
 		taskToAdd.setTaskIndex(maxIndex);
 		if (isUserCommand) {
@@ -69,92 +69,103 @@ void State::addTask(Task taskToAdd, bool isUserCommand, int specifiedIndex){
 	}
 }
 
-void State::deleteTask(int taskIndexToDelete, bool isUserCommand){
-	for(unsigned int i=0; i< _entireListOfTasks.size();i++){
-		if(_entireListOfTasks[i].getTaskIndex() == taskIndexToDelete){
+void State::deleteTask(int taskIndexToDelete, bool isUserCommand) {
+	for (unsigned int index = INITIAL_INDEX; 
+		index < _entireListOfTasks.size(); index++) {
+		if (_entireListOfTasks[index].getTaskIndex() == taskIndexToDelete) {
 			if (isUserCommand) {
 				_lastActionType = actionType::DELETED;
 				_lastActionTaskIndex = taskIndexToDelete;
 			} else {
 				_lastActionType = actionType::NONE;
 			}
-			_entireListOfTasks.erase(_entireListOfTasks.begin() + i);
+			_entireListOfTasks.erase(_entireListOfTasks.begin() + index);
 		}
 	}
 }
 
 void State::doneTask(int taskIndexToDo, bool isUserCommand) {
-	for(unsigned int i=0; i< _entireListOfTasks.size();i++){
-		if(_entireListOfTasks[i].getTaskIndex() == taskIndexToDo){
-			_entireListOfTasks[i].setTaskIsDone(isUserCommand);
+	for(unsigned int index = INITIAL_INDEX; 
+		index < _entireListOfTasks.size(); index++) {
+		if(_entireListOfTasks[index].getTaskIndex() == taskIndexToDo) {
+			_entireListOfTasks[index].setTaskIsDone(isUserCommand);
 			_lastActionType = actionType::CHANGED;
 			_lastActionTaskIndex = taskIndexToDo;
 		}
 	}
 }
 
-void State::clearAllTasks(){
+void State::clearAllTasks() {
 	_entireListOfTasks.clear();
 }
 
-void State::sortAllTasks(){
-	int i,j;
+void State::sortAllTasks() {
+	int primaryIndex, secondaryIndex;
 	Task swapTask;
 
-	for (i=0; unsigned(i)<_entireListOfTasks.size(); i++) {
-		for (j=i+1; unsigned(j)<_entireListOfTasks.size(); j++) {
-			if (swapTask.isTaskSortedBefore(_entireListOfTasks[i], _entireListOfTasks[j])) {
-				swapTask = _entireListOfTasks[j];
-				_entireListOfTasks[j] = _entireListOfTasks[i];
-				_entireListOfTasks[i] = swapTask;
+	//Selection Sort Algorithm
+	for (primaryIndex = INITIAL_INDEX; 
+		unsigned(primaryIndex) < _entireListOfTasks.size(); 
+		primaryIndex++) {
+			for (secondaryIndex = primaryIndex + TO_THE_RIGHT_BY_ONE; 
+				unsigned(secondaryIndex) < _entireListOfTasks.size(); 
+				secondaryIndex++) {
+			if (swapTask.isTaskSortedBefore(_entireListOfTasks[primaryIndex], 
+				_entireListOfTasks[secondaryIndex])) {
+				swapTask = _entireListOfTasks[secondaryIndex];
+				_entireListOfTasks[secondaryIndex] = _entireListOfTasks[primaryIndex];
+				_entireListOfTasks[primaryIndex] = swapTask;
 			}
 		}
 	}
 }
 
-vector<Task> State::getAllTasks(){
+vector<Task> State::getAllTasks() {
 	sortAllTasks();
 	return _entireListOfTasks;
 }
 
-vector<Task> State::getTimedTasks(){
+vector<Task> State::getTimedTasks() {
 	vector<Task> timedTasks;
 	sortAllTasks();
 
-	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
-		if(((_entireListOfTasks[i]).getTaskType() == Task::FIXED_ALLDAY) || 
-			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_START) || 
-			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_TIME_WITHIN_DAY) ||
-			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_TIME_ACROSS_DAY) ||
-			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_TIME_TO_DAY) ||
-			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_DAY_TO_TIME) ||
-			((_entireListOfTasks[i]).getTaskType() == Task::FIXED_DAY_TO_DAY)) {
-			timedTasks.push_back(_entireListOfTasks[i]);
+	for (unsigned int index = INITIAL_INDEX; 
+		index < _entireListOfTasks.size(); index++) {
+		if (((_entireListOfTasks[index]).getTaskType() == Task::FIXED_ALLDAY) || 
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_START) || 
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_TIME_WITHIN_DAY) ||
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_TIME_ACROSS_DAY) ||
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_TIME_TO_DAY) ||
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_DAY_TO_TIME) ||
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_DAY_TO_DAY)) {
+			timedTasks.push_back(_entireListOfTasks[index]);
 		}
 	}
 	return timedTasks;
 }
 
-vector<Task> State::getDeadlineTasks(){
+vector<Task> State::getDeadlineTasks() {
 	vector<Task> deadlineTasks;
 	sortAllTasks();
 
-	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
-		if(((_entireListOfTasks[i]).getTaskType() == Task::DEADLINE_TIME) || 
-			((_entireListOfTasks[i]).getTaskType() == Task::DEADLINE_ALLDAY)) {
-			deadlineTasks.push_back(_entireListOfTasks[i]);
+	for (unsigned int index = INITIAL_INDEX; 
+		index < _entireListOfTasks.size(); index++) {
+		if (((_entireListOfTasks[index]).getTaskType() == Task::DEADLINE_TIME) || 
+			((_entireListOfTasks[index]).getTaskType() == Task::DEADLINE_ALLDAY)) {
+			deadlineTasks.push_back(_entireListOfTasks[index]);
 		}
 	}
 	return deadlineTasks;
 }
 
-vector<Task> State::getFloatingTasks(){
+vector<Task> State::getFloatingTasks() {
 	vector<Task> floatingTasks;
 	sortAllTasks();
 
-	for(unsigned int i=0; i<_entireListOfTasks.size();i++){
-		if((_entireListOfTasks[i]).getTaskType() == Task::FLOATING){
-			floatingTasks.push_back(_entireListOfTasks[i]);
+	for (unsigned int index = INITIAL_INDEX; 
+		index < _entireListOfTasks.size(); index++) {
+		if ((_entireListOfTasks[index]).getTaskType() == Task::FLOATING){
+			floatingTasks.push_back(_entireListOfTasks[index]);
 		}
 	}
 	return floatingTasks;

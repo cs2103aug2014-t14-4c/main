@@ -40,7 +40,7 @@ const string LogicData::STRING_ALL_TYPES = "all types";
 const string LogicData::STRING_ONLY_FIXED = "only fixed";
 const string LogicData::STRING_ONLY_DUE = "only due";
 
-const string LogicData::INITIAL_VALUE_LOG_FILE_NAME = "LogicDataLog.txt";
+const string LogicData::LOG_LOGIC_DATA_FILE_NAME = "LogicDataLog.txt";
 const string LogicData::LOG_MSG_CURRENT_STATE_SET = "Function called: setCurrentState()\n";
 const string LogicData::LOG_MSG_VIEW_STATE_SET = "Function called: setViewState()\n";
 const string LogicData::LOG_MSG_DONE_FILTER_SET = "Function called: setDoneFilter()\n";
@@ -55,40 +55,40 @@ const string LogicData::ERR_MSG_INVALID_TASK_TYPE = "INVALID_ARGUMENT: Task Type
 const string LogicData::ERR_MSG_INVALID_STATUS_TYPE = "INVALID_ARGUMENT: Status Type not known\n";
 
 //Constructor
-LogicData::LogicData(){
+LogicData::LogicData() {
 	_currentCommandHistoryIndex = INITIAL_COMMAND_HISTORY_INDEX;
 	_doneFilter = Status::ONLY_UNDONE;
 	_typeFilter = Type::ALL_TYPES;
 	_startDateFilter = boost::gregorian::date(neg_infin);
 	_endDateFilter = boost::gregorian::date(pos_infin);
-	_logFileName = INITIAL_VALUE_LOG_FILE_NAME;
+	_logFileName = LOG_LOGIC_DATA_FILE_NAME;
 	_loggingModeOn = false;
 }
 
 //Setters
-void LogicData::setCurrentState(State stateToSet){
+void LogicData::setCurrentState(State stateToSet) {
 	_currentState = stateToSet;
 	StorageExecutor myStorageExecutor;
 	myStorageExecutor.saveToStorage(_currentState);
 	log(LOG_MSG_CURRENT_STATE_SET);
 }
 
-void LogicData::setViewState(State stateToSet){
+void LogicData::setViewState(State stateToSet) {
 	_viewState = stateToSet;
 	log(LOG_MSG_VIEW_STATE_SET);
 }
 
-void LogicData::setDoneFilter(int doneFilter){
+void LogicData::setDoneFilter(int doneFilter) {
 	_doneFilter = doneFilter;
 	log(LOG_MSG_DONE_FILTER_SET);
 }
 
-void LogicData::setTypeFilter(int typeFilter){
+void LogicData::setTypeFilter(int typeFilter) {
 	_typeFilter = typeFilter;
 	log(LOG_MSG_TYPE_FILTER_SET);
 }
 
-void LogicData::setDateFilter(date startDateFilter, date endDateFilter){
+void LogicData::setDateFilter(date startDateFilter, date endDateFilter) {
 	_startDateFilter = startDateFilter;
 	_endDateFilter = endDateFilter;
 	log(LOG_MSG_DATE_FILTER_SET);
@@ -107,27 +107,27 @@ State LogicData::getViewState() {
 	return filterTasks();
 }
 
-vector<Command*> LogicData::getCommandHistory(){
+vector<Command*> LogicData::getCommandHistory() {
 	return _commandHistory;
 }
 
-int LogicData::getCurrentCommandHistoryIndex(){
+int LogicData::getCurrentCommandHistoryIndex() {
 	return _currentCommandHistoryIndex;
 }
 
-int LogicData::getDoneFilter(){
+int LogicData::getDoneFilter() {
 	return _doneFilter;
 }
 
-int LogicData::getTypeFilter(){
+int LogicData::getTypeFilter() {
 	return _typeFilter;
 }
 
-date LogicData::getStartDateFilter(){
+date LogicData::getStartDateFilter() {
 	return _startDateFilter;
 }
 
-date LogicData::getEndDateFilter(){
+date LogicData::getEndDateFilter() {
 	return _endDateFilter;
 }
 
@@ -138,20 +138,20 @@ void LogicData::resetCommandHistory() {
 	return;
 }
 
-void LogicData::addCommandToHistory(Command* commandToAdd){
+void LogicData::addCommandToHistory(Command* commandToAdd) {
 	_commandHistory.push_back(commandToAdd);
 	_currentCommandHistoryIndex++;
 	log(LOG_MSG_COMMAND_HISTORY_ADDED);
 }
 
-void LogicData::resetToInitialSettings(){
+void LogicData::resetToInitialSettings() {
 	_currentState = _initialState;
 	_viewState = _initialState;
 	_commandHistory.clear();
 	log(LOG_MSG_RESET);
 }
 
-void LogicData::loadInitialSettings(){
+void LogicData::loadInitialSettings() {
 	LogicData();
 	StorageExecutor myStorageExecutor;
 	State initialState = myStorageExecutor.loadFromStorage();
@@ -178,16 +178,14 @@ State LogicData::filterTasks() {
 				filteredTasks.push_back(*iter);
 			}
 		}
-	} catch (const invalid_argument& ia){
+	} catch (const invalid_argument& ia) {
 		if(!isLoggingModeOn())
 			setLoggingModeOn();
 	    log(ia.what());
 	}
 	filteredViewState.setAllTasks(filteredTasks);
-	filteredViewState.setActionMessage(filteredViewState.getActionMessage() + 
-		STRING_SPACE_CHAR + STRING_SPACE_CHAR + STRING_VERTICAL_BAR_CHAR + 
-		STRING_VERTICAL_BAR_CHAR + STRING_SPACE_CHAR + STRING_SPACE_CHAR + 
-		getFilterStatus());
+	string newActionMessage = compileNewActionMessage(filteredViewState);
+	filteredViewState.setActionMessage(newActionMessage);
 	return filteredViewState;
 }
 
@@ -203,7 +201,7 @@ bool LogicData::passDoneFilter(Task task) {
 			default:;
 				throw invalid_argument(ERR_MSG_INVALID_STATUS_TYPE);
 		}
-	} catch (const invalid_argument&){
+	} catch (const invalid_argument&) {
 		throw;
 	}
 }
@@ -220,7 +218,7 @@ bool LogicData::passTypeFilter(Task task) {
 			default:;
 				throw invalid_argument(ERR_MSG_INVALID_TASK_TYPE);
 		}
-	} catch (const invalid_argument&){
+	} catch (const invalid_argument&) {
 		throw;
 	}
 }
@@ -233,8 +231,8 @@ bool LogicData::passDateFilter(Task task) {
 			(task.getTaskDeadline().date() <= _endDateFilter));
 	} else if(task.hasStartDateTime() && task.hasEndDateTime()) {
 		return ((task.getTaskStartTime().date() >= _startDateFilter) && 
-			(task.getTaskStartTime().date() <= _endDateFilter)
-			&& (task.getTaskEndTime().date() <= _endDateFilter) && 
+			(task.getTaskStartTime().date() <= _endDateFilter) && 
+			(task.getTaskEndTime().date() <= _endDateFilter) && 
 			(task.getTaskStartTime().date() >= _startDateFilter));
 	} else if(task.hasStartDateTime() && !task.hasEndDateTime()) {
 		return ((task.getTaskStartTime().date() >= _startDateFilter) && 
@@ -274,18 +272,17 @@ string LogicData::getFilterStatus() {
 	}
 
 	if (_startDateFilter != boost::gregorian::date(neg_infin)) {
-		dateFilterStatus += STRING_SPACE_CHAR + STRING_FRONTSLASH_CHAR + 
-			STRING_SPACE_CHAR + STRING_FROM + STRING_SPACE_CHAR + 
-			getDisplayDay(ptime(_startDateFilter));
+		dateFilterStatus = compileStartDateFilterStatus (dateFilterStatus,
+			_startDateFilter);
 	}
 	if (_endDateFilter != boost::gregorian::date(pos_infin)) {
-		dateFilterStatus += STRING_SPACE_CHAR + STRING_TO + 
-			STRING_SPACE_CHAR + getDisplayDay(ptime(_endDateFilter));
+		dateFilterStatus = compileEndDateFilterStatus(dateFilterStatus,
+			_endDateFilter);
 	}
 
-	filterStatus = STRING_FILTERED_BY + STRING_SPACE_CHAR + 
-		doneFilterStatus + STRING_SPACE_CHAR + STRING_FRONTSLASH_CHAR + 
-		STRING_SPACE_CHAR + typeFilterStatus + dateFilterStatus;
+	filterStatus = compileFilterStatus(doneFilterStatus,
+		typeFilterStatus, dateFilterStatus);
+
 	return filterStatus;
 }
 
@@ -328,7 +325,7 @@ string LogicData::changeMonthToMonthOfYear(int month) {
 }
 
 //Logging
-void LogicData::log(string stringToLog){
+void LogicData::log(string stringToLog) {
 	if (!isLoggingModeOn()) {
 		return;
 	}
@@ -341,14 +338,51 @@ void LogicData::log(string stringToLog){
 	return;
 }
 
-bool LogicData::isLoggingModeOn(){
+bool LogicData::isLoggingModeOn() {
 	return _loggingModeOn;
 }
 
-void LogicData::setLoggingModeOff(){
+void LogicData::setLoggingModeOff() {
 	_loggingModeOn = false;
 }
 
-void LogicData::setLoggingModeOn(){
+void LogicData::setLoggingModeOn() {
 	_loggingModeOn = true;
+}
+
+string LogicData::compileStartDateFilterStatus(string dateFilterStatus, 
+												date startDateFilter) {
+	dateFilterStatus += STRING_SPACE_CHAR + STRING_FRONTSLASH_CHAR + 
+		STRING_SPACE_CHAR + STRING_FROM + STRING_SPACE_CHAR + 
+		getDisplayDay(ptime(_startDateFilter));
+	return dateFilterStatus;
+}
+
+string LogicData::compileEndDateFilterStatus(string dateFilterStatus, 
+											 date endDateFilter) {
+	dateFilterStatus += STRING_SPACE_CHAR + STRING_TO + 
+		STRING_SPACE_CHAR + getDisplayDay(ptime(_endDateFilter));
+	return dateFilterStatus;
+}
+
+string LogicData::compileFilterStatus(string doneFilterStatus,
+			string typeFilterStatus, string dateFilterStatus) {
+	string filterStatusToReturn;
+				
+	filterStatusToReturn = STRING_FILTERED_BY + STRING_SPACE_CHAR + 
+		doneFilterStatus + STRING_SPACE_CHAR + STRING_FRONTSLASH_CHAR + 
+		STRING_SPACE_CHAR + typeFilterStatus + dateFilterStatus;
+
+	return filterStatusToReturn;
+}
+
+string LogicData::compileNewActionMessage(State filteredViewState){
+	string newActionMessageToReturn;	
+	
+	newActionMessageToReturn = filteredViewState.getActionMessage() + 
+		STRING_SPACE_CHAR + STRING_SPACE_CHAR + STRING_VERTICAL_BAR_CHAR + 
+		STRING_VERTICAL_BAR_CHAR + STRING_SPACE_CHAR + STRING_SPACE_CHAR + 
+		getFilterStatus();
+
+	return newActionMessageToReturn;
 }
