@@ -30,12 +30,19 @@
 //
 //*Note: datetimes which occupy an entire day are marked with 1 second 
 //		(000001 in HHMMSS)
+//
+//Logging is used to tracked changes within the internal workings of a Task
+//However, it can be toggled on and off by the developer on an optional basis.
+//This is because logging for a large number of Tasks may slow down the 
+//computational processes within WhatToDo. This can be easily changed by
+//setting _loggingModeOn to either true or false in the constructor.
 //****************************************************************************
 
 #ifndef TASK_H
 #define TASK_H
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <exception>
@@ -46,20 +53,33 @@ using namespace std;
 using namespace boost::posix_time;
 using namespace boost::gregorian;
 
+//Constants
 const int NUM_OF_COMP_FUNCTIONS = 8;
 const int MARKED_AS_FULL_DAY = 1;
-const string MSG_ERR_INVALID_FUNCTION_CALL = "INVALID_ARGUMENT: Function called does not exist\n";
+const int EMPTY = 0;
+const string ERR_MSG_INVALID_FUNCTION_CALL = "INVALID_ARGUMENT: Function called does not exist\n";
+const string LOG_TASK_FILE_NAME = "Task.txt";
+const string LOG_MSG_INITIATE = "Constructor called: Task()\n";
+const string LOG_MSG_COMPARE = "Function called: compare()\n";
+const string LOG_MSG_TASK_SORTED_BEFORE = "Function called: isTaskSortedBefore()\n";
+const string LOG_MSG_TASK_OVERLAP = "Function called: isTaskOverlapWith()\n";
+const string LOG_MSG_TASK_DONE = "Function called: setTaskIsDone()\n";
 
 class Task {
 	private:
+		//Attributes for Task
 		ptime _taskStartDateTime;
 		ptime _taskEndDateTime;
 		ptime _taskDeadline;
 		string _taskName;
-		string _taskDetails; //Not used for now
 		vector<string> _taskTags;
 		int _taskIndex;
 		bool _isDone;
+
+		//Attributes for Logging
+		string _logFileName;
+		bool _loggingModeOn;
+		char buffer[255];
 
 	public:
 		//Constructor
@@ -70,7 +90,6 @@ class Task {
 		void setTaskEndTime(ptime dateTimeToSet);
 		void setTaskDeadline(ptime dateTimeToSet);
 		void setTaskName(string nameToSet);
-		void setTaskDetails(string detailsToSet); // Not used for now
 		void setTaskTags(vector<string> tagsToSet);
 		void setTaskIndex(int indexToSet);
 		void setTaskIsDone(bool doneStatusToSet = true);
@@ -84,7 +103,6 @@ class Task {
 		ptime getTaskDeadline();
 		time_duration getTaskDuration();
 		string getTaskName();
-		string getTaskDetails();//Not used for now
 		vector<string> getTaskTags();
 		bool getTaskIsDone();
 		
@@ -110,6 +128,12 @@ class Task {
 		bool compareByFixedStart(Task firstTask, Task secondTask, bool *orderConfirmed);
 		bool compareByFixedTime(Task firstTask, Task secondTask, bool *orderConfirmed);
 		bool compareByFixedTimeAndStart(Task firstTask, Task secondTask, bool *orderConfirmed);
+		
+		//Logging
+		void log(string stringToLog);
+		bool isLoggingModeOn();
+		void setLoggingModeOff();
+		void setLoggingModeOn();
 
 		//Enumeration
 		enum TaskType {

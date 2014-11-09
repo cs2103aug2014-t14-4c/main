@@ -6,6 +6,8 @@ Task::Task() {
 	_taskEndDateTime = not_a_date_time;
 	_taskDeadline = not_a_date_time;
 	_isDone = false;
+	_loggingModeOn = false;
+	log(LOG_MSG_INITIATE);
 }
 
 //Setters
@@ -25,10 +27,6 @@ void Task::setTaskName(string nameToSet) {
 	_taskName = nameToSet;
 }
 
-void Task::setTaskDetails(string detailsToSet) {
-	_taskDetails = detailsToSet;
-}
-
 void Task::setTaskTags(vector<string> tagsToSet) {
 	_taskTags = tagsToSet;
 }
@@ -38,6 +36,7 @@ void Task::setTaskIndex(int indexToSet) {
 }
 
 void Task::setTaskIsDone(bool doneStatusToSet) {
+	log(LOG_MSG_TASK_DONE);
 	_isDone = doneStatusToSet; 
 }
 
@@ -105,10 +104,6 @@ string Task::getTaskName() {
 	return _taskName;
 }
 
-string Task::getTaskDetails() {
-	return _taskDetails;
-}
-
 vector<string> Task::getTaskTags() {
 	return _taskTags;
 }
@@ -155,6 +150,8 @@ bool Task::isTaskTypeFixedTime(Task myTask) {
 }
 
 bool Task::isTaskOverlapWith(Task myTask) {
+	log(LOG_MSG_TASK_OVERLAP);
+
 	bool isOverlap = false;
 	assert(myTask.getTaskType() != FLOATING && this->getTaskType() != FLOATING);
 
@@ -196,6 +193,8 @@ bool Task::isEarlierThan(Task myTask) {
 //more information on the ordering sequence) Hence should the order be determined at any point, 
 //the loop terminates from within and the boolean variable will be returned to the caller
 bool Task::isTaskSortedBefore(Task firstTask, Task secondTask) {
+	log(LOG_MSG_TASK_SORTED_BEFORE);
+
 	bool orderConfirmed = false;
 	bool isEarlier;
 	int functionToCall = COMPARE_FLOAT;
@@ -205,13 +204,15 @@ bool Task::isTaskSortedBefore(Task firstTask, Task secondTask) {
 			functionToCall++;
 		}
 		return isEarlier;
-	} catch(const invalid_argument& ia){
-		cerr << ia.what();
+	} catch(const invalid_argument& ia){;
+		log(ia.what());
 	}
 	return isEarlier;
 }
 
 bool Task::compare(Task firstTask, Task secondTask, bool *orderConfirmed, int functionToCall) {
+	log(LOG_MSG_COMPARE);
+	
 	switch(functionToCall){
 		case COMPARE_FLOAT: {
 			return compareByFloat(firstTask, secondTask, orderConfirmed);
@@ -238,7 +239,7 @@ bool Task::compare(Task firstTask, Task secondTask, bool *orderConfirmed, int fu
 			return compareByFixedTimeAndStart(firstTask, secondTask, orderConfirmed);
 		}
 		default: {
-			throw invalid_argument(MSG_ERR_INVALID_FUNCTION_CALL);
+			throw invalid_argument(ERR_MSG_INVALID_FUNCTION_CALL);
 		}
 	}
 }
@@ -444,4 +445,30 @@ bool Task::compareByFixedTimeAndStart(Task firstTask, Task secondTask, bool *ord
 		}
 	}
 	return false;
+}
+
+//Logging
+void Task::log(string stringToLog) {
+	if (!isLoggingModeOn()) {
+		return;
+	}
+
+	ofstream writeToLog;
+	writeToLog.open(_logFileName, ios::app);
+	writeToLog << stringToLog;
+	writeToLog.close();
+
+	return;
+}
+
+bool Task::isLoggingModeOn() {
+	return _loggingModeOn;
+}
+
+void Task::setLoggingModeOff() {
+	_loggingModeOn = false;
+}
+
+void Task::setLoggingModeOn() {
+	_loggingModeOn = true;
 }
