@@ -1,5 +1,24 @@
 //@author A0116278B
+//****************************************************************************
+//StorageConverter is the class that is responsible for all the aspects of 
+//the conversions when an user wants to save a State to database or load a 
+//State from database. The two main conversions involved are...
 
+//1)converting from a Task to string
+//2)converting from a string to Task
+
+//for each type of conversion, the process is further breaked down into smaller 
+//pieces or called subfunctions to apply the Single Level of Abstraction 
+//Principle. After conversion is complete, the relevant info are returned to 
+//the other StorageExecutor to either be written to database, or return a State
+//If an error occurred at any of the conversion operations, an error message
+//will be logged. 
+
+//sample usage:
+//string taskString =storageConverterObj.convertTaskToString(Task taskToConvert);
+//Task myTask = storageConverterObj.convertStringToTask(vector<string> 
+//stringToConvert);
+//****************************************************************************
 #pragma once
 
 #include <string>
@@ -16,19 +35,20 @@ const string STRING_TRUE = "1";
 const string STRING_FALSE = "0";
 const bool LOGGING_MODE_ON = true;
 
-const string LOGGING_TEMPLATE = "Function called: %s\nError Message: %s";
+//functions that thrown the messages
+const string STORAGE_LOGGING_TEMPLATE = "Function called: %s\nError Message: %s";
+const string STORAGE_FUNCTION_CONVERT_PTIME_START = "convertStringStartTimeToTask();";
+const string STORAGE_FUNCTION_CONVERT_PTIME_END = "convertStringEndTimeToTask();";
+const string STORAGE_FUNCTION_CONVERT_PTIME_DEADLINE = "convertStringDeadLineToTask();";
+const string STORAGE_FUNCTION_CONVERT_ISDONE = "ConvertStringIsDoneToTask(Task &convertedTask);";
 
-const string FUNCTION_CONVERT_PTIME_START = "convertStringStartTimeToTask();";
-const string FUNCTION_CONVERT_PTIME_END = "convertStringEndTimeToTask();";
-const string FUNCTION_CONVERT_PTIME_DEADLINE = "convertStringDeadLineToTask();";
-const string FUNCTION_CONVERT_ISDONE = "ConvertStringIsDoneToTask(Task &convertedTask);";
+//error messages
+const string STORAGE_MSG_PTIME_START_ERROR = "Start Datetime false format.\n";
+const string STORAGE_MSG_PTIME_END_ERROR = "End Datetime false format.\n";
+const string STORAGE_MSG_PTIME_DEADLINE_ERROR = "Deadline false format.\n";
+const string STORAGE_MSG_ISDONE_ERROR = "Task IsDone false format. \n";
 
-const string MSG_PTIME_START_ERROR = "Start Datetime false format.\n";
-const string MSG_PTIME_END_ERROR = "End Datetime false format.\n";
-const string MSG_PTIME_DEADLINE_ERROR = "Deadline false format.\n";
-const string MSG_ISDONE_ERROR = "Task IsDone false format. \n";
-//
-
+//for documentation and readability
 const string TITLE_TASKSTARTDATETIME = "Start Datetime: ";
 const string TITLE_TASKENDDATETIME = "End Datetime: ";
 const string TITLE_TASKDEADLINE = "Task Deadline: ";
@@ -47,7 +67,6 @@ class StorageConverter{
 		string _taskIsDone; 
 		string _logFileName;
 		char _logErrorMessage[MAX_SIZE]; 
-
 
 	public:
 

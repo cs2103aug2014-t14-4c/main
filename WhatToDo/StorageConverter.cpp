@@ -1,4 +1,5 @@
-﻿#include "StorageConverter.h"
+﻿//@auher A0116278B
+#include "StorageConverter.h"
 
 StorageConverter::StorageConverter(void){
 	_taskDatetimeString = ""; 
@@ -152,22 +153,24 @@ void StorageConverter::convertStringIsdoneToTask(Task& convertedTask){
 		if(_taskIsDone==STRING_TRUE){
 			convertedTask.setTaskIsDone();
 		}else if(_taskIsDone==STRING_FALSE){
-			
+			convertedTask.setTaskIsNotDone();
 		}else{
-			compileErrorMessage(FUNCTION_CONVERT_ISDONE,MSG_ISDONE_ERROR);
+			compileErrorMessage(STORAGE_FUNCTION_CONVERT_ISDONE,STORAGE_MSG_ISDONE_ERROR);
 			logErrorMessage(_logErrorMessage);
 			throw; 
 		} 
 		return;
 	}
 	catch(exception&){
-		compileErrorMessage(FUNCTION_CONVERT_ISDONE,MSG_ISDONE_ERROR);
+		compileErrorMessage(STORAGE_FUNCTION_CONVERT_ISDONE,STORAGE_MSG_ISDONE_ERROR);
 		logErrorMessage(_logErrorMessage);
 		throw; 
 		//log error
 	}
 }
 
+//converts a Datetime string into a ptime object
+//function throws exception if conversion is not successful
 void StorageConverter::convertStringStartDatetimeToTask(Task& convertedTask){
 
 	try{
@@ -179,14 +182,14 @@ void StorageConverter::convertStringStartDatetimeToTask(Task& convertedTask){
 		}
 	}
 	catch(exception&){
-		compileErrorMessage(FUNCTION_CONVERT_PTIME_START, MSG_PTIME_START_ERROR);
+		compileErrorMessage(STORAGE_FUNCTION_CONVERT_PTIME_START, STORAGE_MSG_PTIME_START_ERROR);
 		logErrorMessage(_logErrorMessage);
 		throw;
-		//log error
 	}
 	return; 
 }
 
+//similar to convertStringToPtime, introduced for SLAP
 void StorageConverter::convertStringEndDatetimeToTask(Task& convertedTask){
 	try{
 		if (_taskDatetimeString == NOT_A_DATETIME){
@@ -197,7 +200,7 @@ void StorageConverter::convertStringEndDatetimeToTask(Task& convertedTask){
 		}
 	}
 	catch(const out_of_range&){
-		compileErrorMessage(FUNCTION_CONVERT_PTIME_END,MSG_PTIME_END_ERROR);
+		compileErrorMessage(STORAGE_FUNCTION_CONVERT_PTIME_END,STORAGE_MSG_PTIME_END_ERROR);
 		logErrorMessage(_logErrorMessage);
 		throw;
 		//throw outofrange error message
@@ -205,6 +208,7 @@ void StorageConverter::convertStringEndDatetimeToTask(Task& convertedTask){
 	
 }
 
+//similar to convertStringToPtime, introduced for SLAP
 void StorageConverter::convertStringDeadlineToTask(Task& convertedTask){
 	try{
 		if (_taskDatetimeString == NOT_A_DATETIME){
@@ -215,7 +219,7 @@ void StorageConverter::convertStringDeadlineToTask(Task& convertedTask){
 		}
 		return;
 	} catch(...){
-		compileErrorMessage(FUNCTION_CONVERT_PTIME_DEADLINE,MSG_PTIME_DEADLINE_ERROR);
+		compileErrorMessage(STORAGE_FUNCTION_CONVERT_PTIME_DEADLINE,STORAGE_MSG_PTIME_DEADLINE_ERROR);
 		logErrorMessage(_logErrorMessage);
 		throw;
 		//log error message
@@ -223,6 +227,7 @@ void StorageConverter::convertStringDeadlineToTask(Task& convertedTask){
 	
 }
 
+//converts	 a vector<string> of tasktags to Task attribute 
 void StorageConverter::convertStringTasktagToTask(Task& convertedTask){
 
 	vector<string> taskTagVector = convertTaskTagStringToVector(_taskTags);
@@ -231,20 +236,25 @@ void StorageConverter::convertStringTasktagToTask(Task& convertedTask){
 	return; 
 }
 
+//error messages will be compiled to a standard template before 
+//it is to be written to file
+void StorageConverter::compileErrorMessage(string errorMessageLocation, string errorMessage){
+	
+	sprintf_s(_logErrorMessage, STORAGE_LOGGING_TEMPLATE.c_str(), errorMessageLocation.c_str(), errorMessage.c_str());
+
+	return;
+}
+
+//logging function to write error message to file
 void StorageConverter::logErrorMessage(string errorMessage){
 	if(LOGGING_MODE_ON == true){
 		ofstream writeToLogFile;
 		string currentTime = to_simple_string(second_clock::local_time());
 		writeToLogFile.open(LOG_FILE_NAME, ios::app);
 		writeToLogFile << currentTime << endl << errorMessage << endl;
+		writeToLogFile << endl;
 		writeToLogFile.close();
 	} 
 	return;
 }
 
-void StorageConverter::compileErrorMessage(string errorMessageLocation, string errorMessage){
-	
-	sprintf_s(_logErrorMessage, LOGGING_TEMPLATE.c_str(), errorMessageLocation.c_str(), errorMessage.c_str());
-
-	return;
-}
