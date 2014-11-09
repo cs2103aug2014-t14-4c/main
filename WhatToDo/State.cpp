@@ -3,6 +3,7 @@
 //Constructor
 State::State(){
 	maxIndex = 0;
+	_loggingModeOn = false;
 }
 
 //Setters
@@ -47,6 +48,8 @@ int State::getLastActionTaskIndex() {
 
 //Operations
 void State::addTask(Task taskToAdd, bool isUserCommand, int specifiedIndex) {
+	log(LOG_MSG_ADD_TASK);
+
 	if (specifiedIndex == UNSPECIFIED_INDEX) {
 		taskToAdd.setTaskIndex(maxIndex);
 		if (isUserCommand) {
@@ -70,6 +73,8 @@ void State::addTask(Task taskToAdd, bool isUserCommand, int specifiedIndex) {
 }
 
 void State::deleteTask(int taskIndexToDelete, bool isUserCommand) {
+	log(LOG_MSG_DELETE_TASK);
+
 	for (unsigned int index = INITIAL_INDEX; 
 		index < _entireListOfTasks.size(); index++) {
 		if (_entireListOfTasks[index].getTaskIndex() == taskIndexToDelete) {
@@ -85,6 +90,8 @@ void State::deleteTask(int taskIndexToDelete, bool isUserCommand) {
 }
 
 void State::doneTask(int taskIndexToDo, bool isUserCommand) {
+	log(LOG_MSG_DONE_TASK);
+
 	for(unsigned int index = INITIAL_INDEX; 
 		index < _entireListOfTasks.size(); index++) {
 		if(_entireListOfTasks[index].getTaskIndex() == taskIndexToDo) {
@@ -96,10 +103,13 @@ void State::doneTask(int taskIndexToDo, bool isUserCommand) {
 }
 
 void State::clearAllTasks() {
+	log(LOG_MSG_CLEAR_TASKS);
 	_entireListOfTasks.clear();
 }
 
 void State::sortAllTasks() {
+	log(LOG_MSG_SORT_TASKS);
+
 	int primaryIndex, secondaryIndex;
 	Task swapTask;
 
@@ -181,4 +191,30 @@ bool State::isDeadlineTask(Task taskToCheck) {
 
 bool State::isFloatingTask(Task taskToCheck) {
 	return taskToCheck.getTaskType() == Task::FLOATING;
+}
+
+//Logging
+void State::log(string stringToLog) {
+	if (!isLoggingModeOn()) {
+		return;
+	}
+
+	ofstream writeToLog;
+	writeToLog.open(_logFileName, ios::app);
+	writeToLog << stringToLog;
+	writeToLog.close();
+
+	return;
+}
+
+bool State::isLoggingModeOn() {
+	return _loggingModeOn;
+}
+
+void State::setLoggingModeOff() {
+	_loggingModeOn = false;
+}
+
+void State::setLoggingModeOn() {
+	_loggingModeOn = true;
 }
