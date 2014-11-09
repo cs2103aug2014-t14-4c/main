@@ -276,7 +276,6 @@ void WhatToDo::defineAllHotkeys() {
 	QAction *hotkeyUndo = new QAction(this);
 	QAction *hotkeyRedo = new QAction(this);
 	QAction *hotkeyFind = new QAction(this);
-	QAction *hotkeyTabView = new QAction(this);
 	QAction *hotkeyMinimize = new QAction(this);
 	QAction *hotkeyDelete = new QAction(this);
 	QAction *hotkeyEdit = new QAction(this);
@@ -291,7 +290,6 @@ void WhatToDo::defineAllHotkeys() {
 	hotkeyUndo->setShortcut(Qt::Key_S | Qt::CTRL | Qt::SHIFT);
 	hotkeyRedo->setShortcut(Qt::Key_D | Qt::CTRL | Qt::SHIFT);
 	hotkeyFind->setShortcut(Qt::Key_F | Qt::CTRL);
-	hotkeyTabView->setShortcut(Qt::Key_Tab | Qt::CTRL);
 	hotkeyMinimize->setShortcut(Qt::Key_Space | Qt::CTRL);
 	hotkeyDelete->setShortcut(Qt::Key_W | Qt::CTRL);
 	hotkeyEdit->setShortcut(Qt::Key_E | Qt::CTRL);
@@ -309,8 +307,6 @@ void WhatToDo::defineAllHotkeys() {
 		this, SLOT(handleButtonRedo()));
 	connect(hotkeyFind, SIGNAL(triggered()), 
 		this, SLOT(handleEntryIntoSearchBar()));
-	connect(hotkeyTabView, SIGNAL(triggered()), 
-		this, SLOT(handleToggleTab()));
 	connect(hotkeyMinimize, SIGNAL(triggered()), 
 		this, SLOT(handleHotkeyMinimize()));
 	connect(hotkeyDelete, SIGNAL(triggered()), 
@@ -333,7 +329,6 @@ void WhatToDo::defineAllHotkeys() {
 	_ui.centralWidget->addAction(hotkeyUndo);
 	_ui.centralWidget->addAction(hotkeyRedo);
 	_ui.centralWidget->addAction(hotkeyFind);
-	_ui.centralWidget->addAction(hotkeyTabView);
 	_ui.centralWidget->addAction(hotkeyMinimize);
 	_ui.centralWidget->addAction(hotkeyDelete);
 	_ui.centralWidget->addAction(hotkeyEdit);
@@ -1405,7 +1400,7 @@ string WhatToDo::createNonFloatingTaskHtml(Task taskToProcess) {
 	else if (taskToProcess.isTaskHasStartAndEnd()) {
 		taskFirstDisplayTime = taskToProcess.getTaskStartTime();
 		taskSecondDisplayTime = taskToProcess.getTaskEndTime();
-		if (taskFirstDisplayTime.date() == taskSecondDisplayTime.date()) {
+		if (taskToProcess.getTaskType() == Task::FIXED_TIME_WITHIN_DAY) {
 			partialTaskHtml = 
 				HTMLTAGS_TASK_NAMETAGS_POST_FIXED_TIMED + 
 				getDisplayTime(taskFirstDisplayTime) + 
@@ -1413,8 +1408,7 @@ string WhatToDo::createNonFloatingTaskHtml(Task taskToProcess) {
 				getDisplayTime(taskSecondDisplayTime) + 
 				HTMLTAGS_TASK_NAMETAGS_POST + taskNameTagsHtml;
 		}
-		else if ((taskFirstDisplayTime.time_of_day().seconds() == 0) 
-				&& (taskSecondDisplayTime.time_of_day().seconds() == 0)) {
+		else if (taskToProcess.getTaskType() == Task::FIXED_TIME_ACROSS_DAY) {
 			partialTaskHtml = 
 				HTMLTAGS_TASK_NAMETAGS_POST_FIXED_TIMED + 
 				getDisplayTime(taskFirstDisplayTime) + 
@@ -1422,17 +1416,14 @@ string WhatToDo::createNonFloatingTaskHtml(Task taskToProcess) {
 				getDisplayDay(taskSecondDisplayTime) + 
 				HTMLTAGS_TASK_NAMETAGS_POST + taskNameTagsHtml;
 		}
-		else if ((taskFirstDisplayTime.time_of_day().seconds() != 0) 
-				&& (taskSecondDisplayTime.time_of_day().seconds() != 0)) {
+		else if (taskToProcess.getTaskType() == Task::FIXED_DAY_TO_DAY) {
 			partialTaskHtml = 
 				HTMLTAGS_TASK_NAMETAGS_POST_FIXED_TIMED + 
-				"All Day" + 
-				HTMLTAGS_TASK_NAMETAGS_MID_FIXED_START + 
+				STRING_ALL_DAY + HTMLTAGS_TASK_NAMETAGS_MID_FIXED_START + 
 				getDisplayDayWithoutTime(taskSecondDisplayTime) + 
 				HTMLTAGS_TASK_NAMETAGS_POST + taskNameTagsHtml;
 		}
-		else if ((taskFirstDisplayTime.time_of_day().seconds() == 0) 
-				&& (taskSecondDisplayTime.time_of_day().seconds() != 0)) {
+		else if (taskToProcess.getTaskType() == Task::FIXED_TIME_TO_DAY) {
 			partialTaskHtml = 
 				HTMLTAGS_TASK_NAMETAGS_POST_FIXED_TIMED + 
 				getDisplayTime(taskFirstDisplayTime) + 
@@ -1440,12 +1431,10 @@ string WhatToDo::createNonFloatingTaskHtml(Task taskToProcess) {
 				getDisplayDayWithoutTime(taskSecondDisplayTime) + 
 				HTMLTAGS_TASK_NAMETAGS_POST + taskNameTagsHtml;
 		}
-		else if ((taskFirstDisplayTime.time_of_day().seconds() != 0) 
-				&& (taskSecondDisplayTime.time_of_day().seconds() == 0)) {
+		else if (taskToProcess.getTaskType() == Task::FIXED_DAY_TO_TIME) {
 			partialTaskHtml = 
 				HTMLTAGS_TASK_NAMETAGS_POST_FIXED_TIMED + 
-				"All Day" + 
-				HTMLTAGS_TASK_NAMETAGS_MID_FIXED_START + 
+				STRING_ALL_DAY + HTMLTAGS_TASK_NAMETAGS_MID_FIXED_START + 
 				getDisplayDay(taskSecondDisplayTime) + 
 				HTMLTAGS_TASK_NAMETAGS_POST + taskNameTagsHtml;
 		}

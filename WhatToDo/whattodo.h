@@ -191,6 +191,7 @@ const string STRING_COMMA_CHAR = ",";
 const string STRING_ZERO_CHAR = "0";
 const string STRING_AM = "am";
 const string STRING_PM = "pm";
+const string STRING_ALL_DAY = "All Day";
 
 class WhatToDo : public QMainWindow
 {
