@@ -6,6 +6,8 @@ Task::Task() {
 	_taskEndDateTime = not_a_date_time;
 	_taskDeadline = not_a_date_time;
 	_isDone = false;
+	_loggingModeOn = true;
+	log(LOG_MSG_INITIATE);
 }
 
 //Setters
@@ -38,6 +40,7 @@ void Task::setTaskIndex(int indexToSet) {
 }
 
 void Task::setTaskIsDone(bool doneStatusToSet) {
+	log(LOG_MSG_TASK_DONE);
 	_isDone = doneStatusToSet; 
 }
 
@@ -47,36 +50,42 @@ void Task::setTaskIsNotDone() {
 
 //Getters
 int Task::getTaskType() {
-	if ((!hasStartDateTime()) && (!hasDeadline())) {
-		return FLOATING;
-	} else if (hasDeadline()) {
-		if (isFullDay(_taskDeadline)) {
-			return DEADLINE_ALLDAY;
-		} else {
-			return DEADLINE_TIME;
-		}
-	} else if (hasStartDateTime()) {
-		if (hasEndDateTime()) {
-			if(isStartDateEqualEndDate()) {
-				return FIXED_TIME_WITHIN_DAY;
-			} else if (isFullDay(_taskStartDateTime)) {
-				if(isFullDay(_taskEndDateTime)) {
-					return FIXED_DAY_TO_DAY;
-				} else {
-					return FIXED_DAY_TO_TIME;
-				}
-			} else if(isFullDay(_taskEndDateTime)) {
-				return FIXED_TIME_TO_DAY;
+	try {
+		if ((!hasStartDateTime()) && (!hasDeadline())) {
+			return FLOATING;
+		} else if (hasDeadline()) {
+			if (isFullDay(_taskDeadline)) {
+				return DEADLINE_ALLDAY;
 			} else {
-				return FIXED_TIME_ACROSS_DAY;
+				return DEADLINE_TIME;
 			}
-		} else if (isFullDay(_taskStartDateTime)) {
-			return FIXED_ALLDAY;
+		} else if (hasStartDateTime()) {
+			if (hasEndDateTime()) {
+				if(isStartDateEqualEndDate()) {
+					return FIXED_TIME_WITHIN_DAY;
+				} else if (isFullDay(_taskStartDateTime)) {
+					if(isFullDay(_taskEndDateTime)) {
+						return FIXED_DAY_TO_DAY;
+					} else {
+						return FIXED_DAY_TO_TIME;
+					}
+				} else if(isFullDay(_taskEndDateTime)) {
+					return FIXED_TIME_TO_DAY;
+				} else {
+					return FIXED_TIME_ACROSS_DAY;
+				}
+			} else if (isFullDay(_taskStartDateTime)) {
+				return FIXED_ALLDAY;
+			} else {
+				return FIXED_START;
+			}
 		} else {
-			return FIXED_START;
+			throw invalid_argument(ERR_MSG_INVALID_TASK_TYPE);
 		}
+	} catch (const invalid_argument& ia) {
+		log(ia.what());
+		return NOT_A_TASK_TYPE;
 	}
-	return NOT_A_TASK_TYPE;
 }
 
 int Task::getTaskIndex() {
@@ -154,7 +163,13 @@ bool Task::isTaskTypeFixedTime(Task myTask) {
 		myTaskType == FIXED_TIME_TO_DAY;
 }
 
+bool Task::isTaskHasStartAndEnd() {
+	return ((this->getTaskType() == FIXED_DAY_TO_DAY) || (this->getTaskType() == FIXED_TIME_WITHIN_DAY) || (this->getTaskType() == FIXED_TIME_ACROSS_DAY) || (this->getTaskType() == FIXED_DAY_TO_TIME) || (this->getTaskType() == FIXED_TIME_TO_DAY));
+}
+
 bool Task::isTaskOverlapWith(Task myTask) {
+	log(LOG_MSG_TASK_OVERLAP);
+
 	bool isOverlap = false;
 	assert(myTask.getTaskType() != FLOATING && this->getTaskType() != FLOATING);
 
@@ -196,6 +211,8 @@ bool Task::isEarlierThan(Task myTask) {
 //more information on the ordering sequence) Hence should the order be determined at any point, 
 //the loop terminates from within and the boolean variable will be returned to the caller
 bool Task::isTaskSortedBefore(Task firstTask, Task secondTask) {
+	log(LOG_MSG_TASK_SORTED_BEFORE);
+
 	bool orderConfirmed = false;
 	bool isEarlier;
 	int functionToCall = COMPARE_FLOAT;
@@ -212,6 +229,8 @@ bool Task::isTaskSortedBefore(Task firstTask, Task secondTask) {
 }
 
 bool Task::compare(Task firstTask, Task secondTask, bool *orderConfirmed, int functionToCall) {
+	log(LOG_MSG_COMPARE);	
+	
 	switch(functionToCall){
 		case COMPARE_FLOAT: {
 			return compareByFloat(firstTask, secondTask, orderConfirmed);
@@ -446,6 +465,14 @@ bool Task::compareByFixedTimeAndStart(Task firstTask, Task secondTask, bool *ord
 	return false;
 }
 
-bool Task::isTaskHasStartAndEnd() {
-	return ((this->getTaskType() == FIXED_DAY_TO_DAY) || (this->getTaskType() == FIXED_TIME_WITHIN_DAY) || (this->getTaskType() == FIXED_TIME_ACROSS_DAY) || (this->getTaskType() == FIXED_DAY_TO_TIME) || (this->getTaskType() == FIXED_TIME_TO_DAY));
+bool Task::isLoggingModeOn() {
+	return _loggingModeOn;
+}
+
+void Task::setLoggingModeOff() {
+	_loggingModeOn = false;
+}
+
+void Task::setLoggingModeOn() {
+	_loggingModeOn = true;
 }
