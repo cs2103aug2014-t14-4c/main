@@ -1,6 +1,5 @@
-//****************************************************************************
 //@author A0110873L
-//
+//****************************************************************************
 //LogicData is responsible for holding the current State, view State and
 //initial State. It also keeps track of the commands that are executed from 
 //the time that WhatToDo is executed. This allows for easy redoing and undoing
@@ -60,9 +59,9 @@ class LogicData {
 		static date _endDateFilter;
 
 		//Attributes for Logging
-		static string _logFileName;
+		/*static string _logFileName;
 		static bool _loggingModeOn;
-		static char buffer[255];
+		static char buffer[255];*/
 
 	public:
 		//Constructor
@@ -106,12 +105,15 @@ class LogicData {
 		static string compileFilterStatus(string doneFilterStatus,
 			string typeFilterStatus, string dateFilterStatus);
 		static string compileNewActionMessage(State filteredViewState);
+		static bool doesDeadlinePassDateFilter(Task task);
+		static bool doesStartDatePassDateFilter(Task task);
+		static bool doesEndDatePassDateFilter(Task task);
 
 		//Logging
-		static void log(string stringToLog);
+		/*static void log(string stringToLog);
 		static bool isLoggingModeOn();
 		static void setLoggingModeOff();
-		static void setLoggingModeOn();
+		static void setLoggingModeOn();*/
 
 		//Constants
 		static const int INITIAL_COMMAND_HISTORY_INDEX;

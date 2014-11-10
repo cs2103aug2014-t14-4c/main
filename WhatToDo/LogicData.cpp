@@ -1,3 +1,4 @@
+@author A0110873L
 #include "LogicData.h"
 
 State LogicData::_currentState;
@@ -61,8 +62,8 @@ LogicData::LogicData() {
 	_typeFilter = Type::ALL_TYPES;
 	_startDateFilter = boost::gregorian::date(neg_infin);
 	_endDateFilter = boost::gregorian::date(pos_infin);
-	_logFileName = LOG_LOGIC_DATA_FILE_NAME;
-	_loggingModeOn = false;
+	/*_logFileName = LOG_LOGIC_DATA_FILE_NAME;
+	_loggingModeOn = false;*/
 }
 
 //Setters
@@ -70,28 +71,28 @@ void LogicData::setCurrentState(State stateToSet) {
 	_currentState = stateToSet;
 	StorageExecutor myStorageExecutor;
 	myStorageExecutor.saveToStorage(_currentState);
-	log(LOG_MSG_CURRENT_STATE_SET);
+	/*log(LOG_MSG_CURRENT_STATE_SET);*/
 }
 
 void LogicData::setViewState(State stateToSet) {
 	_viewState = stateToSet;
-	log(LOG_MSG_VIEW_STATE_SET);
+	/*log(LOG_MSG_VIEW_STATE_SET);*/
 }
 
 void LogicData::setDoneFilter(int doneFilter) {
 	_doneFilter = doneFilter;
-	log(LOG_MSG_DONE_FILTER_SET);
+	/*log(LOG_MSG_DONE_FILTER_SET);*/
 }
 
 void LogicData::setTypeFilter(int typeFilter) {
 	_typeFilter = typeFilter;
-	log(LOG_MSG_TYPE_FILTER_SET);
+	//log(LOG_MSG_TYPE_FILTER_SET);
 }
 
 void LogicData::setDateFilter(date startDateFilter, date endDateFilter) {
 	_startDateFilter = startDateFilter;
 	_endDateFilter = endDateFilter;
-	log(LOG_MSG_DATE_FILTER_SET);
+	//log(LOG_MSG_DATE_FILTER_SET);
 }
 
 void LogicData::setCommandHistoryIndex(int indexToSet) {
@@ -134,21 +135,21 @@ date LogicData::getEndDateFilter() {
 //Operations
 void LogicData::resetCommandHistory() {
 	_commandHistory.clear();
-	log(LOG_MSG_COMMAND_HISTORY_RESET);
+	//log(LOG_MSG_COMMAND_HISTORY_RESET);
 	return;
 }
 
 void LogicData::addCommandToHistory(Command* commandToAdd) {
 	_commandHistory.push_back(commandToAdd);
 	_currentCommandHistoryIndex++;
-	log(LOG_MSG_COMMAND_HISTORY_ADDED);
+	//log(LOG_MSG_COMMAND_HISTORY_ADDED);
 }
 
 void LogicData::resetToInitialSettings() {
 	_currentState = _initialState;
 	_viewState = _initialState;
 	_commandHistory.clear();
-	log(LOG_MSG_RESET);
+	//log(LOG_MSG_RESET);
 }
 
 void LogicData::loadInitialSettings() {
@@ -158,7 +159,7 @@ void LogicData::loadInitialSettings() {
 	_initialState = initialState;
 	_currentState = initialState;
 	_viewState = initialState;
-	log(LOG_MSG_LOAD);
+	//log(LOG_MSG_LOAD);
 }
 
 void LogicData::fakeinitiate(State fakestate) {
@@ -179,9 +180,9 @@ State LogicData::filterTasks() {
 			}
 		}
 	} catch (const invalid_argument& ia) {
-		if(!isLoggingModeOn())
-			setLoggingModeOn();
-	    log(ia.what());
+		//if(!isLoggingModeOn())
+		//	setLoggingModeOn();
+	    cerr << ia.what();
 	}
 	filteredViewState.setAllTasks(filteredTasks);
 	string newActionMessage = compileNewActionMessage(filteredViewState);
@@ -224,19 +225,15 @@ bool LogicData::passTypeFilter(Task task) {
 }
 
 bool LogicData::passDateFilter(Task task) {
-	if(!task.hasStartDateTime() && !task.hasDeadline()) {
+	if(task.getTaskType() == Task::FLOATING) {
 		return true;
 	} else if(task.hasDeadline()) {
-		return ((task.getTaskDeadline().date() >= _startDateFilter) && 
-			(task.getTaskDeadline().date() <= _endDateFilter));
+		return doesDeadlinePassDateFilter(task);
 	} else if(task.hasStartDateTime() && task.hasEndDateTime()) {
-		return ((task.getTaskStartTime().date() >= _startDateFilter) && 
-			(task.getTaskStartTime().date() <= _endDateFilter) && 
-			(task.getTaskEndTime().date() <= _endDateFilter) && 
-			(task.getTaskStartTime().date() >= _startDateFilter));
+		return doesStartDatePassDateFilter(task) && 
+			doesEndDatePassDateFilter(task);
 	} else if(task.hasStartDateTime() && !task.hasEndDateTime()) {
-		return ((task.getTaskStartTime().date() >= _startDateFilter) && 
-			(task.getTaskStartTime().date() <= _endDateFilter));
+		return doesStartDatePassDateFilter(task);
 	}
 	return false;
 }
@@ -248,27 +245,33 @@ string LogicData::getFilterStatus() {
 	string dateFilterStatus;
 	
 	switch(_doneFilter) {
-		case(Status::DONE_BOTH) :
+		case(Status::DONE_BOTH) : {
 			doneFilterStatus = STRING_NO_DONE;
 			break;
-		case(Status::ONLY_DONE) :
+		}
+		case(Status::ONLY_DONE) : {
 			doneFilterStatus = STRING_DONE;
 			break;
-		case(Status::ONLY_UNDONE) :
+		}
+		case(Status::ONLY_UNDONE) : {
 			doneFilterStatus = STRING_UNDONE;
 			break;
+		}
 	}
 
 	switch(_typeFilter) {
-		case(Type::ALL_TYPES) :
+		case(Type::ALL_TYPES) : {
 			typeFilterStatus = STRING_ALL_TYPES;
 			break;
-		case(Type::ONLY_FIXED) :
+		}
+		case(Type::ONLY_FIXED) : {
 			typeFilterStatus = STRING_ONLY_FIXED;
 			break;
-		case(Type::ONLY_DUE) :
+		}
+		case(Type::ONLY_DUE) : {
 			typeFilterStatus = STRING_ONLY_DUE;
 			break;
+		}
 	}
 
 	if (_startDateFilter != boost::gregorian::date(neg_infin)) {
@@ -324,31 +327,46 @@ string LogicData::changeMonthToMonthOfYear(int month) {
 	return STRING_EMPTY;
 }
 
+bool LogicData::doesDeadlinePassDateFilter(Task task) {
+	return task.getTaskDeadline().date() >= _startDateFilter && 
+			task.getTaskDeadline().date() <= _endDateFilter;
+}
+
+bool LogicData::doesStartDatePassDateFilter(Task task) {
+    return task.getTaskStartTime().date() >= _startDateFilter && 
+			task.getTaskStartTime().date() <= _endDateFilter;
+}
+
+bool LogicData::doesEndDatePassDateFilter(Task task) {
+	return (task.getTaskEndTime().date() <= _endDateFilter) && 
+			(task.getTaskEndTime().date() >= _startDateFilter);
+}
+
 //Logging
-void LogicData::log(string stringToLog) {
-	if (!isLoggingModeOn()) {
-		return;
-	}
-
-	ofstream writeToLog;
-	writeToLog.open(_logFileName, ios::app);
-	writeToLog << stringToLog;
-	writeToLog.close();
-
-	return;
-}
-
-bool LogicData::isLoggingModeOn() {
-	return _loggingModeOn;
-}
-
-void LogicData::setLoggingModeOff() {
-	_loggingModeOn = false;
-}
-
-void LogicData::setLoggingModeOn() {
-	_loggingModeOn = true;
-}
+//void LogicData::log(string stringToLog) {
+//	if (!isLoggingModeOn()) {
+//		return;
+//	}
+//
+//	ofstream writeToLog;
+//	writeToLog.open(_logFileName, ios::app);
+//	writeToLog << stringToLog;
+//	writeToLog.close();
+//
+//	return;
+//}
+//
+//bool LogicData::isLoggingModeOn() {
+//	return _loggingModeOn;
+//}
+//
+//void LogicData::setLoggingModeOff() {
+//	_loggingModeOn = false;
+//}
+//
+//void LogicData::setLoggingModeOn() {
+//	_loggingModeOn = true;
+//}
 
 string LogicData::compileStartDateFilterStatus(string dateFilterStatus, 
 												date startDateFilter) {
