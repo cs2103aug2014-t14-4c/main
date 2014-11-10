@@ -1,6 +1,5 @@
-//****************************************************************************
 //@author A0110873L
-//
+//****************************************************************************
 //Task is the most fundamental component within WhatToDo and is responsible 
 //for storing important details of a task such as its start time, end time, 
 //deadline, name, tags and status (done or not done). In additional, a Task 
