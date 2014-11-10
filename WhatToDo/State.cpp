@@ -131,7 +131,13 @@ vector<Task> State::getTimedTasks() {
 
 	for (unsigned int index = INITIAL_INDEX; 
 		index < _entireListOfTasks.size(); index++) {
-			if (isTimedTask(_entireListOfTasks[index])) {
+		if (((_entireListOfTasks[index]).getTaskType() == Task::FIXED_ALLDAY) || 
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_START) || 
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_TIME_WITHIN_DAY) ||
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_TIME_ACROSS_DAY) ||
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_TIME_TO_DAY) ||
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_DAY_TO_TIME) ||
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_DAY_TO_DAY)) {
 			timedTasks.push_back(_entireListOfTasks[index]);
 		}
 	}
@@ -144,7 +150,8 @@ vector<Task> State::getDeadlineTasks() {
 
 	for (unsigned int index = INITIAL_INDEX; 
 		index < _entireListOfTasks.size(); index++) {
-			if (isDeadlineTask(_entireListOfTasks[index])) {
+		if (((_entireListOfTasks[index]).getTaskType() == Task::DEADLINE_TIME) || 
+			((_entireListOfTasks[index]).getTaskType() == Task::DEADLINE_ALLDAY)) {
 			deadlineTasks.push_back(_entireListOfTasks[index]);
 		}
 	}
@@ -157,28 +164,10 @@ vector<Task> State::getFloatingTasks() {
 
 	for (unsigned int index = INITIAL_INDEX; 
 		index < _entireListOfTasks.size(); index++) {
-			if (isFloatingTask(_entireListOfTasks[index])) {
+		if ((_entireListOfTasks[index]).getTaskType() == Task::FLOATING){
 			floatingTasks.push_back(_entireListOfTasks[index]);
 		}
 	}
 	return floatingTasks;
 }
 
-bool State::isTimedTask(Task taskToCheck) {
-	return (taskToCheck.getTaskType() == Task::FIXED_ALLDAY) || 
-			(taskToCheck.getTaskType() == Task::FIXED_START) || 
-			(taskToCheck.getTaskType() == Task::FIXED_TIME_WITHIN_DAY) ||
-			(taskToCheck.getTaskType() == Task::FIXED_TIME_ACROSS_DAY) ||
-			(taskToCheck.getTaskType() == Task::FIXED_TIME_TO_DAY) ||
-			(taskToCheck.getTaskType() == Task::FIXED_DAY_TO_TIME) ||
-			(taskToCheck.getTaskType() == Task::FIXED_DAY_TO_DAY);
-}
-
-bool State::isDeadlineTask(Task taskToCheck) {
-	return taskToCheck.getTaskType() == Task::DEADLINE_TIME || 
-			taskToCheck.getTaskType() == Task::DEADLINE_ALLDAY;
-}
-
-bool State::isFloatingTask(Task taskToCheck) {
-	return taskToCheck.getTaskType() == Task::FLOATING;
-}

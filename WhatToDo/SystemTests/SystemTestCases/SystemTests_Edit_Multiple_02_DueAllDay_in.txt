@@ -1,0 +1,6 @@
+do homework by 10 Dec
+do tutorial by 20 Dec
+play dota by 21 Dec
+play cs by 22 Dec
+/edit 0 do more homework by 10 Dec
+/edit 3 play more cs by 22 Dec

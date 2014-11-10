@@ -71,12 +71,9 @@ class State {
 		vector<Task> getTimedTasks();
 		vector<Task> getDeadlineTasks();
 		vector<Task> getFloatingTasks();
-		bool isTimedTask(Task taskToCheck);
-		bool isDeadlineTask(Task taskToCheck);
-		bool isFloatingTask(Task taskToCheck);
 
 		//Enumeration
-		enum actionType { NONE = 1, CHANGED, DELETED };
+		enum actionType { NONE = 0, CHANGED, DELETED };
 };
 
 #endif

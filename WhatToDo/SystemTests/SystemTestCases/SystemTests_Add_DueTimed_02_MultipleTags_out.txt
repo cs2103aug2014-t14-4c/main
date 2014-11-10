@@ -1,0 +1,40 @@
+play piano
+not-a-date-time
+not-a-date-time
+20131230T080000
+3
+#piano
+#relax
+#hobbies
+0
+
+do homework
+not-a-date-time
+not-a-date-time
+20141211T140000
+2
+#CS2103
+#homework
+0
+
+write english essay
+not-a-date-time
+not-a-date-time
+20141212T160000
+2
+#homework
+#tutorial
+0
+
+Finish CS2103 Homework
+not-a-date-time
+not-a-date-time
+20141213T180000
+1
+#CS2103
+0
+
+Task Added!  ||  Filtered by: all types / undone
+
+2
+3

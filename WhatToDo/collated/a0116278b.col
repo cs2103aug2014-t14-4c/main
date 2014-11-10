@@ -1,0 +1,416 @@
+//@author: a0116278b
+
+
+
+	/**
+	 * origin: ./\StorageConverter.h
+	 */
+
+//****************************************************************************
+//StorageConverter is the class that is responsible for all the aspects of 
+//the conversions when an user wants to save a State to database or load a 
+//State from database. The two main conversions involved are...
+
+//1)converting from a Task to string
+//2)converting from a string to Task
+
+//for each type of conversion, the process is further breaked down into smaller 
+//pieces or called subfunctions to apply the Single Level of Abstraction 
+//Principle. After conversion is complete, the relevant info are returned to 
+//the other StorageExecutor to either be written to database, or return a State
+//If an error occurred at any of the conversion operations, an error message
+//will be logged. 
+
+//sample usage:
+//string taskString =storageConverterObj.convertTaskToString(Task taskToConvert);
+//Task myTask = storageConverterObj.convertStringToTask(vector<string> 
+//stringToConvert);
+//****************************************************************************
+#pragma once
+
+#include <string>
+#include <vector>
+#include <sstream>
+#include "Task.h"
+#include <exception>
+#include <fstream>
+
+using namespace std;
+const int MAX_SIZE = 255;
+const string LOG_FILE_NAME = "storageLog.txt";
+const string STRING_TRUE = "1";
+const string STRING_FALSE = "0";
+const bool LOGGING_MODE_ON = true;
+
+//functions that thrown the messages
+const string STORAGE_LOGGING_TEMPLATE = "Function called: %s\nError Message: %s";
+const string STORAGE_FUNCTION_CONVERT_PTIME_START = "convertStringStartTimeToTask();";
+const string STORAGE_FUNCTION_CONVERT_PTIME_END = "convertStringEndTimeToTask();";
+const string STORAGE_FUNCTION_CONVERT_PTIME_DEADLINE = "convertStringDeadLineToTask();";
+const string STORAGE_FUNCTION_CONVERT_ISDONE = "ConvertStringIsDoneToTask(Task &convertedTask);";
+
+//error messages
+const string STORAGE_MSG_PTIME_START_ERROR = "Start Datetime false format.\n";
+const string STORAGE_MSG_PTIME_END_ERROR = "End Datetime false format.\n";
+const string STORAGE_MSG_PTIME_DEADLINE_ERROR = "Deadline false format.\n";
+const string STORAGE_MSG_ISDONE_ERROR = "Task IsDone false format. \n";
+
+//for documentation and readability
+const string TITLE_TASKSTARTDATETIME = "Start Datetime: ";
+const string TITLE_TASKENDDATETIME = "End Datetime: ";
+const string TITLE_TASKDEADLINE = "Task Deadline: ";
+const string TITLE_TASKNAME = "Task Name: ";
+const string TITLE_TASKTAGS = "Task Tags: ";
+const string TITLE_TASKISDONE = "Task isDone Status: ";
+const string NOT_A_DATETIME = "not-a-date-time"; 
+
+class StorageConverter{
+	private:
+		//attributes for StorageConverter
+		vector<string> _taskStringAttributes;
+		string _taskDatetimeString; 
+		string _taskName;
+		string _taskTags;
+		string _taskIsDone; 
+		string _logFileName;
+		char _logErrorMessage[MAX_SIZE]; 
+
+	public:
+
+		StorageConverter(void);
+
+		//primary conversion functions
+		vector<string> convertTaskToString(Task taskToConvert);
+		Task convertStringToTask(vector<string> stringToConvert);
+
+		//subfunctions for conversion from task to string
+		string convertTaskPtimeToString(ptime myDatetime);
+		string convertTaskPtimeDurationToString(time_duration myDuration);
+		string convertTaskBoolToString(bool boolToConvert);
+		string convertTaskTagVectorToString(vector<string> taskTags);
+		string convertTaskNameToString(Task taskToConvert);
+		
+		//subfunctions for conversion from string to task
+		void convertStringIsdoneToTask(Task& convertedTask);
+		void convertStringStartDatetimeToTask(Task& convertedTask);
+		void convertStringEndDatetimeToTask(Task& convertedTask);
+		void convertStringDeadlineToTask(Task& convertedTask);
+		void convertStringTasktagToTask(Task& convertedTask);
+		vector<string> convertTaskTagStringToVector(string tagString);
+
+		//logging function
+		void logErrorMessage(string logString);
+		void compileErrorMessage(string errorMessageLocation, 
+								 string errorMessage);
+}; 
+
+
+	// End of segment: ./\StorageConverter.h
+
+
+
+
+
+	/**
+	 * origin: ./\StorageDatabase.h
+	 */
+
+//****************************************************************************
+//StorageDatabase is the class responsible for reading and writing of file
+//to Database. Files will be saved as .txt file format in local database 
+//such that the user can directly edit the .txt file even before openning the
+//programme. 
+
+//StorageDatabase comprises of 2 main functions which are
+//1)read from database 
+//2)write to database 
+//StorageDatabase also writes a copy of the schedule to a backup database
+//in the event that the user accidentally deleted the database or corrupted
+//the file that deem it unreadable. The user would however, be refrained from
+//editting the backup copy.
+
+//sample usage:
+//storageDatabaseObj.writeToDatabase();
+//vector<vector<string>> databaseString = StorageDatabaseObj.readFromDatabase();
+//****************************************************************************
+
+#include <vector>
+#include <string>
+#include <assert.h>
+
+#pragma once
+using namespace std;
+
+const string INITIAL_VALUE_FILE_NAME = "Database.txt";
+const string INITIAL_VALUE_BACK_UP_FILE_NAME ="Qt5Test.dll";
+const int START=0;
+const int NO_OF_ATTRIBUTES = 6;
+
+class StorageDatabase{
+	private:
+		string _fileName;
+		string _backUpFileName;
+		vector<vector<string>> _stringToRead; 
+		vector<string> _individualReadFile;
+	
+	public:
+		StorageDatabase();
+		
+		//primary functions
+		vector<vector<string>> readFromDatabase();
+		vector<vector<string>> readFromBackUpDatabase();
+		void writeToDatabase(vector<vector<string>> taskStringVectorToWrite);
+		
+		//secondary supporting functions
+		void setFileName(string nameToSet); 
+		string getFileName(); 
+		vector<string> readFromDataBaseIndividualTaskString();
+		void writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, 
+										  ofstream& writeFile, 
+										  vector<vector<string>> taskStringToWrite);
+		void readIndividualFileFromDatabase(ifstream& readFile, string myText);
+		
+		
+};
+
+
+
+
+	// End of segment: ./\StorageDatabase.h
+
+
+
+
+
+	/**
+	 * origin: ./\StorageExecutor.cpp
+	 */
+
+#include "StorageExecutor.h"
+
+using namespace std; 
+
+StorageExecutor::StorageExecutor(void){
+	_logFileName == LOG_FILE_NAME; 
+}
+
+//loadFromStorage reads file, converts string into task
+//packs tasks into a State and return as a state
+State StorageExecutor::loadFromStorage(){
+
+	readFileAndConvertString();
+	vector<Task>::iterator taskIterator = _convertedTaskVector.begin();
+	_stateToLoad = processTaskAddition(taskIterator);
+	
+	return _stateToLoad;
+}
+
+//saveToStorage first gets all tasks from state
+//convert tasks to vector<string>
+//write the string to database 
+void StorageExecutor::saveToStorage(State stateToSave){
+	
+	//ensures that State does not return a NULL pointer
+	assert(&stateToSave!=NULL);
+	_taskToStore = stateToSave.getAllTasks(); 
+
+	vector<Task>::iterator myTaskIterator = _taskToStore.begin();
+	convertAllTaskToString(myTaskIterator);
+	_storageDatabaseObj.writeToDatabase(_convertedStringStorage);
+	
+	return;
+}
+
+//conversion from vector<string> to Task
+//exception handling when conversion isn't successful
+void StorageExecutor::processVectorStringToTaskConversion(vector<vector<string>>::
+	iterator vIterator){
+	//convert string to task
+	try{
+		while(vIterator!=_storageToConvert.end()){
+			_individualTask = _storageConverterObj.convertStringToTask(*vIterator);
+			_convertedTaskVector.push_back(_individualTask);
+			vIterator++;
+		}
+		return;
+	} catch(exception&){
+		compileErrorMessage(FUNCTION_VECTOR_STRING_TO_TASK_CONVERSION,
+					        STORAGE_MSG_CONVERSION_ERROR);
+		logErrorMessage(_logErrorMessage); 
+		throw;
+	}
+}
+
+//adds converted Tasks into a State 
+//returns the State after all Tasks are added
+State StorageExecutor::processTaskAddition(vector<Task>::iterator taskIterator){
+
+	while(taskIterator!= _convertedTaskVector.end()){
+		_stateToLoad.addTask(*taskIterator); 
+		taskIterator++; 
+	}
+	return _stateToLoad;
+}
+
+//converts Tasks to strings
+//store the converted string into a vector of strings
+void StorageExecutor::convertAllTaskToString(vector<Task>::iterator taskIterator){
+
+	_convertedStringStorage.clear();
+	while(taskIterator!=_taskToStore.end()){
+		_individualConvertedTask = _storageConverterObj.
+			convertTaskToString(*taskIterator);	
+		_convertedStringStorage.push_back(_individualConvertedTask);
+		taskIterator++;
+	}
+	return;
+}
+
+//read from database
+//convert each string into task using storageConverter
+//if any exceptions were caught during the conversion process
+//errors could be from any of the sub-conversion functions
+//conversions have failed and State will be loaded from backup 
+//file
+void StorageExecutor::readFileAndConvertString(){
+	try{
+		_storageToConvert = _storageDatabaseObj.readFromDatabase();
+		vector<vector<string>>::iterator myStorageIterator = _storageToConvert.begin();
+		processVectorStringToTaskConversion(myStorageIterator);
+	} catch(exception&){
+		compileErrorMessage(STORAGE_FUNCTION_LOAD_FROM_STORAGE,STORAGE_MSG_DATABASE_ERROR);
+		logErrorMessage(_logErrorMessage);
+		_storageToConvert.clear();
+		logErrorMessage(STORAGE_MSG_LOAD_FROM_BACKUP); 
+		_storageToConvert = _storageDatabaseObj.readFromBackUpDatabase();
+		vector<vector<string>>::iterator myStorageIterator = _storageToConvert.begin();
+		processVectorStringToTaskConversion(myStorageIterator);
+	}
+}
+
+//error messages will be compiled to a standard template before 
+//it is to be written to file
+void StorageExecutor::compileErrorMessage(string errorMessageLocation, 
+										  string errorMessage){
+	
+	sprintf_s(_logErrorMessage, STORAGE_LOGGING_TEMPLATE.c_str(), 
+			  errorMessageLocation.c_str(), errorMessage.c_str());
+
+	return;
+}
+
+
+
+//logging function to write error message to file
+void StorageExecutor::logErrorMessage(string errorMessage){
+	if(LOGGING_MODE_ON == true){
+		ofstream writeToLogFile;
+		string currentTime = to_simple_string(second_clock::local_time());
+		writeToLogFile.open(LOG_FILE_NAME, ios::app);
+		writeToLogFile << currentTime << endl << errorMessage << endl;
+		writeToLogFile.close();
+	} 
+
+	return;
+}
+
+
+	// End of segment: ./\StorageExecutor.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\StorageExecutor.h
+	 */
+
+//****************************************************************************
+//StorageExecutor is the class that depends on both StorageConverter as well 
+//as StorageDatabase in order to execute its functions. 
+//StorageExecutor acts as the Central Nerves System for the storage component
+//what it does is handling and managing the different Tasks. Its two main 
+//functions are 
+
+//1) Saving a current State to storage
+//2) Loading a saved .txt file and return a State
+
+//Errors will also be logged if any of the component is not working as supposed
+
+//sample usage:
+//State stateToLoad = storageExecutorObj.loadFromStorage();
+//storageExecutorObj.saveToStorage(); 
+//****************************************************************************
+
+#pragma once
+
+#include "State.h"
+#include "StorageConverter.h"
+#include "StorageDatabase.h"
+#include <string>
+#include <vector>
+
+using namespace std;
+
+//error messages and error locations
+const string FUNCTION_VECTOR_STRING_TO_TASK_CONVERSION = 
+	"processVectorStringToTaskConversion(vector<vector<string>>::"
+	"iterator vIterator)";
+const string STORAGE_FUNCTION_LOAD_FROM_STORAGE = 
+	"loadFromStorage();";
+const string STORATE_FUNCTION_LOAD_FROM_BACKUP = 
+	"raedFromBackUpDatabase();";
+
+const string STORAGE_MSG_CONVERSION_ERROR = 
+	"Conversion was unsuccessful!\n";
+const string STORAGE_MSG_DATABASE_ERROR = 
+	"Database file corrupted, reading from backup!\n";
+const string STORAGE_MSG_BACKUP_ERROR = 
+	"Backup file corrupted, creating a new copy!\n";
+const string STORAGE_MSG_LOAD_FROM_BACKUP = 
+	"Loading from Backup database...";
+
+
+class StorageExecutor{
+	private:
+		string _logFileName; 
+		char _logErrorMessage[MAX_SIZE]; 
+
+		//obj requirements.
+		StorageDatabase _storageDatabaseObj;
+		StorageConverter _storageConverterObj; 
+
+		State _stateToLoad; 
+		Task _individualTask; 
+
+		vector<vector<string>> _storageToConvert; 
+		vector<vector<string>> _convertedStringStorage; 
+		vector<string> _individualConvertedTask;
+		vector<Task> _convertedTaskVector;
+		vector<Task> _taskToStore;
+	public:
+		StorageExecutor(void);
+		
+		//primary functions
+		State loadFromStorage();
+		void saveToStorage(State stateToSave);
+		
+		//supporting functions
+		State processTaskAddition(vector<Task>::iterator taskIterator);
+		void readFileAndConvertString();
+		void processVectorStringToTaskConversion(vector<vector<string>>::
+												 iterator vectorStringIterator);
+		void convertAllTaskToString(vector<Task>::iterator taskIterator);
+		void logErrorMessage(string errorMessage);
+		void compileErrorMessage(string errorMessageLocation, 
+								 string errorMessage);
+};
+
+
+
+	// End of segment: ./\StorageExecutor.h
+
+
+
+
+

@@ -1,0 +1,6 @@
+do homework on 10 Dec
+do tutorial on 20 Dec
+do tutorial 2 on 21 Dec
+do tutorial 3 on 23 Dec
+/edit 1 do my tutorial on 20 Dec
+/edit 0 do my homework on 10 Dec

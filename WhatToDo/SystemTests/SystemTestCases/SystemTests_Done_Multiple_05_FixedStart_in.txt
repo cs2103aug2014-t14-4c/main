@@ -1,0 +1,7 @@
+/filter nodone
+do homework from 10 Dec to 11 Dec
+do tutorial from 12 Dec to 13 Dec
+do tutorial two from 12 Dec to 13 Dec
+do tutorial three from 14 Dec to 17 Dec
+/done 2
+/done 3

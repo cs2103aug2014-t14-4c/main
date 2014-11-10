@@ -1,0 +1,11 @@
+task one #homework
+task two #homework
+task three
+task four #tutorial
+breakfast eggs by 10 Dec #homework #tutorial
+breakfast bacon by 10 Dec 2pm
+lunch chicken on 11 Dec #homework
+lunch beef on 11 Dec 1pm
+dinner mcdonalds 12 Dec 1pm to 2pm #homework
+dinner sushi for me 12 Dec 3pm to 6pm #tutorial
+/search breakfast #homework #tutorial

@@ -445,3 +445,7 @@ bool Task::compareByFixedTimeAndStart(Task firstTask, Task secondTask, bool *ord
 	}
 	return false;
 }
+
+bool Task::isTaskHasStartAndEnd() {
+	return ((this->getTaskType() == FIXED_DAY_TO_DAY) || (this->getTaskType() == FIXED_TIME_WITHIN_DAY) || (this->getTaskType() == FIXED_TIME_ACROSS_DAY) || (this->getTaskType() == FIXED_DAY_TO_TIME) || (this->getTaskType() == FIXED_TIME_TO_DAY));
+}

@@ -1,0 +1,6 @@
+do homework
+do tutorial
+play dota
+play cs
+/delete 0
+/delete 2

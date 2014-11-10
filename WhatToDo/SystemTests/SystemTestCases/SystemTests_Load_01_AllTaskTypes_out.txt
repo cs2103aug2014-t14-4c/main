@@ -1,0 +1,82 @@
+task one
+not-a-date-time
+not-a-date-time
+not-a-date-time
+0
+0
+
+task two
+not-a-date-time
+not-a-date-time
+not-a-date-time
+1
+#homework
+0
+
+listen to mp3
+not-a-date-time
+not-a-date-time
+20141109T000001
+0
+0
+
+play dota
+not-a-date-time
+not-a-date-time
+20141109T130000
+0
+0
+
+buy drinks
+20141109T000001
+not-a-date-time
+not-a-date-time
+0
+0
+
+eat fruits
+20141109T000001
+not-a-date-time
+not-a-date-time
+0
+0
+
+repair the program
+20141109T150000
+20141109T160000
+not-a-date-time
+0
+0
+
+eat fruits
+20141109T210000
+not-a-date-time
+not-a-date-time
+0
+0
+
+finish homework
+20141110T000001
+20141111T000001
+not-a-date-time
+0
+0
+
+finish tutorial
+20141110T140000
+20141112T000001
+not-a-date-time
+0
+0
+
+go for dinner
+20141110T210000
+not-a-date-time
+not-a-date-time
+0
+0
+
+  ||  Filtered by: all types / undone
+
+0
+-1

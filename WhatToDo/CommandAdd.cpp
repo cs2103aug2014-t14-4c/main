@@ -31,6 +31,7 @@ void CommandAdd::execute() {
 		_userMessage = errorMsg;
 		retrieveExistingViewState();
 		addUserMessageToCurrentState();
+		_currentState->setActionMessage(STRING_EMPTY);
 		setNewViewState();
 	}
 

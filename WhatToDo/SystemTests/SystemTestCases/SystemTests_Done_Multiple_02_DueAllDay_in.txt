@@ -1,0 +1,7 @@
+/filter nodone
+do homework by 10 Dec
+do tutorial by 20 Dec
+play dota by 21 Dec
+play cs by 22 Dec
+/done 0
+/done 3

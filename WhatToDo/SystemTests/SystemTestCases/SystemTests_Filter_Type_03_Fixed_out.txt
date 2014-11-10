@@ -1,0 +1,60 @@
+task one
+not-a-date-time
+not-a-date-time
+not-a-date-time
+0
+0
+
+task four
+not-a-date-time
+not-a-date-time
+not-a-date-time
+0
+0
+
+lunch get more chicken
+20131211T000001
+not-a-date-time
+not-a-date-time
+0
+0
+
+lunch get more beef
+20131211T130000
+not-a-date-time
+not-a-date-time
+0
+0
+
+lunch chicken
+20141211T000001
+not-a-date-time
+not-a-date-time
+0
+0
+
+lunch beef
+20141211T130000
+not-a-date-time
+not-a-date-time
+0
+0
+
+dinner mcdonalds
+20141212T130000
+20141212T140000
+not-a-date-time
+0
+0
+
+dinner sushi for me
+20141212T150000
+20141212T180000
+not-a-date-time
+0
+0
+
+  ||  Filtered by: only fixed / undone
+
+0
+-1

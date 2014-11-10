@@ -1,0 +1,696 @@
+//@author: a0110873l
+
+
+
+	/**
+	 * origin: ./\LogicData.cpp
+	 */
+
+
+#include "LogicData.h"
+
+State LogicData::_currentState;
+State LogicData::_viewState;
+State LogicData::_initialState;
+vector<Command*> LogicData::_commandHistory;
+int LogicData::_currentCommandHistoryIndex;
+int LogicData::_doneFilter;
+int LogicData::_typeFilter;
+date LogicData::_startDateFilter;
+date LogicData::_endDateFilter;
+
+//Constants
+const int LogicData::INITIAL_COMMAND_HISTORY_INDEX = 0;
+
+const string LogicData::ABBREV_MONTH_JAN = "Jan";
+const string LogicData::ABBREV_MONTH_FEB = "Feb";
+const string LogicData::ABBREV_MONTH_MAR = "Mar";
+const string LogicData::ABBREV_MONTH_APR = "Apr";
+const string LogicData::ABBREV_MONTH_MAY = "May";
+const string LogicData::ABBREV_MONTH_JUN = "Jun";
+const string LogicData::ABBREV_MONTH_JUL = "Jul";
+const string LogicData::ABBREV_MONTH_AUG = "Aug";
+const string LogicData::ABBREV_MONTH_SEP = "Sep";
+const string LogicData::ABBREV_MONTH_OCT = "Oct";
+const string LogicData::ABBREV_MONTH_NOV = "Nov";
+const string LogicData::ABBREV_MONTH_DEC = "Dec";
+const string LogicData::STRING_SPACE_CHAR = " ";
+const string LogicData::STRING_FRONTSLASH_CHAR = "/";
+const string LogicData::STRING_FROM = " / from ";
+const string LogicData::STRING_TO = " to ";
+const string LogicData::STRING_FILTERED_BY = "Filtered by";
+const string LogicData::STRING_COLON = ":";
+const string LogicData::STRING_VERTICAL_BAR_CHAR = "|";
+const string LogicData::STRING_EMPTY = "";
+const string LogicData::STRING_NO_DONE = "";
+const string LogicData::STRING_DONE = " / done";
+const string LogicData::STRING_UNDONE = " / undone";
+const string LogicData::STRING_ALL_TYPES = "all types";
+const string LogicData::STRING_ONLY_FIXED = "only fixed";
+const string LogicData::STRING_ONLY_DUE = "only due";
+
+const string LogicData::ERR_MSG_INVALID_TASK_TYPE = "INVALID_ARGUMENT: Task Type not known\n";
+const string LogicData::ERR_MSG_INVALID_STATUS_TYPE = "INVALID_ARGUMENT: Status Type not known\n";
+
+//Constructor
+LogicData::LogicData() {
+	_currentCommandHistoryIndex = INITIAL_COMMAND_HISTORY_INDEX;
+	_doneFilter = Status::ONLY_UNDONE;
+	_typeFilter = Type::ALL_TYPES;
+	_startDateFilter = boost::gregorian::date(neg_infin);
+	_endDateFilter = boost::gregorian::date(pos_infin);
+}
+
+//Setters
+void LogicData::setCurrentState(State stateToSet) {
+	_currentState = stateToSet;
+	StorageExecutor myStorageExecutor;
+	myStorageExecutor.saveToStorage(_currentState);
+}
+
+void LogicData::setViewState(State stateToSet) {
+	_viewState = stateToSet;
+}
+
+void LogicData::setDoneFilter(int doneFilter) {
+	_doneFilter = doneFilter;
+}
+
+void LogicData::setTypeFilter(int typeFilter) {
+	_typeFilter = typeFilter;
+}
+
+void LogicData::setDateFilter(date startDateFilter, date endDateFilter) {
+	_startDateFilter = startDateFilter;
+	_endDateFilter = endDateFilter;
+}
+
+void LogicData::setCommandHistoryIndex(int indexToSet) {
+	_currentCommandHistoryIndex = indexToSet;
+}
+
+//Getters
+State LogicData::getCurrentState() {
+	return _currentState;
+}
+
+State LogicData::getViewState() {
+	return filterTasks();
+}
+
+vector<Command*> LogicData::getCommandHistory() {
+	return _commandHistory;
+}
+
+int LogicData::getCurrentCommandHistoryIndex() {
+	return _currentCommandHistoryIndex;
+}
+
+int LogicData::getDoneFilter() {
+	return _doneFilter;
+}
+
+int LogicData::getTypeFilter() {
+	return _typeFilter;
+}
+
+date LogicData::getStartDateFilter() {
+	return _startDateFilter;
+}
+
+date LogicData::getEndDateFilter() {
+	return _endDateFilter;
+}
+
+//Operations
+void LogicData::resetCommandHistory() {
+	_commandHistory.clear();
+	return;
+}
+
+void LogicData::addCommandToHistory(Command* commandToAdd) {
+	_commandHistory.push_back(commandToAdd);
+	_currentCommandHistoryIndex++;
+}
+
+void LogicData::resetToInitialSettings() {
+	_currentState = _initialState;
+	_viewState = _initialState;
+	_commandHistory.clear();
+}
+
+void LogicData::loadInitialSettings() {
+	LogicData();
+	StorageExecutor myStorageExecutor;
+	State initialState = myStorageExecutor.loadFromStorage();
+	_initialState = initialState;
+	_currentState = initialState;
+	_viewState = initialState;
+}
+
+void LogicData::fakeinitiate(State fakestate) {
+	LogicData();
+	_initialState = fakestate;
+	_currentState = _initialState;
+	_viewState = _initialState;
+
+}
+
+State LogicData::filterTasks() {
+	State filteredViewState = _viewState;
+	vector<Task> unfilteredTasks = _viewState.getAllTasks();
+	vector<Task> filteredTasks;
+	try{
+		for(auto iter = unfilteredTasks.begin(); iter != unfilteredTasks.end(); ++iter) {
+			if(passDoneFilter(*iter) && passTypeFilter(*iter) && passDateFilter(*iter)) {
+				filteredTasks.push_back(*iter);
+			}
+		}
+	} catch (const invalid_argument& ia) {
+
+	}
+	filteredViewState.setAllTasks(filteredTasks);
+	string newActionMessage = compileNewActionMessage(filteredViewState);
+	filteredViewState.setActionMessage(newActionMessage);
+	return filteredViewState;
+}
+
+bool LogicData::passDoneFilter(Task task) {
+	try{
+		switch(_doneFilter) {
+			case(Status::DONE_BOTH) :
+				return true;
+			case(Status::ONLY_DONE) :
+				return task.getTaskIsDone();
+			case(Status::ONLY_UNDONE) :
+				return !task.getTaskIsDone();
+			default:;
+				throw invalid_argument(ERR_MSG_INVALID_STATUS_TYPE);
+		}
+	} catch (const invalid_argument&) {
+		throw;
+	}
+}
+
+bool LogicData::passTypeFilter(Task task) {
+	try{
+		switch(_typeFilter) {
+			case(Type::ALL_TYPES) :
+				return true;
+			case(Type::ONLY_FIXED) : 
+				return !task.hasDeadline();
+			case(Type::ONLY_DUE) :
+				return task.hasDeadline() || !task.hasStartDateTime();
+			default:;
+				throw invalid_argument(ERR_MSG_INVALID_TASK_TYPE);
+		}
+	} catch (const invalid_argument&) {
+		throw;
+	}
+}
+
+bool LogicData::passDateFilter(Task task) {
+	if(!task.hasStartDateTime() && !task.hasDeadline()) {
+		return true;
+	} else if(task.hasDeadline()) {
+		return ((task.getTaskDeadline().date() >= _startDateFilter) && 
+			(task.getTaskDeadline().date() <= _endDateFilter));
+	} else if(task.hasStartDateTime() && task.hasEndDateTime()) {
+		return ((task.getTaskStartTime().date() >= _startDateFilter) && 
+			(task.getTaskStartTime().date() <= _endDateFilter) && 
+			(task.getTaskEndTime().date() <= _endDateFilter) && 
+			(task.getTaskStartTime().date() >= _startDateFilter));
+	} else if(task.hasStartDateTime() && !task.hasEndDateTime()) {
+		return ((task.getTaskStartTime().date() >= _startDateFilter) && 
+			(task.getTaskStartTime().date() <= _endDateFilter));
+	}
+	return false;
+}
+
+string LogicData::getFilterStatus() {
+	string filterStatus;
+	string doneFilterStatus;
+	string typeFilterStatus;
+	string dateFilterStatus;
+	
+	switch(_doneFilter) {
+		case(Status::DONE_BOTH) :
+			doneFilterStatus = STRING_NO_DONE;
+			break;
+		case(Status::ONLY_DONE) :
+			doneFilterStatus = STRING_DONE;
+			break;
+		case(Status::ONLY_UNDONE) :
+			doneFilterStatus = STRING_UNDONE;
+			break;
+	}
+
+	switch(_typeFilter) {
+		case(Type::ALL_TYPES) :
+			typeFilterStatus = STRING_ALL_TYPES;
+			break;
+		case(Type::ONLY_FIXED) :
+			typeFilterStatus = STRING_ONLY_FIXED;
+			break;
+		case(Type::ONLY_DUE) :
+			typeFilterStatus = STRING_ONLY_DUE;
+			break;
+	}
+
+	if (_startDateFilter != boost::gregorian::date(neg_infin)) {
+		dateFilterStatus += STRING_FROM + getDisplayDay(ptime(_startDateFilter));
+	}
+	if (_endDateFilter != boost::gregorian::date(pos_infin)) {
+		dateFilterStatus += STRING_TO + getDisplayDay(ptime(_endDateFilter));
+	}
+
+	filterStatus = STRING_FILTERED_BY + STRING_COLON + STRING_SPACE_CHAR +
+		typeFilterStatus + doneFilterStatus + dateFilterStatus;
+	return filterStatus;
+}
+
+string LogicData::getDisplayDay(ptime myTime) {
+	string displayDay;
+	displayDay += to_string(myTime.date().day());
+	displayDay += STRING_SPACE_CHAR + changeMonthToMonthOfYear(myTime.date().month());
+	displayDay += STRING_SPACE_CHAR + to_string(myTime.date().year());
+	return displayDay;
+}
+
+string LogicData::changeMonthToMonthOfYear(int month) {
+	if (month == Month::JAN) {
+		return ABBREV_MONTH_JAN;
+	} else if (month == Month::FEB) {
+		return ABBREV_MONTH_FEB;
+	} else if (month == Month::MAR) {
+		return ABBREV_MONTH_MAR;
+	} else if (month == Month::APR) {
+		return ABBREV_MONTH_APR;
+	} else if (month == Month::MAY) {
+		return ABBREV_MONTH_MAY;
+	} else if (month == Month::JUN) {
+		return ABBREV_MONTH_JUN;
+	} else if (month == Month::JUL) {
+		return ABBREV_MONTH_JUL;
+	} else if (month == Month::AUG) {
+		return ABBREV_MONTH_AUG;
+	} else if (month == Month::SEP) {
+		return ABBREV_MONTH_SEP;
+	} else if (month == Month::OCT) {
+		return ABBREV_MONTH_OCT;
+	} else if (month == Month::NOV) {
+		return ABBREV_MONTH_NOV;
+	} else if (month == Month::DEC) {
+		return ABBREV_MONTH_DEC;
+	}
+
+	return STRING_EMPTY;
+}
+
+string LogicData::compileNewActionMessage(State filteredViewState){
+	string newActionMessageToReturn;	
+	
+	newActionMessageToReturn = filteredViewState.getActionMessage() + 
+		STRING_SPACE_CHAR + STRING_SPACE_CHAR + STRING_VERTICAL_BAR_CHAR + 
+		STRING_VERTICAL_BAR_CHAR + STRING_SPACE_CHAR + STRING_SPACE_CHAR + 
+		getFilterStatus();
+
+	return newActionMessageToReturn;
+}
+	// End of segment: ./\LogicData.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\LogicData.h
+	 */
+
+//
+//LogicData is responsible for holding the current State, view State and
+//initial State. It also keeps track of the commands that are executed from 
+//the time that WhatToDo is executed. This allows for easy redoing and undoing
+//from caller methods such as Command::Undo and Command::Redo. Also, LogicData
+//supports Command::Filter as well, it is able to support filters such as:
+//	1) Status
+//		a) Done & Undone
+//		b) Done only
+//		c) Undone Only
+//	2) Task type
+//		a) All types
+//		b) Fixed Timed
+//		c) Deadline
+//	3) Date
+//
+//Furthermore, LogicData support the logging of functions executed and errors 
+//should they occur. Logging mode can be turned on or off in the constructor
+//based on the developer's requirements
+//****************************************************************************
+
+#ifndef LOGICDATA_H
+#define LOGICDATA_H
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include "State.h"
+#include "StorageExecutor.h"
+
+enum Status {
+	STATUS_NOT_SET = -1, DONE_BOTH, ONLY_DONE, ONLY_UNDONE
+};
+
+enum Type {
+	TYPE_NOT_SET = -1, ALL_TYPES, ONLY_FIXED, ONLY_DUE
+};
+
+enum Month {
+	JAN = 1, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT,
+	NOV, DEC
+};
+
+class Command;
+
+class LogicData {
+
+	private:
+		//Attributes for LogicData
+		static State _currentState;
+		static State _viewState;
+		static State _initialState;
+		static vector<Command*> _commandHistory;
+		static int _currentCommandHistoryIndex;
+		static int _doneFilter;
+		static int _typeFilter;
+		static date _startDateFilter;
+		static date _endDateFilter;
+
+		//Attributes for Logging
+		//static string _logFileName;
+		//static bool _loggingModeOn;
+		static char buffer[255];
+
+	public:
+		//Constructor
+		LogicData();
+
+		//Setters
+		static void setCurrentState(State stateToSet);
+		static void setViewState(State stateToSet);
+		static void setDoneFilter(int doneFilter);
+		static void setTypeFilter(int typeFilter);
+		static void setDateFilter(date startDateFilter, date endDateFilter);
+		static void setCommandHistoryIndex(int indexToSet);
+
+		//Getters
+		static State getCurrentState();
+		static State getViewState();
+		static vector<Command*> getCommandHistory();
+		static int getCurrentCommandHistoryIndex();
+		static int getDoneFilter();
+		static int getTypeFilter();
+		static date getStartDateFilter();
+		static date getEndDateFilter();
+
+		//Operations
+		static void resetCommandHistory();
+		static void addCommandToHistory(Command* commandToAdd);
+		static void resetToInitialSettings();
+		static void loadInitialSettings();
+		static void fakeinitiate(State fakestate);
+		static State filterTasks();
+		static bool passDoneFilter(Task task);
+		static bool passTypeFilter(Task task);
+		static bool passDateFilter(Task task);
+		static string getFilterStatus();
+		static string changeMonthToMonthOfYear(int month);
+		static string getDisplayDay(ptime myTime);
+		static string compileNewActionMessage(State filteredViewState);
+
+		//Constants
+		static const int INITIAL_COMMAND_HISTORY_INDEX;
+
+		static const string ABBREV_MONTH_JAN;
+		static const string ABBREV_MONTH_FEB;
+		static const string ABBREV_MONTH_MAR;
+		static const string ABBREV_MONTH_APR;
+		static const string ABBREV_MONTH_MAY;
+		static const string ABBREV_MONTH_JUN;
+		static const string ABBREV_MONTH_JUL;
+		static const string ABBREV_MONTH_AUG;
+		static const string ABBREV_MONTH_SEP;
+		static const string ABBREV_MONTH_OCT;
+		static const string ABBREV_MONTH_NOV;
+		static const string ABBREV_MONTH_DEC;
+		static const string STRING_SPACE_CHAR;
+		static const string STRING_FRONTSLASH_CHAR;
+		static const string STRING_FROM;
+		static const string STRING_TO;
+		static const string STRING_FILTERED_BY;
+		static const string STRING_COLON;
+		static const string STRING_VERTICAL_BAR_CHAR;
+		static const string STRING_EMPTY;
+		static const string STRING_NO_DONE;
+		static const string STRING_DONE;
+		static const string STRING_UNDONE;
+		static const string STRING_ALL_TYPES;
+		static const string STRING_ONLY_FIXED;
+		static const string STRING_ONLY_DUE;
+
+		static const string ERR_MSG_INVALID_TASK_TYPE;
+		static const string ERR_MSG_INVALID_STATUS_TYPE;
+};
+
+#endif
+	// End of segment: ./\LogicData.h
+
+
+
+
+
+	/**
+	 * origin: ./\State.h
+	 */
+
+//
+//State is responsible for storing a list of Tasks. State primarily deals with
+//the adding, deleting of Tasks. Also, when a Task is completed,
+//State is able to set the Task as done. Other than this, State can return
+//the caller a sorted list of specified Tasks based on these specifications:
+//	1) Timed - Contain information such as StartDate or EndDate, but does not
+//     have a deadline
+//	2) Deadline - Specifically has a deadline
+//	3) Floating - No StartDate and deadline
+//
+//Upon the execution of any function, State keeps track of its latest action
+//type:
+//	1) NONE - meaning that no changes were made
+//  2) CHANGED - meaning that the State has changed with the addition of a new
+//			task or a task is marked as done
+//	3) DELETED - meaning that a Task has been deleted from State
+//
+//This information can be extracted from caller components such as LogicData
+//through its getter functions
+//****************************************************************************
+
+#ifndef STATE_H
+#define STATE_H
+
+#include "Task.h"
+using namespace std;
+
+const int UNSPECIFIED_INDEX = -1;
+const int INITIAL_INDEX = 0;
+const int TO_THE_RIGHT_BY_ONE = 1;
+const bool UNSPECIFIED_USER_COMMAND = false;
+
+class State {
+	private:
+		vector<Task> _entireListOfTasks;
+		string _userMessage;
+		string _actionMessage;
+		int maxIndex;
+		int _lastActionType;
+		int _lastActionTaskIndex;
+
+	public:
+		//Constructor
+		State();
+
+		//Setters
+		void setAllTasks(vector<Task> tasksToSet);
+		void setUserMessage(string stringToSet);
+		void setActionMessage(string stringToSet);
+		void setLastActionType(int actionTypeToSet);
+		void setLastActionTaskIndex(int actionTaskIndexToSet);
+		
+		//Getters
+		string getUserMessage();
+		string getActionMessage();
+		int getLastActionType();
+		int getLastActionTaskIndex();
+
+		//Operations
+		void addTask(Task taskToAdd, bool isUserCommand = UNSPECIFIED_USER_COMMAND, 
+			int specifiedIndex = UNSPECIFIED_INDEX);
+		void deleteTask(int taskIndexToDelete, 
+			bool isUserCommand = UNSPECIFIED_USER_COMMAND);
+		void doneTask(int taskIndexToDo, 
+			bool isUserCommand = UNSPECIFIED_USER_COMMAND);
+		void clearAllTasks();
+		void sortAllTasks();
+		vector<Task> getAllTasks();
+		vector<Task> getTimedTasks();
+		vector<Task> getDeadlineTasks();
+		vector<Task> getFloatingTasks();
+
+		//Enumeration
+		enum actionType { NONE = 0, CHANGED, DELETED };
+};
+
+#endif
+	// End of segment: ./\State.h
+
+
+
+
+
+	/**
+	 * origin: ./\Task.h
+	 */
+
+//
+//Task is the most fundamental component within WhatToDo and is responsible 
+//for storing important details of a task such as its start time, end time, 
+//deadline, name, tags and status (done or not done). In additional, a Task 
+//has two additional functions firstly it is able to check if two Tasks 
+//overlap, and secondly it is able to check if a Task begins earlier than 
+//another Task. A Task also can be defined in many types:
+//	1)Floating Tasks - no start date time, no end date time and no deadline
+//  2)Deadline Tasks
+//		a) All Day - Meaning that the entire day is demarketed as the deadline
+//		b) Time - Meaning that the deadline has a specific time
+//	3)Fixed Tasks
+//		a) Day
+//			i) All Day - Meaning that one entire day is demarketed for the Task
+//		   ii) Day To Time - Meaning that the start date is specified wih no 
+//				time and the end date time is specified
+//		  iii) Day To Day - Meaning that the start and end dates are both 
+//				specified with no times specified	
+//		b) Start - Meaning that the start time is specified without any end
+//			datetime
+//		c) Time 
+//			i) Time Within Day - Meaning that the start time and end time are
+//				specified within a single day
+//		   ii) Time Across Day - Meaning that the start time and end time are
+//				specified over one day
+//		  iii) Time To Day - Meaning that the start time is specified and the
+//				end date is specified with no time
+//
+//*Note: datetimes which occupy an entire day are marked with 1 second 
+//		(000001 in HHMMSS)
+//****************************************************************************
+
+#ifndef TASK_H
+#define TASK_H
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <exception>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/gregorian_calendar.hpp>
+
+using namespace std;
+using namespace boost::posix_time;
+using namespace boost::gregorian;
+
+const int NUM_OF_COMP_FUNCTIONS = 8;
+const int MARKED_AS_FULL_DAY = 1;
+const int EMPTY = 0;
+const string MSG_ERR_INVALID_FUNCTION_CALL = "INVALID_ARGUMENT: Function called does not exist\n";
+
+class Task {
+	private:
+		ptime _taskStartDateTime;
+		ptime _taskEndDateTime;
+		ptime _taskDeadline;
+		string _taskName;
+		string _taskDetails; //Not used for now
+		vector<string> _taskTags;
+		int _taskIndex;
+		bool _isDone;
+
+	public:
+		//Constructor
+		Task();
+
+		//Setters
+		void setTaskStartTime(ptime dateTimeToSet);
+		void setTaskEndTime(ptime dateTimeToSet);
+		void setTaskDeadline(ptime dateTimeToSet);
+		void setTaskName(string nameToSet);
+		void setTaskDetails(string detailsToSet); // Not used for now
+		void setTaskTags(vector<string> tagsToSet);
+		void setTaskIndex(int indexToSet);
+		void setTaskIsDone(bool doneStatusToSet = true);
+		void setTaskIsNotDone();
+
+		//Getters
+		int getTaskType();
+		int getTaskIndex();
+		ptime getTaskStartTime();
+		ptime getTaskEndTime();
+		ptime getTaskDeadline();
+		time_duration getTaskDuration();
+		string getTaskName();
+		string getTaskDetails();//Not used for now
+		vector<string> getTaskTags();
+		bool getTaskIsDone();
+		
+		//Primary Operations
+		bool hasStartDateTime();
+		bool hasEndDateTime();
+		bool hasDeadline();
+		bool isFullDay(ptime dateTimeToCheck);
+		bool isStartDateEqualEndDate();
+		bool isTaskTypeFixedDay(Task myTask);
+		bool isTaskTypeFixedTime(Task myTask);
+		bool isTaskHasStartAndEnd();
+		bool isTaskOverlapWith(Task myTask);
+		bool isEarlierThan(Task myTask);
+		bool isTaskSortedBefore(Task firstTask, Task secondTask);
+		bool compare(Task firstTask, Task secondTask, bool *orderConfirmed, int functionToCall);
+
+		//Secondary Operations
+		bool compareByFloat(Task firstTask, Task secondTask, bool *orderConfirmed);
+		bool compareByDate(Task firstTask, Task secondTask, bool *orderConfirmed);
+		bool compareByDeadlineAllDay(Task firstTask, Task secondTask, bool *orderConfirmed);
+		bool compareByDeadlineTime(Task firstTask, Task secondTask, bool *orderConfirmed);
+		bool compareByFixedDay(Task firstTask, Task secondTask, bool *orderConfirmed);
+		bool compareByFixedStart(Task firstTask, Task secondTask, bool *orderConfirmed);
+		bool compareByFixedTime(Task firstTask, Task secondTask, bool *orderConfirmed);
+		bool compareByFixedTimeAndStart(Task firstTask, Task secondTask, bool *orderConfirmed);
+
+		//Enumeration
+		enum TaskType {
+			 FLOATING = 1, DEADLINE_TIME, DEADLINE_ALLDAY, FIXED_ALLDAY, FIXED_DAY_TO_DAY, 
+			 FIXED_DAY_TO_TIME, FIXED_START, FIXED_TIME_WITHIN_DAY, FIXED_TIME_ACROSS_DAY, 
+			 FIXED_TIME_TO_DAY, NOT_A_TASK_TYPE 
+		};
+
+		//Compare Functions are arranged in order of precedence from greatest priority starting from 1.
+		enum CompareType {
+			COMPARE_FLOAT = 1, COMPARE_DATE, COMPARE_DEADLINE_ALLDAY, COMPARE_DEADLINE_TIME,
+			COMPARE_FIXED_DAY, COMPARE_FIXED_START, COMPARE_FIXED_TIME, COMPARE_FIXED_TIME_START
+		};
+};
+
+#endif
+	// End of segment: ./\Task.h
+
+
+
+
+

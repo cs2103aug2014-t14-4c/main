@@ -421,9 +421,25 @@ class WhatToDo : public QMainWindow
 		string removeUnwantedChars(string stringToProcess);
 		string changeDayToDayOfWeek(int day);
 		string changeMonthToMonthOfYear(int year);
+
+		// This function converts a task into text that the user can
+		// readily edit.
+
 		string convertTaskToEditText(Task taskToConvert);
+
+		// This function converts a task's date into text that the user 
+		// can readily edit.
+
 		string getTaskDateAsEditText(Task taskToConvert);
+
+		// This function converts a ptime's date into text that the
+		// user can readily edit.
+
 		string convertDateTimeToEditText(ptime timeToConvert);
+
+		// This function converts a ptime's date and time into text that 
+		// the user can readily edit.
+
 		string convertDateToEditText(ptime timeToConvert);
 		bool checkIsContainStrangeChars(string stringToProcess);
 		bool checkIsCurrentStateEmpty();

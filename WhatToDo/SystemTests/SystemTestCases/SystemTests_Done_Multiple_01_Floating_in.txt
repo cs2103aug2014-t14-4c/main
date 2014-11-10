@@ -1,0 +1,7 @@
+/filter nodone
+do homework
+do tutorial
+play dota
+play cs
+/done 0
+/done 2
