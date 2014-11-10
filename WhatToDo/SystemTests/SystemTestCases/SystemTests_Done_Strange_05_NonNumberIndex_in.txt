@@ -1,0 +1,5 @@
+/filter nodone
+first task
+second task
+third task
+/done a

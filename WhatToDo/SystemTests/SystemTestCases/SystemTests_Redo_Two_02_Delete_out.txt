@@ -1,0 +1,105 @@
+task one
+not-a-date-time
+not-a-date-time
+not-a-date-time
+1
+#homework
+0
+
+task two
+not-a-date-time
+not-a-date-time
+not-a-date-time
+1
+#homework
+0
+
+task three
+not-a-date-time
+not-a-date-time
+not-a-date-time
+0
+0
+
+task four
+not-a-date-time
+not-a-date-time
+not-a-date-time
+1
+#tutorial
+0
+
+task one
+not-a-date-time
+not-a-date-time
+not-a-date-time
+1
+#homework
+0
+
+task two
+not-a-date-time
+not-a-date-time
+not-a-date-time
+1
+#homework
+0
+
+task three
+not-a-date-time
+not-a-date-time
+not-a-date-time
+0
+0
+
+breakfast eggs
+not-a-date-time
+not-a-date-time
+20141210T000001
+2
+#homework
+#tutorial
+0
+
+breakfast bacon
+not-a-date-time
+not-a-date-time
+20141210T140000
+0
+0
+
+lunch chicken
+20141211T000001
+not-a-date-time
+not-a-date-time
+1
+#homework
+0
+
+lunch beef
+20141211T130000
+not-a-date-time
+not-a-date-time
+0
+0
+
+dinner mcdonalds
+20141212T130000
+20141212T140000
+not-a-date-time
+1
+#homework
+0
+
+dinner sushi for me
+20141212T150000
+20141212T180000
+not-a-date-time
+1
+#tutorial
+0
+
+Task Added!  ||  Filtered by: all types / undone
+
+1
+12

@@ -60,8 +60,8 @@ class LogicData {
 		static date _endDateFilter;
 
 		//Attributes for Logging
-		static string _logFileName;
-		static bool _loggingModeOn;
+		//static string _logFileName;
+		//static bool _loggingModeOn;
 		static char buffer[255];
 
 	public:
@@ -99,19 +99,7 @@ class LogicData {
 		static string getFilterStatus();
 		static string changeMonthToMonthOfYear(int month);
 		static string getDisplayDay(ptime myTime);
-		static string compileStartDateFilterStatus(string dateFilterStatus, 
-			date startDateFilter);
-		static string compileEndDateFilterStatus(string dateFilterStatus, 
-			date endDateFilter);
-		static string compileFilterStatus(string doneFilterStatus,
-			string typeFilterStatus, string dateFilterStatus);
 		static string compileNewActionMessage(State filteredViewState);
-
-		//Logging
-		static void log(string stringToLog);
-		static bool isLoggingModeOn();
-		static void setLoggingModeOff();
-		static void setLoggingModeOn();
 
 		//Constants
 		static const int INITIAL_COMMAND_HISTORY_INDEX;
@@ -142,17 +130,6 @@ class LogicData {
 		static const string STRING_ALL_TYPES;
 		static const string STRING_ONLY_FIXED;
 		static const string STRING_ONLY_DUE;
-
-		static const string LOG_LOGIC_DATA_FILE_NAME;
-		static const string LOG_MSG_CURRENT_STATE_SET;
-		static const string LOG_MSG_VIEW_STATE_SET;
-		static const string LOG_MSG_DONE_FILTER_SET;
-		static const string LOG_MSG_TYPE_FILTER_SET;
-		static const string LOG_MSG_DATE_FILTER_SET;
-		static const string LOG_MSG_COMMAND_HISTORY_RESET;
-		static const string LOG_MSG_COMMAND_HISTORY_ADDED;
-		static const string LOG_MSG_RESET;
-		static const string LOG_MSG_LOAD;
 
 		static const string ERR_MSG_INVALID_TASK_TYPE;
 		static const string ERR_MSG_INVALID_STATUS_TYPE;

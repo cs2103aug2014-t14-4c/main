@@ -18,6 +18,10 @@ Command::Command(void) {
 	_loggingModeOn = INITIAL_VALUE_LOGGING_MODE_ON;
 	_doneFilter = Status::STATUS_NOT_SET;
 	_typeFilter = Type::TYPE_NOT_SET;
+
+	ofstream writeToLog;
+	writeToLog.open(_logFileName, ios::out);
+	writeToLog.close();
 }
 
 void Command::execute() {

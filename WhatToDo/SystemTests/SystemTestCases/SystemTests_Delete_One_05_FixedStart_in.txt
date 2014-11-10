@@ -1,0 +1,3 @@
+do homework from 10 Dec to 11 Dec
+do tutorial from 12 Dec to 13 Dec
+/delete 1

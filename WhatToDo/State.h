@@ -25,36 +25,21 @@
 #define STATE_H
 
 #include "Task.h"
-#include <fstream>
 using namespace std;
 
-//Constants
 const int UNSPECIFIED_INDEX = -1;
 const int INITIAL_INDEX = 0;
 const int TO_THE_RIGHT_BY_ONE = 1;
 const bool UNSPECIFIED_USER_COMMAND = false;
 
-const string LOG_STATE_FILE_NAME = "StateLog.txt";
-const string LOG_MSG_TASK_ADDED = "Function called: addTask()\n";
-const string LOG_MSG_TASK_DELETED = "Function called: deleteTask()\n";
-const string LOG_MSG_TASK_DONE = "Function called: doneTask()\n";
-const string LOG_MSG_TASKS_CLEARED = "Function called: clearAllTasks()\n";
-const string LOG_MSG_TASKS_SORTED = "Function called: sortAllTasks()\n";
-
 class State {
 	private:
-		//Attributes for State
 		vector<Task> _entireListOfTasks;
 		string _userMessage;
 		string _actionMessage;
 		int maxIndex;
 		int _lastActionType;
 		int _lastActionTaskIndex;
-
-		//Attributes for Logging
-		string _logFileName;
-		bool _loggingModeOn;
-		char buffer[255];
 
 	public:
 		//Constructor
@@ -86,18 +71,9 @@ class State {
 		vector<Task> getTimedTasks();
 		vector<Task> getDeadlineTasks();
 		vector<Task> getFloatingTasks();
-		bool isTimedTask(Task taskToCheck);
-		bool isDeadlineTask(Task taskToCheck);
-		bool isFloatingTask(Task taskToCheck);
-
-		//Logging
-		void log(string stringToLog);
-		bool isLoggingModeOn();
-		void setLoggingModeOff();
-		void setLoggingModeOn();
 
 		//Enumeration
-		enum actionType { NONE = 1, CHANGED, DELETED };
+		enum actionType { NONE = 0, CHANGED, DELETED };
 };
 
 #endif

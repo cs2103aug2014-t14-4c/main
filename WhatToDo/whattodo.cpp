@@ -8,8 +8,8 @@ WhatToDo::WhatToDo(string exeDirectory, QWidget *parent)
 	: QMainWindow(parent) {
 	_exeDirectory = exeDirectory;
 	_ui.setupUi(this);
-	setupOtherUIConfigs();
 	setupCalendar();
+	setupOtherUIConfigs();
 	setupKeyPressEater();
 	defineAllHotkeys();
 	connectAllOtherSignalAndSlots();
@@ -169,7 +169,7 @@ void WhatToDo::handleButtonToggleCalendar() {
 	
 	// Move the calendar to a viewable position in the GUi
 	
-	_ui.calendarframe->move(20, 70);
+	_ui.calendarframe->move(20, 66);
 	_ui.calendarbtn_next->move(290, 10);
 	_ui.calendarbtn_prev->move(220, 10);
 
@@ -237,6 +237,9 @@ void WhatToDo::setupOtherUIConfigs() {
 	setupInitialGUISizeConfigs();
 	setupMessageBoxConfigs();
 	setupTextSizeConfigs();
+	_ui.displayAgendaviewFloat->raise();
+	_ui.displayAgendaviewTimed->raise();
+	_ui.messageFeedback->raise();
 	return;
 }
 
@@ -364,9 +367,9 @@ void WhatToDo::setupMessageBoxConfigs() {
 	// Set the message box view as transparent to the user and 
 	// transparent to mouse events
 
-	_ui.messageFeedback->setAttribute(Qt::WA_TranslucentBackground);
 	_ui.messageFeedback->setStyleSheet(
 		QString::fromStdString(QTSTYLESHEET_TRANSPARENT_BACKGROUND));
+	_ui.messageFeedback->setAttribute(Qt::WA_TranslucentBackground);
 	_ui.messageFeedback->setAttribute(Qt::WA_TransparentForMouseEvents);
 	return;
 }
@@ -1677,6 +1680,11 @@ string WhatToDo::convertTaskToEditText(Task taskToConvert) {
 
 string WhatToDo::getTaskDateAsEditText(Task taskToConvert) {
 	string taskDateEditText;
+
+	// Converting different kinds of tasks into different date
+	// formats so they will be registered as the same kinds of 
+	// task if the user does not change anything.
+
 	if (taskToConvert.getTaskType() == Task::FLOATING) {
 		taskDateEditText = STRING_EMPTY;
 	}
@@ -1696,7 +1704,25 @@ string WhatToDo::getTaskDateAsEditText(Task taskToConvert) {
 		taskDateEditText = COMMAND_PARAM_ADD_DATE_TIMED_START + 
 			convertDateTimeToEditText(taskToConvert.getTaskStartTime());
 	}
-	else if (taskToConvert.isTaskHasStartAndEnd()) {
+	else if (taskToConvert.getTaskType() == Task::FIXED_DAY_TO_DAY) {
+		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_START + 
+			convertDateToEditText(taskToConvert.getTaskStartTime());
+		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_END + 
+			convertDateToEditText(taskToConvert.getTaskEndTime());
+	}
+	else if (taskToConvert.getTaskType() == Task::FIXED_DAY_TO_TIME) {
+		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_START + 
+			convertDateToEditText(taskToConvert.getTaskStartTime());
+		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_END + 
+			convertDateTimeToEditText(taskToConvert.getTaskEndTime());
+	}
+	else if (taskToConvert.getTaskType() == Task::FIXED_TIME_TO_DAY) {
+		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_START + 
+			convertDateTimeToEditText(taskToConvert.getTaskStartTime());
+		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_END + 
+			convertDateToEditText(taskToConvert.getTaskEndTime());
+	}
+	else {
 		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_START + 
 			convertDateTimeToEditText(taskToConvert.getTaskStartTime());
 		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_END + 

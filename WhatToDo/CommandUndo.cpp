@@ -25,6 +25,7 @@ void CommandUndo::execute() {
 	catch (string errorMsg) {
 		_userMessage = errorMsg;
 		retrieveExistingViewState();
+		_currentState->setActionMessage(STRING_EMPTY);
 		addUserMessageToCurrentState();
 		setNewViewState();
 	}

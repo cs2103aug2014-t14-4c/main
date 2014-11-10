@@ -1,0 +1,5 @@
+/filter nodone
+do homework from 10 Dec 3pm to 11 Dec 4pm
+do tutorial from 12 Dec 10am to 11am
+/done 1
+/done 0

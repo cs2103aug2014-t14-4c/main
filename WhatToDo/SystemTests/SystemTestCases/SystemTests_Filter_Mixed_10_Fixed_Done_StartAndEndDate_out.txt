@@ -1,0 +1,18 @@
+task two
+not-a-date-time
+not-a-date-time
+not-a-date-time
+0
+1
+
+task three
+not-a-date-time
+not-a-date-time
+not-a-date-time
+0
+1
+
+  ||  Filtered by: only fixed / done / from 10 Dec 2014 to 20 Dec 2014
+
+0
+-1

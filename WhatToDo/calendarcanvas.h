@@ -16,13 +16,13 @@
 #define BLOCK_HEIGHT 50.f
 #define VERTICAL_LINE_INTERVAL 60.f
 
-#define BLOCK_BG_COLOUR sf::Color(10, 10, 10, 255)
+#define BLOCK_BG_COLOUR sf::Color(255, 255, 255, 255)
 #define BLOCK_OUTLINE_COLOUR sf::Color(0, 0, 0, 255)
 #define BLOCK_HIGHLIGHT_OUTLINE_COLOUR sf::Color(100, 100, 100, 55)
-#define BLOCK_DEADLINE_BG_COLOUR sf::Color(50, 0, 0, 255)
+#define BLOCK_DEADLINE_BG_COLOUR sf::Color(200, 0, 0, 255)
 #define BLOCK_DEADLINE_POS sf::Vector2f(task.getTaskDeadline().time_of_day().hours() * VERTICAL_LINE_INTERVAL+ VERTICAL_LINE_INTERVAL * task.getTaskDeadline().time_of_day().minutes() / 60 + 2,(task.getTaskDeadline().date() - today).days() * BLOCK_HEIGHT + 2)
 #define BLOCK_FIXED_POS sf::Vector2f(task.getTaskStartTime().time_of_day().hours() * VERTICAL_LINE_INTERVAL + VERTICAL_LINE_INTERVAL * task.getTaskStartTime().time_of_day().minutes() / 60 + 2,(task.getTaskStartTime().date() - today).days() * BLOCK_HEIGHT + 2)
-
+#define BLOCK_NAME_VERTICAL_SPACE 10
 #define FRAME_WIDTH 921	//To determinate the scale of the view
 #define FRAME_HEIGHT 501
 
@@ -46,7 +46,7 @@ class CalendarCanvas : public QSFMLCanvas{
 	//the rectangular shape together, to make retrieving info easier
 	struct Calendar_task{
 		Task task;
-		sf::RectangleShape calendarTasksBlk;
+		sf::RectangleShape calendarTasksBlk[2];
 	};
 
 	public:

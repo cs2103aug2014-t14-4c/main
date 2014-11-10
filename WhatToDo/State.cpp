@@ -3,7 +3,6 @@
 //Constructor
 State::State(){
 	maxIndex = 0;
-	_loggingModeOn = false;
 }
 
 //Setters
@@ -48,8 +47,6 @@ int State::getLastActionTaskIndex() {
 
 //Operations
 void State::addTask(Task taskToAdd, bool isUserCommand, int specifiedIndex) {
-	log(LOG_MSG_ADD_TASK);
-
 	if (specifiedIndex == UNSPECIFIED_INDEX) {
 		taskToAdd.setTaskIndex(maxIndex);
 		if (isUserCommand) {
@@ -73,8 +70,6 @@ void State::addTask(Task taskToAdd, bool isUserCommand, int specifiedIndex) {
 }
 
 void State::deleteTask(int taskIndexToDelete, bool isUserCommand) {
-	log(LOG_MSG_DELETE_TASK);
-
 	for (unsigned int index = INITIAL_INDEX; 
 		index < _entireListOfTasks.size(); index++) {
 		if (_entireListOfTasks[index].getTaskIndex() == taskIndexToDelete) {
@@ -90,8 +85,6 @@ void State::deleteTask(int taskIndexToDelete, bool isUserCommand) {
 }
 
 void State::doneTask(int taskIndexToDo, bool isUserCommand) {
-	log(LOG_MSG_DONE_TASK);
-
 	for(unsigned int index = INITIAL_INDEX; 
 		index < _entireListOfTasks.size(); index++) {
 		if(_entireListOfTasks[index].getTaskIndex() == taskIndexToDo) {
@@ -103,13 +96,10 @@ void State::doneTask(int taskIndexToDo, bool isUserCommand) {
 }
 
 void State::clearAllTasks() {
-	log(LOG_MSG_CLEAR_TASKS);
 	_entireListOfTasks.clear();
 }
 
 void State::sortAllTasks() {
-	log(LOG_MSG_SORT_TASKS);
-
 	int primaryIndex, secondaryIndex;
 	Task swapTask;
 
@@ -141,7 +131,13 @@ vector<Task> State::getTimedTasks() {
 
 	for (unsigned int index = INITIAL_INDEX; 
 		index < _entireListOfTasks.size(); index++) {
-			if (isTimedTask(_entireListOfTasks[index])) {
+		if (((_entireListOfTasks[index]).getTaskType() == Task::FIXED_ALLDAY) || 
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_START) || 
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_TIME_WITHIN_DAY) ||
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_TIME_ACROSS_DAY) ||
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_TIME_TO_DAY) ||
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_DAY_TO_TIME) ||
+			((_entireListOfTasks[index]).getTaskType() == Task::FIXED_DAY_TO_DAY)) {
 			timedTasks.push_back(_entireListOfTasks[index]);
 		}
 	}
@@ -154,7 +150,8 @@ vector<Task> State::getDeadlineTasks() {
 
 	for (unsigned int index = INITIAL_INDEX; 
 		index < _entireListOfTasks.size(); index++) {
-			if (isDeadlineTask(_entireListOfTasks[index])) {
+		if (((_entireListOfTasks[index]).getTaskType() == Task::DEADLINE_TIME) || 
+			((_entireListOfTasks[index]).getTaskType() == Task::DEADLINE_ALLDAY)) {
 			deadlineTasks.push_back(_entireListOfTasks[index]);
 		}
 	}
@@ -167,54 +164,10 @@ vector<Task> State::getFloatingTasks() {
 
 	for (unsigned int index = INITIAL_INDEX; 
 		index < _entireListOfTasks.size(); index++) {
-			if (isFloatingTask(_entireListOfTasks[index])) {
+		if ((_entireListOfTasks[index]).getTaskType() == Task::FLOATING){
 			floatingTasks.push_back(_entireListOfTasks[index]);
 		}
 	}
 	return floatingTasks;
 }
 
-bool State::isTimedTask(Task taskToCheck) {
-	return (taskToCheck.getTaskType() == Task::FIXED_ALLDAY) || 
-			(taskToCheck.getTaskType() == Task::FIXED_START) || 
-			(taskToCheck.getTaskType() == Task::FIXED_TIME_WITHIN_DAY) ||
-			(taskToCheck.getTaskType() == Task::FIXED_TIME_ACROSS_DAY) ||
-			(taskToCheck.getTaskType() == Task::FIXED_TIME_TO_DAY) ||
-			(taskToCheck.getTaskType() == Task::FIXED_DAY_TO_TIME) ||
-			(taskToCheck.getTaskType() == Task::FIXED_DAY_TO_DAY);
-}
-
-bool State::isDeadlineTask(Task taskToCheck) {
-	return taskToCheck.getTaskType() == Task::DEADLINE_TIME || 
-			taskToCheck.getTaskType() == Task::DEADLINE_ALLDAY;
-}
-
-bool State::isFloatingTask(Task taskToCheck) {
-	return taskToCheck.getTaskType() == Task::FLOATING;
-}
-
-//Logging
-void State::log(string stringToLog) {
-	if (!isLoggingModeOn()) {
-		return;
-	}
-
-	ofstream writeToLog;
-	writeToLog.open(_logFileName, ios::app);
-	writeToLog << stringToLog;
-	writeToLog.close();
-
-	return;
-}
-
-bool State::isLoggingModeOn() {
-	return _loggingModeOn;
-}
-
-void State::setLoggingModeOff() {
-	_loggingModeOn = false;
-}
-
-void State::setLoggingModeOn() {
-	_loggingModeOn = true;
-}

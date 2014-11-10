@@ -3,6 +3,330 @@
 
 
 	/**
+<<<<<<< HEAD
+=======
+	 * origin: ./\LogicData.cpp
+	 */
+
+
+#include "LogicData.h"
+
+State LogicData::_currentState;
+State LogicData::_viewState;
+State LogicData::_initialState;
+vector<Command*> LogicData::_commandHistory;
+int LogicData::_currentCommandHistoryIndex;
+int LogicData::_doneFilter;
+int LogicData::_typeFilter;
+date LogicData::_startDateFilter;
+date LogicData::_endDateFilter;
+
+//Constants
+const int LogicData::INITIAL_COMMAND_HISTORY_INDEX = 0;
+
+const string LogicData::ABBREV_MONTH_JAN = "Jan";
+const string LogicData::ABBREV_MONTH_FEB = "Feb";
+const string LogicData::ABBREV_MONTH_MAR = "Mar";
+const string LogicData::ABBREV_MONTH_APR = "Apr";
+const string LogicData::ABBREV_MONTH_MAY = "May";
+const string LogicData::ABBREV_MONTH_JUN = "Jun";
+const string LogicData::ABBREV_MONTH_JUL = "Jul";
+const string LogicData::ABBREV_MONTH_AUG = "Aug";
+const string LogicData::ABBREV_MONTH_SEP = "Sep";
+const string LogicData::ABBREV_MONTH_OCT = "Oct";
+const string LogicData::ABBREV_MONTH_NOV = "Nov";
+const string LogicData::ABBREV_MONTH_DEC = "Dec";
+const string LogicData::STRING_SPACE_CHAR = " ";
+const string LogicData::STRING_FRONTSLASH_CHAR = "/";
+const string LogicData::STRING_FROM = " / from ";
+const string LogicData::STRING_TO = " to ";
+const string LogicData::STRING_FILTERED_BY = "Filtered by";
+const string LogicData::STRING_COLON = ":";
+const string LogicData::STRING_VERTICAL_BAR_CHAR = "|";
+const string LogicData::STRING_EMPTY = "";
+const string LogicData::STRING_NO_DONE = "";
+const string LogicData::STRING_DONE = " / done";
+const string LogicData::STRING_UNDONE = " / undone";
+const string LogicData::STRING_ALL_TYPES = "all types";
+const string LogicData::STRING_ONLY_FIXED = "only fixed";
+const string LogicData::STRING_ONLY_DUE = "only due";
+
+const string LogicData::ERR_MSG_INVALID_TASK_TYPE = "INVALID_ARGUMENT: Task Type not known\n";
+const string LogicData::ERR_MSG_INVALID_STATUS_TYPE = "INVALID_ARGUMENT: Status Type not known\n";
+
+//Constructor
+LogicData::LogicData() {
+	_currentCommandHistoryIndex = INITIAL_COMMAND_HISTORY_INDEX;
+	_doneFilter = Status::ONLY_UNDONE;
+	_typeFilter = Type::ALL_TYPES;
+	_startDateFilter = boost::gregorian::date(neg_infin);
+	_endDateFilter = boost::gregorian::date(pos_infin);
+}
+
+//Setters
+void LogicData::setCurrentState(State stateToSet) {
+	_currentState = stateToSet;
+	StorageExecutor myStorageExecutor;
+	myStorageExecutor.saveToStorage(_currentState);
+}
+
+void LogicData::setViewState(State stateToSet) {
+	_viewState = stateToSet;
+}
+
+void LogicData::setDoneFilter(int doneFilter) {
+	_doneFilter = doneFilter;
+}
+
+void LogicData::setTypeFilter(int typeFilter) {
+	_typeFilter = typeFilter;
+}
+
+void LogicData::setDateFilter(date startDateFilter, date endDateFilter) {
+	_startDateFilter = startDateFilter;
+	_endDateFilter = endDateFilter;
+}
+
+void LogicData::setCommandHistoryIndex(int indexToSet) {
+	_currentCommandHistoryIndex = indexToSet;
+}
+
+//Getters
+State LogicData::getCurrentState() {
+	return _currentState;
+}
+
+State LogicData::getViewState() {
+	return filterTasks();
+}
+
+vector<Command*> LogicData::getCommandHistory() {
+	return _commandHistory;
+}
+
+int LogicData::getCurrentCommandHistoryIndex() {
+	return _currentCommandHistoryIndex;
+}
+
+int LogicData::getDoneFilter() {
+	return _doneFilter;
+}
+
+int LogicData::getTypeFilter() {
+	return _typeFilter;
+}
+
+date LogicData::getStartDateFilter() {
+	return _startDateFilter;
+}
+
+date LogicData::getEndDateFilter() {
+	return _endDateFilter;
+}
+
+//Operations
+void LogicData::resetCommandHistory() {
+	_commandHistory.clear();
+	return;
+}
+
+void LogicData::addCommandToHistory(Command* commandToAdd) {
+	_commandHistory.push_back(commandToAdd);
+	_currentCommandHistoryIndex++;
+}
+
+void LogicData::resetToInitialSettings() {
+	_currentState = _initialState;
+	_viewState = _initialState;
+	_commandHistory.clear();
+}
+
+void LogicData::loadInitialSettings() {
+	LogicData();
+	StorageExecutor myStorageExecutor;
+	State initialState = myStorageExecutor.loadFromStorage();
+	_initialState = initialState;
+	_currentState = initialState;
+	_viewState = initialState;
+}
+
+void LogicData::fakeinitiate(State fakestate) {
+	LogicData();
+	_initialState = fakestate;
+	_currentState = _initialState;
+	_viewState = _initialState;
+
+}
+
+State LogicData::filterTasks() {
+	State filteredViewState = _viewState;
+	vector<Task> unfilteredTasks = _viewState.getAllTasks();
+	vector<Task> filteredTasks;
+	try{
+		for(auto iter = unfilteredTasks.begin(); iter != unfilteredTasks.end(); ++iter) {
+			if(passDoneFilter(*iter) && passTypeFilter(*iter) && passDateFilter(*iter)) {
+				filteredTasks.push_back(*iter);
+			}
+		}
+	} catch (const invalid_argument& ia) {
+
+	}
+	filteredViewState.setAllTasks(filteredTasks);
+	string newActionMessage = compileNewActionMessage(filteredViewState);
+	filteredViewState.setActionMessage(newActionMessage);
+	return filteredViewState;
+}
+
+bool LogicData::passDoneFilter(Task task) {
+	try{
+		switch(_doneFilter) {
+			case(Status::DONE_BOTH) :
+				return true;
+			case(Status::ONLY_DONE) :
+				return task.getTaskIsDone();
+			case(Status::ONLY_UNDONE) :
+				return !task.getTaskIsDone();
+			default:;
+				throw invalid_argument(ERR_MSG_INVALID_STATUS_TYPE);
+		}
+	} catch (const invalid_argument&) {
+		throw;
+	}
+}
+
+bool LogicData::passTypeFilter(Task task) {
+	try{
+		switch(_typeFilter) {
+			case(Type::ALL_TYPES) :
+				return true;
+			case(Type::ONLY_FIXED) : 
+				return !task.hasDeadline();
+			case(Type::ONLY_DUE) :
+				return task.hasDeadline() || !task.hasStartDateTime();
+			default:;
+				throw invalid_argument(ERR_MSG_INVALID_TASK_TYPE);
+		}
+	} catch (const invalid_argument&) {
+		throw;
+	}
+}
+
+bool LogicData::passDateFilter(Task task) {
+	if(!task.hasStartDateTime() && !task.hasDeadline()) {
+		return true;
+	} else if(task.hasDeadline()) {
+		return ((task.getTaskDeadline().date() >= _startDateFilter) && 
+			(task.getTaskDeadline().date() <= _endDateFilter));
+	} else if(task.hasStartDateTime() && task.hasEndDateTime()) {
+		return ((task.getTaskStartTime().date() >= _startDateFilter) && 
+			(task.getTaskStartTime().date() <= _endDateFilter) && 
+			(task.getTaskEndTime().date() <= _endDateFilter) && 
+			(task.getTaskStartTime().date() >= _startDateFilter));
+	} else if(task.hasStartDateTime() && !task.hasEndDateTime()) {
+		return ((task.getTaskStartTime().date() >= _startDateFilter) && 
+			(task.getTaskStartTime().date() <= _endDateFilter));
+	}
+	return false;
+}
+
+string LogicData::getFilterStatus() {
+	string filterStatus;
+	string doneFilterStatus;
+	string typeFilterStatus;
+	string dateFilterStatus;
+	
+	switch(_doneFilter) {
+		case(Status::DONE_BOTH) :
+			doneFilterStatus = STRING_NO_DONE;
+			break;
+		case(Status::ONLY_DONE) :
+			doneFilterStatus = STRING_DONE;
+			break;
+		case(Status::ONLY_UNDONE) :
+			doneFilterStatus = STRING_UNDONE;
+			break;
+	}
+
+	switch(_typeFilter) {
+		case(Type::ALL_TYPES) :
+			typeFilterStatus = STRING_ALL_TYPES;
+			break;
+		case(Type::ONLY_FIXED) :
+			typeFilterStatus = STRING_ONLY_FIXED;
+			break;
+		case(Type::ONLY_DUE) :
+			typeFilterStatus = STRING_ONLY_DUE;
+			break;
+	}
+
+	if (_startDateFilter != boost::gregorian::date(neg_infin)) {
+		dateFilterStatus += STRING_FROM + getDisplayDay(ptime(_startDateFilter));
+	}
+	if (_endDateFilter != boost::gregorian::date(pos_infin)) {
+		dateFilterStatus += STRING_TO + getDisplayDay(ptime(_endDateFilter));
+	}
+
+	filterStatus = STRING_FILTERED_BY + STRING_COLON + STRING_SPACE_CHAR +
+		typeFilterStatus + doneFilterStatus + dateFilterStatus;
+	return filterStatus;
+}
+
+string LogicData::getDisplayDay(ptime myTime) {
+	string displayDay;
+	displayDay += to_string(myTime.date().day());
+	displayDay += STRING_SPACE_CHAR + changeMonthToMonthOfYear(myTime.date().month());
+	displayDay += STRING_SPACE_CHAR + to_string(myTime.date().year());
+	return displayDay;
+}
+
+string LogicData::changeMonthToMonthOfYear(int month) {
+	if (month == Month::JAN) {
+		return ABBREV_MONTH_JAN;
+	} else if (month == Month::FEB) {
+		return ABBREV_MONTH_FEB;
+	} else if (month == Month::MAR) {
+		return ABBREV_MONTH_MAR;
+	} else if (month == Month::APR) {
+		return ABBREV_MONTH_APR;
+	} else if (month == Month::MAY) {
+		return ABBREV_MONTH_MAY;
+	} else if (month == Month::JUN) {
+		return ABBREV_MONTH_JUN;
+	} else if (month == Month::JUL) {
+		return ABBREV_MONTH_JUL;
+	} else if (month == Month::AUG) {
+		return ABBREV_MONTH_AUG;
+	} else if (month == Month::SEP) {
+		return ABBREV_MONTH_SEP;
+	} else if (month == Month::OCT) {
+		return ABBREV_MONTH_OCT;
+	} else if (month == Month::NOV) {
+		return ABBREV_MONTH_NOV;
+	} else if (month == Month::DEC) {
+		return ABBREV_MONTH_DEC;
+	}
+
+	return STRING_EMPTY;
+}
+
+string LogicData::compileNewActionMessage(State filteredViewState){
+	string newActionMessageToReturn;	
+	
+	newActionMessageToReturn = filteredViewState.getActionMessage() + 
+		STRING_SPACE_CHAR + STRING_SPACE_CHAR + STRING_VERTICAL_BAR_CHAR + 
+		STRING_VERTICAL_BAR_CHAR + STRING_SPACE_CHAR + STRING_SPACE_CHAR + 
+		getFilterStatus();
+
+	return newActionMessageToReturn;
+}
+	// End of segment: ./\LogicData.cpp
+
+
+
+
+
+	/**
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	 * origin: ./\LogicData.h
 	 */
 
@@ -66,8 +390,13 @@ class LogicData {
 		static date _endDateFilter;
 
 		//Attributes for Logging
+<<<<<<< HEAD
 		static string _logFileName;
 		static bool _loggingModeOn;
+=======
+		//static string _logFileName;
+		//static bool _loggingModeOn;
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		static char buffer[255];
 
 	public:
@@ -105,6 +434,7 @@ class LogicData {
 		static string getFilterStatus();
 		static string changeMonthToMonthOfYear(int month);
 		static string getDisplayDay(ptime myTime);
+<<<<<<< HEAD
 		static string compileStartDateFilterStatus(string dateFilterStatus, 
 			date startDateFilter);
 		static string compileEndDateFilterStatus(string dateFilterStatus, 
@@ -119,6 +449,10 @@ class LogicData {
 		static void setLoggingModeOff();
 		static void setLoggingModeOn();
 
+=======
+		static string compileNewActionMessage(State filteredViewState);
+
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		//Constants
 		static const int INITIAL_COMMAND_HISTORY_INDEX;
 
@@ -149,6 +483,7 @@ class LogicData {
 		static const string STRING_ONLY_FIXED;
 		static const string STRING_ONLY_DUE;
 
+<<<<<<< HEAD
 		static const string LOG_LOGIC_DATA_FILE_NAME;
 		static const string LOG_MSG_CURRENT_STATE_SET;
 		static const string LOG_MSG_VIEW_STATE_SET;
@@ -160,6 +495,8 @@ class LogicData {
 		static const string LOG_MSG_RESET;
 		static const string LOG_MSG_LOAD;
 
+=======
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		static const string ERR_MSG_INVALID_TASK_TYPE;
 		static const string ERR_MSG_INVALID_STATUS_TYPE;
 };
@@ -172,6 +509,7 @@ class LogicData {
 
 
 	/**
+<<<<<<< HEAD
 	 * origin: ./\LogicDataUnitTests\LogicDataTests.cpp
 	 */
 
@@ -714,6 +1052,8 @@ namespace testLogicDataComponent {
 
 
 	/**
+=======
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	 * origin: ./\State.h
 	 */
 
@@ -742,15 +1082,21 @@ namespace testLogicDataComponent {
 #define STATE_H
 
 #include "Task.h"
+<<<<<<< HEAD
 #include <fstream>
 using namespace std;
 
 //Constants
+=======
+using namespace std;
+
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 const int UNSPECIFIED_INDEX = -1;
 const int INITIAL_INDEX = 0;
 const int TO_THE_RIGHT_BY_ONE = 1;
 const bool UNSPECIFIED_USER_COMMAND = false;
 
+<<<<<<< HEAD
 const string LOG_STATE_FILE_NAME = "StateLog.txt";
 const string LOG_MSG_TASK_ADDED = "Function called: addTask()\n";
 const string LOG_MSG_TASK_DELETED = "Function called: deleteTask()\n";
@@ -761,6 +1107,10 @@ const string LOG_MSG_TASKS_SORTED = "Function called: sortAllTasks()\n";
 class State {
 	private:
 		//Attributes for State
+=======
+class State {
+	private:
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		vector<Task> _entireListOfTasks;
 		string _userMessage;
 		string _actionMessage;
@@ -768,11 +1118,14 @@ class State {
 		int _lastActionType;
 		int _lastActionTaskIndex;
 
+<<<<<<< HEAD
 		//Attributes for Logging
 		string _logFileName;
 		bool _loggingModeOn;
 		char buffer[255];
 
+=======
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	public:
 		//Constructor
 		State();
@@ -803,6 +1156,7 @@ class State {
 		vector<Task> getTimedTasks();
 		vector<Task> getDeadlineTasks();
 		vector<Task> getFloatingTasks();
+<<<<<<< HEAD
 		bool isTimedTask(Task taskToCheck);
 		bool isDeadlineTask(Task taskToCheck);
 		bool isFloatingTask(Task taskToCheck);
@@ -815,6 +1169,11 @@ class State {
 
 		//Enumeration
 		enum actionType { NONE = 1, CHANGED, DELETED };
+=======
+
+		//Enumeration
+		enum actionType { NONE = 0, CHANGED, DELETED };
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 };
 
 #endif
@@ -832,7 +1191,11 @@ class State {
 //Task is the most fundamental component within WhatToDo and is responsible 
 //for storing important details of a task such as its start time, end time, 
 //deadline, name, tags and status (done or not done). In additional, a Task 
+<<<<<<< HEAD
 //has two additional functions – firstly it is able to check if two Tasks 
+=======
+//has two additional functions firstly it is able to check if two Tasks 
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 //overlap, and secondly it is able to check if a Task begins earlier than 
 //another Task. A Task also can be defined in many types:
 //	1)Floating Tasks - no start date time, no end date time and no deadline
@@ -858,19 +1221,25 @@ class State {
 //
 //*Note: datetimes which occupy an entire day are marked with 1 second 
 //		(000001 in HHMMSS)
+<<<<<<< HEAD
 //
 //Logging is used to tracked changes within the internal workings of a Task
 //However, it can be toggled on and off by the developer on an optional basis.
 //This is because logging for a large number of Tasks may slow down the 
 //computational processes within WhatToDo. This can be easily changed by
 //setting _loggingModeOn to either true or false in the constructor.
+=======
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 //****************************************************************************
 
 #ifndef TASK_H
 #define TASK_H
 
 #include <iostream>
+<<<<<<< HEAD
 #include <fstream>
+=======
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 #include <vector>
 #include <string>
 #include <exception>
@@ -881,6 +1250,7 @@ using namespace std;
 using namespace boost::posix_time;
 using namespace boost::gregorian;
 
+<<<<<<< HEAD
 //Constants
 const int NUM_OF_COMP_FUNCTIONS = 8;
 const int MARKED_AS_FULL_DAY = 1;
@@ -896,19 +1266,35 @@ const string LOG_MSG_TASK_DONE = "Function called: setTaskIsDone()\n";
 class Task {
 	private:
 		//Attributes for Task
+=======
+const int NUM_OF_COMP_FUNCTIONS = 8;
+const int MARKED_AS_FULL_DAY = 1;
+const int EMPTY = 0;
+const string MSG_ERR_INVALID_FUNCTION_CALL = "INVALID_ARGUMENT: Function called does not exist\n";
+
+class Task {
+	private:
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		ptime _taskStartDateTime;
 		ptime _taskEndDateTime;
 		ptime _taskDeadline;
 		string _taskName;
+<<<<<<< HEAD
+=======
+		string _taskDetails; //Not used for now
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		vector<string> _taskTags;
 		int _taskIndex;
 		bool _isDone;
 
+<<<<<<< HEAD
 		//Attributes for Logging
 		string _logFileName;
 		bool _loggingModeOn;
 		char buffer[255];
 
+=======
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	public:
 		//Constructor
 		Task();
@@ -918,6 +1304,10 @@ class Task {
 		void setTaskEndTime(ptime dateTimeToSet);
 		void setTaskDeadline(ptime dateTimeToSet);
 		void setTaskName(string nameToSet);
+<<<<<<< HEAD
+=======
+		void setTaskDetails(string detailsToSet); // Not used for now
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		void setTaskTags(vector<string> tagsToSet);
 		void setTaskIndex(int indexToSet);
 		void setTaskIsDone(bool doneStatusToSet = true);
@@ -931,6 +1321,10 @@ class Task {
 		ptime getTaskDeadline();
 		time_duration getTaskDuration();
 		string getTaskName();
+<<<<<<< HEAD
+=======
+		string getTaskDetails();//Not used for now
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		vector<string> getTaskTags();
 		bool getTaskIsDone();
 		
@@ -942,6 +1336,10 @@ class Task {
 		bool isStartDateEqualEndDate();
 		bool isTaskTypeFixedDay(Task myTask);
 		bool isTaskTypeFixedTime(Task myTask);
+<<<<<<< HEAD
+=======
+		bool isTaskHasStartAndEnd();
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		bool isTaskOverlapWith(Task myTask);
 		bool isEarlierThan(Task myTask);
 		bool isTaskSortedBefore(Task firstTask, Task secondTask);
@@ -956,12 +1354,15 @@ class Task {
 		bool compareByFixedStart(Task firstTask, Task secondTask, bool *orderConfirmed);
 		bool compareByFixedTime(Task firstTask, Task secondTask, bool *orderConfirmed);
 		bool compareByFixedTimeAndStart(Task firstTask, Task secondTask, bool *orderConfirmed);
+<<<<<<< HEAD
 		
 		//Logging
 		void log(string stringToLog);
 		bool isLoggingModeOn();
 		void setLoggingModeOff();
 		void setLoggingModeOn();
+=======
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 
 		//Enumeration
 		enum TaskType {

@@ -24,6 +24,13 @@ Command::Command(void) {
 	_loggingModeOn = INITIAL_VALUE_LOGGING_MODE_ON;
 	_doneFilter = Status::STATUS_NOT_SET;
 	_typeFilter = Type::TYPE_NOT_SET;
+<<<<<<< HEAD
+=======
+
+	ofstream writeToLog;
+	writeToLog.open(_logFileName, ios::out);
+	writeToLog.close();
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 }
 
 void Command::execute() {
@@ -419,6 +426,10 @@ void CommandAdd::execute() {
 		_userMessage = errorMsg;
 		retrieveExistingViewState();
 		addUserMessageToCurrentState();
+<<<<<<< HEAD
+=======
+		_currentState->setActionMessage(STRING_EMPTY);
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		setNewViewState();
 	}
 
@@ -1386,6 +1397,10 @@ void CommandRedo::execute() {
 	catch (string errorMsg) {
 		_userMessage = errorMsg;
 		retrieveExistingViewState();
+<<<<<<< HEAD
+=======
+		_currentState->setActionMessage(STRING_EMPTY);
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		addUserMessageToCurrentState();
 		setNewViewState();
 	}
@@ -2202,6 +2217,7 @@ class CommandSearchPowerSearch {
 
 
 	/**
+<<<<<<< HEAD
 	 * origin: ./\CommandUndo.cpp
 	 */
 
@@ -2230,6 +2246,2422 @@ void CommandUndo::execute() {
 	catch (string errorMsg) {
 		_userMessage = errorMsg;
 		retrieveExistingViewState();
+		addUserMessageToCurrentState();
+		setNewViewState();
+	}
+
+	return;
+}
+
+void CommandUndo::runAllRelevantCommandsAgain() {
+	int i;
+	for (i=0; i<_currentCommandHistoryIndex; i++) {
+		_commandHistory[i]->execute();
+	}
+
+	sprintf_s(buffer, 
+		MSG_LOGGING_RUN_RELEVANT_COMMANDS_AGAIN.c_str(), 
+		to_string(_currentCommandHistoryIndex).c_str());
+	log(buffer);
+	return;
+}
+
+void CommandUndo::storeRemainingCommandsInHistory() {
+	int i;
+	for (i=_currentCommandHistoryIndex; 
+			unsigned(i)<_commandHistory.size(); i++) {
+		LogicData::addCommandToHistory(_commandHistory[i]);
+	}
+	LogicData::setCommandHistoryIndex(_currentCommandHistoryIndex);
+
+	sprintf_s(buffer, MSG_LOGGING_STORE_REMAINING_COMMANDS.c_str(), 
+		to_string(_commandHistory.size()).c_str(), 
+		to_string(_currentCommandHistoryIndex).c_str());
+	log(buffer);
+	return;
+}
+
+bool CommandUndo::checkIsCommandValid() {
+	bool isUndoPossible;
+	if ((_currentCommandHistoryIndex <= 0) 
+			|| (_currentCommandHistoryIndex > _commandHistory.size())) {
+		throw MSG_ERROR_CANNOT_UNDO_ANYMORE;
+		isUndoPossible = false;
+	}
+	else {
+		isUndoPossible = true;
+		_currentCommandHistoryIndex--;
+	}
+
+	sprintf_s(buffer, MSG_LOGGING_CHECK_IS_COMMAND_VALID.c_str(), 
+		to_string(_currentCommandHistoryIndex).c_str(), 
+		to_string(isUndoPossible).c_str());
+	log(buffer);
+	return isUndoPossible;
+}
+
+void CommandUndo::retrieveCommandHistory() {
+	_commandHistory = LogicData::getCommandHistory();
+
+	sprintf_s(buffer, MSG_LOGGING_RETRIEVE_COMMAND_HISTORY.c_str(), 
+		to_string(_commandHistory.size()).c_str());
+	log(buffer);
+	return;
+}
+
+void CommandUndo::retrieveCommandHistoryIndex() {
+	_currentCommandHistoryIndex = 
+		LogicData::getCurrentCommandHistoryIndex();
+
+	sprintf_s(buffer, 
+		MSG_LOGGING_RETRIEVE_COMMAND_HISTORY_INDEX.c_str(), 
+		to_string(_currentCommandHistoryIndex).c_str());
+	log(buffer);
+	return;
+}
+
+	// End of segment: ./\CommandUndo.cpp
+=======
+	 * origin: ./\CommandTests\CommandAddTests.cpp
+	 */
+
+//
+// All unit tests for CommmandAdd are performed here.
+
+#include "stdafx.h"
+#include "CppUnitTest.h"
+#include "TestSupportLibrary.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace CommandAddTests
+{		
+	TEST_CLASS(CommandAddTests)
+	{
+	public:
+
+		// This is a test case falling under the "normal 
+		// adding process" partition
+
+		TEST_METHOD(CommandAdd_NormalSuccessfulAdd)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			
+			LogicData::fakeinitiate(initialState);
+			
+			// Creating a command and the expected states to test
+
+			Command* testCommand = new CommandAdd;
+			
+			anotherTaskName = "Watch some TV";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			testCommand->setCurrentTask(anotherTask);
+
+			expectedCurrentState = initialState;
+			expectedViewState = expectedCurrentState;
+			expectedViewState.setActionMessage(
+				"Task Added!  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("Task Added!");
+
+			// Obtaining the actual eventual states
+
+			testCommand->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+		// This is a test case falling under the "failed add
+		// due to timing overlap" partition
+
+		TEST_METHOD(CommandAdd_TimingOverlap)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+
+			LogicData::fakeinitiate(initialState);
+			
+			// Creating a command and the expected states to test
+
+			Command* testCommand = new CommandAdd;
+			
+			anotherTaskName = "Watch some TV";
+			anotherTaskStartTime = "20141120T090000";
+			anotherTaskEndTime = "20141120T101500";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			testCommand->setCurrentTask(anotherTask);
+			initialState.addTask(anotherTask);
+
+			expectedCurrentState = initialState;
+			expectedViewState = expectedCurrentState;
+			expectedViewState.setUserMessage(
+				"Task Added! Note: Beware task overlap!");
+			expectedViewState.setActionMessage(
+				"Task Added!  ||  Filtered by: all types / undone");
+			expectedCurrentState.setUserMessage(
+				"Task Added! Note: Beware task overlap!");
+			expectedCurrentState.setActionMessage(
+				"Task Added!");
+
+			// Obtaining the actual eventual states
+
+			testCommand->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+		// This is a test case falling under the "failed add
+		// due to incorrect time ordering" partition
+
+		TEST_METHOD(CommandAdd_EndTimeBeforeStartTime)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+
+			LogicData::fakeinitiate(initialState);
+			
+			// Creating a command and the expected states to test
+
+			Command* testCommand = new CommandAdd;
+			
+			anotherTaskName = "Watch some TV";
+			anotherTaskStartTime = "20141120T130000";
+			anotherTaskEndTime = "20141120T120000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			testCommand->setCurrentTask(anotherTask);
+
+			expectedCurrentState = initialState;
+			expectedViewState = expectedCurrentState;
+			expectedViewState.setUserMessage(
+				"The end time cannot be before the start time!");
+			expectedViewState.setActionMessage(
+				"  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("");
+
+			// Obtaining the actual eventual states
+
+			testCommand->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+		// This is a test case falling under the "failed add due
+		// to incorrectincorrect user input parsed wrongly" partition
+
+		TEST_METHOD(CommandAdd_ParsedStatusFalse)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask
+				(anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+
+			LogicData::fakeinitiate(initialState);
+			
+			// Creating a command and the expected states to test
+
+			Command* testCommand = new CommandAdd;
+			
+			anotherTaskName = "Watch some TV";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = true;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			testCommand->setCurrentTask(anotherTask);
+			testCommand->setParsedStatus(false);
+
+			expectedCurrentState = initialState;
+			expectedViewState = expectedCurrentState;
+			expectedViewState.setUserMessage("");
+			expectedViewState.setActionMessage(
+				"  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("");
+
+			// Obtaining the actual eventual states
+
+			testCommand->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+	};
+}
+	// End of segment: ./\CommandTests\CommandAddTests.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\CommandTests\CommandClearTests.cpp
+	 */
+
+//
+// All unit tests for CommmandClear are performed here.
+
+#include "stdafx.h"
+#include "CppUnitTest.h"
+#include "TestSupportLibrary.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace CommandClearTests
+{		
+	TEST_CLASS(CommandClearTests)
+	{
+	public:
+
+		// This is a test case falling under the "normal 
+		// clear process" partition
+
+		TEST_METHOD(CommandClear_NormalClear)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			
+			LogicData::fakeinitiate(initialState);
+			
+			// Creating a command and the expected states to test
+
+			Command* testCommandClear = new CommandClear;
+			Command* testCommandSearch = new CommandSearch;
+			testCommandSearch->setSearchKeyword("Surf the web");
+
+			expectedCurrentState = initialState;
+			expectedViewState = expectedCurrentState;
+
+			expectedViewState.setActionMessage(
+				"  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("");
+
+			// Obtaining the actual eventual states
+
+			testCommandSearch->execute();
+			testCommandClear->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+	};
+}
+	// End of segment: ./\CommandTests\CommandClearTests.cpp
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
+
+
+
+
+
+	/**
+<<<<<<< HEAD
+	 * origin: ./\CommandUndo.h
+	 */
+
+// 
+// This is the concrete CommandUndo class, which is reponsible for executing 
+// a "undo" command specified by the user.
+//
+// It works by (i) checking for the validity of the command; (ii) resetting
+// all LogicData's state settings; and (iii) running all the commands from the
+// beginning all over again till the correct existing command to simulate an
+// undo operation.
+//
+// If the command is invalid either due to (i) a false parsed status indicating
+// it has been parsed incorrectly; or (ii) lack of past commands to undo, an error 
+// message will be added to the current state to be shown to the user eventually.
+//
+//****************************************************************************
+
+#pragma once
+
+#include "Command.h"
+
+using namespace std;
+
+const string MSG_LOGGING_EXECUTE_COMMAND_UNDO = 
+	"\nCommand Add Initiated:\n";
+const string MSG_LOGGING_RUN_RELEVANT_COMMANDS_AGAIN = 
+	"Function called: runAllRelevantCommandsAgain(): _currentCommand"
+	"HistoryIndex: %s\n";
+const string MSG_LOGGING_STORE_REMAINING_COMMANDS = 
+	"Function called: storeRemainingCommandsInHistory(): size of _co"
+	"mmandHistory: %s\nFunction called: storeRemainingCommandsInHist"
+	"ory(): _currentCommandHistoryIndex: %s\n";
+const string MSG_LOGGING_CHECK_IS_COMMAND_VALID = 
+	"Function called: checkIsCommandValid(): updated _currentCommand"
+	"HistoryIndex: %s\nFunction called: checkIsCommandValid(): isUnd"
+	"o/RedoPossible: %s\n";
+const string MSG_LOGGING_RETRIEVE_COMMAND_HISTORY = 
+	"Function called: retrieveCommandHistory(): size of CommandHisto"
+	"ry: %s\n";
+const string MSG_LOGGING_RETRIEVE_COMMAND_HISTORY_INDEX = 
+	"Function called: retrieveCommandHistoryIndex(): _currentCommand"
+	"HistoryIndex: %s\n";
+
+const string MSG_ERROR_CANNOT_UNDO_ANYMORE = 
+	"Cannot undo anymore!";
+
+class CommandUndo: public Command {
+	public:
+		CommandUndo(void);
+		
+		/*
+		// This API function executes the Undo Command when called.
+		//
+		// Pre-conditions: 
+		//     (i) LogicData's command history index must be between
+		//     one and the size of the command history vector (LogicData
+		//     must store a valid command history index.
+		//     (ii) The _isParsedCorrectly variable in the command 
+		//     should be true.
+		//
+		// Post-Conditions:
+		//     (i) The latest done action in LogicData's command history 
+		//     will be undone. If there is no such action, undo will 
+		//     not be performed.
+		//
+		// Sample usage:
+		//     CommandUndo* aUndoCommand = new CommandUndo;
+		//     aUndoCommand->execute();
+		*/
+		
+		void execute();
+
+	protected:
+
+		// Attributes For Execution
+
+		int _currentCommandHistoryIndex;
+		vector<Command*> _commandHistory;
+		
+		// Functions For Execution
+
+		bool checkIsCommandValid();
+		void runAllRelevantCommandsAgain();
+		void storeRemainingCommandsInHistory();
+		void retrieveCommandHistory();
+		void retrieveCommandHistoryIndex();
+};
+
+
+	// End of segment: ./\CommandUndo.h
+=======
+	 * origin: ./\CommandTests\CommandDeleteTests.cpp
+	 */
+
+//
+// All unit tests for CommmandDelete are performed here.
+
+#include "stdafx.h"
+#include "CppUnitTest.h"
+#include "TestSupportLibrary.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace CommandDeleteTests
+{		
+	TEST_CLASS(CommandDeleteTests)
+	{
+	public:
+
+		// This is a test case falling under the "normal 
+		// delete process" partition
+
+		TEST_METHOD(CommandDelete_NormalSuccessfulDelete)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState = initialState;
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+
+			LogicData::fakeinitiate(initialState);
+
+			// Creating a command and the expected states to test
+
+			Command* testCommand = new CommandDelete;
+			int index = 2;
+			testCommand->setTaskIndex(index);
+
+			expectedViewState = expectedCurrentState;
+			expectedViewState.setActionMessage(
+				"Task Deleted!  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("Task Deleted!");
+
+			// Obtaining the actual eventual states
+
+			testCommand->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+	};
+}
+	// End of segment: ./\CommandTests\CommandDeleteTests.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\CommandTests\CommandDoneTests.cpp
+	 */
+
+//
+// All unit tests for CommmandDone are performed here.
+
+#include "stdafx.h"
+#include "CppUnitTest.h"
+#include "TestSupportLibrary.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace CommandDoneTests
+{		
+	TEST_CLASS(CommandDoneTests)
+	{
+	public:
+
+		// This is a test case falling under the "normal 
+		// done process" partition
+
+		TEST_METHOD(CommandDone_NormalDone)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+
+
+			LogicData::fakeinitiate(initialState);
+			LogicData::setDoneFilter(0);
+			
+			// Creating a command and the expected states to test
+			
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = true;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			expectedViewState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			Command* testCommandDone = new CommandDone;
+			int index = 2;
+			testCommandDone->setTaskIndex(index);
+			testCommandDone->setIsDoneStatus(true);
+
+			expectedViewState.setActionMessage(
+				"Task marked as Done!  ||  Filtered by: all types");
+			expectedCurrentState.setActionMessage("Task marked as Done!");
+
+			// Obtaining the actual eventual states
+
+			testCommandDone->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+	};
+}
+	// End of segment: ./\CommandTests\CommandDoneTests.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\CommandTests\CommandEditTests.cpp
+	 */
+
+//
+// All unit tests for CommmandEdit are performed here.
+
+#include "stdafx.h"
+#include "CppUnitTest.h"
+#include "TestSupportLibrary.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace CommandEditTests
+{		
+	TEST_CLASS(CommandEditTests)
+	{
+	public:
+
+		// This is a test case falling under the "normal 
+		// edit process" partition
+
+		TEST_METHOD(CommandEdit_NormalSuccessfulEdit)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			
+			LogicData::fakeinitiate(initialState);
+			
+			// Creating a command and the expected states to test
+
+			anotherTaskName = "Surf the web along along";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			expectedViewState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			Command* testCommandEdit = new CommandEdit;
+			int index = 2;
+			testCommandEdit->setTaskIndex(index);
+			testCommandEdit->setCurrentTask(anotherTask);
+
+			expectedViewState.setActionMessage(
+				"Task Edited!  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("Task Edited!");
+
+			// Obtaining the actual eventual states
+
+			testCommandEdit->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+	};
+}
+	// End of segment: ./\CommandTests\CommandEditTests.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\CommandTests\CommandRedoTests.cpp
+	 */
+
+//
+// All unit tests for CommmandRedo are performed here.
+
+#include "stdafx.h"
+#include "CppUnitTest.h"
+#include "TestSupportLibrary.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace CommandRedoTests
+{		
+	TEST_CLASS(CommandRedoTests)
+	{
+	public:
+		
+		// This is a test case falling under the "single viable redo"
+		// partition
+
+		TEST_METHOD(CommandRedo_OneRedo)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+
+			LogicData::resetToInitialSettings();
+			LogicData::fakeinitiate(initialState);
+
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, 	anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			Command* testCommandAdd1 = new CommandAdd;
+			testCommandAdd1->setCurrentTask(anotherTask);
+			testCommandAdd1->execute();
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			Command* testCommandAdd2 = new CommandAdd;
+			testCommandAdd2->setCurrentTask(anotherTask);
+			testCommandAdd2->execute();
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			Command* testCommandAdd3 = new CommandAdd;
+			testCommandAdd3->setCurrentTask(anotherTask);
+			testCommandAdd3->execute();
+
+			// Creating a command and the expected states to test
+
+			Command* testCommandUndo = new CommandUndo;
+			Command* testCommandRedo = new CommandRedo;
+			expectedViewState.setActionMessage(
+				"Task Added!  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("Task Added!");
+
+			// Obtaining the actual eventual states
+
+			testCommandUndo->execute();
+			testCommandUndo->execute();
+			testCommandRedo->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+	}
+
+		// This is a test case falling under the "excessive redos
+		// till redo is no longer possible" partition
+
+		TEST_METHOD(CommandRedo_ExcessiveRedos)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			LogicData::resetToInitialSettings();
+			LogicData::fakeinitiate(initialState);
+
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+			Command* testCommandAdd1 = new CommandAdd;
+			testCommandAdd1->setCurrentTask(anotherTask);
+			testCommandAdd1->execute();
+
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+			Command* testCommandAdd2 = new CommandAdd;
+			testCommandAdd2->setCurrentTask(anotherTask);
+			testCommandAdd2->execute();
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+			Command* testCommandAdd3 = new CommandAdd;
+			testCommandAdd3->setCurrentTask(anotherTask);
+			testCommandAdd3->execute();
+
+			// Creating a command and the expected states to test
+
+			Command* testCommandUndo = new CommandUndo;
+			Command* testCommandRedo = new CommandRedo;
+			expectedViewState.setUserMessage("Cannot redo anymore!");
+			expectedViewState.setActionMessage(
+				"  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("Task Added!");
+
+			// Obtaining the actual eventual states
+
+			testCommandUndo->execute();
+			testCommandRedo->execute();
+			testCommandRedo->execute();
+			testCommandRedo->execute();
+			testCommandRedo->execute();
+
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+	};
+}
+	// End of segment: ./\CommandTests\CommandRedoTests.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\CommandTests\CommandSearchTests.cpp
+	 */
+
+//
+// All unit tests for CommmandSearch are performed here.
+
+#include "stdafx.h"
+#include "CppUnitTest.h"
+#include "TestSupportLibrary.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace CommandSearchTests
+{		
+	TEST_CLASS(CommandSearchTests)
+	{
+	public:
+
+		// This is a test case falling under the "search 
+		// "tags only" partition
+
+		TEST_METHOD(CommandSearch_SearchTagsOnly)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			LogicData::fakeinitiate(initialState);
+
+			// Creating a command and the expected states to test
+
+			Command* testCommand = new CommandSearch;
+			testCommand->setSearchKeyword("#homework");
+			expectedViewState.setActionMessage(
+				"  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("");
+
+			// Obtaining the actual eventual states
+
+			testCommand->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+		// This is a test case falling under the "search a 
+		// combination of tags and names" partition
+
+		TEST_METHOD(CommandSearch_SearchNamesAndTags)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			LogicData::fakeinitiate(initialState);
+
+			// Creating a command and the expected states to test
+
+			Command* testCommand = new CommandSearch;
+			testCommand->setSearchKeyword("tutorial#homework");
+			expectedViewState.setActionMessage(
+				"  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("");
+
+			// Obtaining the actual eventual states
+
+			testCommand->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+		
+		// This is a test case falling under the "search 
+		// with acronyms" partition
+
+		TEST_METHOD(CommandSearch_SearchAcronyms)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = 
+				"Practice Moonlight Sonata and Pirates of the Carribean";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			LogicData::fakeinitiate(initialState);
+
+			// Creating a command and the expected states to test
+
+			Command* testCommand = new CommandSearch;
+			testCommand->setSearchKeyword("potc");
+			expectedViewState.setActionMessage(
+				"  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("");
+
+			// Obtaining the actual eventual states
+
+			testCommand->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+		// This is a test case falling under the "search 
+		// with fuzzysearch" partition
+
+		TEST_METHOD(CommandSearch_SearchFuzzy)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web for kingsofchaos";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+
+			LogicData::fakeinitiate(initialState);
+
+			// Creating a command and the expected states to test
+
+			Command* testCommand = new CommandSearch;
+			testCommand->setSearchKeyword("kongsowchaox");
+			expectedViewState.setActionMessage(
+				"  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("");
+
+			// Obtaining the actual eventual states
+
+			testCommand->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+		// This is a test case falling under the "search 
+		// with shorthand" partition
+
+		TEST_METHOD(CommandSearch_SearchShorthand)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			LogicData::fakeinitiate(initialState);
+
+			// Creating a command and the expected states to test
+
+			Command* testCommand = new CommandSearch;
+			testCommand->setSearchKeyword("mlt");
+			expectedViewState.setActionMessage(
+				"  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("");
+
+			// Obtaining the actual eventual states
+
+			testCommand->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+		// This is a test case falling under the "search 
+		//nonsense" partition
+
+		TEST_METHOD(CommandSearch_SearchGibberish)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			LogicData::fakeinitiate(initialState);
+
+			// Creating a command and the expected states to test
+
+			Command* testCommand = new CommandSearch;
+			testCommand->setSearchKeyword("askjdejk");
+			expectedViewState.setActionMessage(
+				"  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("");
+
+			// Obtaining the actual eventual states
+
+			testCommand->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+		// This is a test case falling under the 
+		// "search spaces" partition
+
+		TEST_METHOD(CommandSearch_SearchSpaces)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline,
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime,
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			initialState.addTask(anotherTask);
+			expectedCurrentState.addTask(anotherTask);
+
+			LogicData::fakeinitiate(initialState);
+
+			// Creating a command and the expected states to test
+
+			Command* testCommand = new CommandSearch;
+			testCommand->setSearchKeyword("        ");
+			expectedViewState = expectedCurrentState;
+			expectedViewState.setActionMessage(
+				"  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("");
+
+			// Obtaining the actual eventual states
+
+			testCommand->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+};
+}
+	// End of segment: ./\CommandTests\CommandSearchTests.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\CommandTests\CommandUndoTests.cpp
+	 */
+
+//
+// All unit tests for CommmandUndo are performed here.
+
+#include "stdafx.h"
+#include "CppUnitTest.h"
+#include "TestSupportLibrary.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace CommandUndoTests
+{		
+	TEST_CLASS(CommandUndoTests)
+	{
+	public:
+		
+		// This is a test case falling under the "single viable undo"
+		// partition
+
+		TEST_METHOD(CommandUndo_OneUndo)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			LogicData::resetToInitialSettings();
+			LogicData::fakeinitiate(initialState);
+
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, 	anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			Command* testCommandAdd1 = new CommandAdd;
+			testCommandAdd1->setCurrentTask(anotherTask);
+			testCommandAdd1->execute();
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			Command* testCommandAdd2 = new CommandAdd;
+			testCommandAdd2->setCurrentTask(anotherTask);
+			testCommandAdd2->execute();
+			expectedCurrentState.addTask(anotherTask);
+			expectedViewState.addTask(anotherTask);
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			Command* testCommandAdd3 = new CommandAdd;
+			testCommandAdd3->setCurrentTask(anotherTask);
+			testCommandAdd3->execute();
+
+			// Creating a command and the expected states to test
+
+			Command* testCommandUndo = new CommandUndo;
+			expectedViewState.setActionMessage(
+				"Task Added!  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("Task Added!");
+
+			// Obtaining the actual eventual states
+
+			testCommandUndo->execute();
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+	}
+
+		// This is a test case falling under the "excessive undos
+		// till undo is no longer possible" partition
+
+		TEST_METHOD(CommandUndo_ExcessiveUndos)
+		{
+			// Initiating the LogicData with an initial state
+			
+			State initialState;
+			State expectedCurrentState;
+			State expectedViewState;
+			State actualCurrentState;
+			State actualViewState;
+
+			Task anotherTask;
+			string anotherTaskName;
+			string anotherTaskStartTime;
+			string anotherTaskEndTime;
+			string anotherTaskDeadline;
+			vector<string> anotherTaskTags;
+			bool anotherTaskIsDone;
+			
+			LogicData::resetToInitialSettings();
+			LogicData::fakeinitiate(initialState);
+
+			anotherTaskName = "Finish Tutorial 1";
+			anotherTaskStartTime = "20141120T100000";
+			anotherTaskEndTime = "20141120T110000";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#cs2103");
+			anotherTaskTags.push_back("#homework");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			Command* testCommandAdd1 = new CommandAdd;
+			testCommandAdd1->setCurrentTask(anotherTask);
+			testCommandAdd1->execute();
+
+			anotherTaskName = "Practice Moonlight Sonata";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "not-a-date-time";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#homework");
+			anotherTaskTags.push_back("#tutorial");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			Command* testCommandAdd2 = new CommandAdd;
+			testCommandAdd2->setCurrentTask(anotherTask);
+			testCommandAdd2->execute();
+
+			anotherTaskName = "Surf the web";
+			anotherTaskStartTime = "not-a-date-time";
+			anotherTaskEndTime = "not-a-date-time";
+			anotherTaskDeadline = "20141120T110000";
+			anotherTaskTags.clear();
+			anotherTaskTags.push_back("#free");
+			anotherTaskIsDone = false;
+			anotherTask = TestSupportLibrary::createTask(
+				anotherTaskName, anotherTaskStartTime, 
+				anotherTaskEndTime, anotherTaskDeadline, 
+				anotherTaskTags, anotherTaskIsDone);
+			Command* testCommandAdd3 = new CommandAdd;
+			testCommandAdd3->setCurrentTask(anotherTask);
+			testCommandAdd3->execute();
+
+			// Creating a command and the expected states to test
+
+			Command* testCommandUndo = new CommandUndo;
+			expectedViewState.setUserMessage("Cannot undo anymore!");
+			expectedViewState.setActionMessage(
+				"  ||  Filtered by: all types / undone");
+			expectedCurrentState.setActionMessage("");
+
+			// Obtaining the actual eventual states
+
+			testCommandUndo->execute();
+			testCommandUndo->execute();
+			testCommandUndo->execute();
+			testCommandUndo->execute();
+			testCommandUndo->execute();
+
+			actualViewState = LogicData::getViewState();
+			actualCurrentState = LogicData::getCurrentState();
+
+			// Perform the testing
+
+			TestSupportLibrary::compareStates(
+				expectedViewState,actualViewState);
+			TestSupportLibrary::compareStates(
+				expectedCurrentState,actualCurrentState);
+		}
+
+	};
+}
+	// End of segment: ./\CommandTests\CommandUndoTests.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\CommandTests\TestSupportLibrary.cpp
+	 */
+
+
+#include "TestSupportLibrary.h"
+#include "stdafx.h"
+
+TestSupportLibrary::TestSupportLibrary(void) {
+}
+
+
+TestSupportLibrary::~TestSupportLibrary(void) {
+}
+
+
+void TestSupportLibrary::compareStates(State firstState, State secondState) {
+	int i;
+	vector<Task> firstStateTaskList = firstState.getAllTasks();
+	vector<Task> secondStateTaskList = secondState.getAllTasks();
+
+	// Number of tasks in both states should be  equal.
+
+	Assert::AreEqual(firstStateTaskList.size(), secondStateTaskList.size());
+
+	for (i=0; unsigned(i)<firstStateTaskList.size(); i++) {
+
+		// Every task should be equal for both states.
+
+		compareTasks(firstStateTaskList[i], secondStateTaskList[i]);
+	}
+	
+	// Both the user messages and the action messages from both states
+	// should be equal.
+
+	Assert::AreEqual(firstState.getUserMessage(), 
+		secondState.getUserMessage());
+	Assert::AreEqual(firstState.getActionMessage(), 
+		secondState.getActionMessage());
+	return;
+}
+
+Task TestSupportLibrary::createTask(string taskName, 
+									string taskStart, 
+									string taskEnd, 
+									string taskDeadline, 
+									vector<string> taskTags, 
+									bool isDone) {
+	Task newTask;
+	newTask.setTaskName(taskName);
+
+	if (taskStart != "not-a-date-time") {
+		newTask.setTaskStartTime(from_iso_string(taskStart));
+	}
+	else {
+		newTask.setTaskStartTime(not_a_date_time);
+	}
+
+	if (taskEnd != "not-a-date-time") {
+		newTask.setTaskEndTime(from_iso_string(taskEnd));
+	}
+	else {
+		newTask.setTaskEndTime(not_a_date_time);
+	}
+
+	if (taskDeadline != "not-a-date-time") {
+		newTask.setTaskDeadline(from_iso_string(taskDeadline));
+	}
+	else {
+		newTask.setTaskDeadline(not_a_date_time);
+	}
+		
+	newTask.setTaskTags(taskTags);
+
+	if (isDone) {
+		newTask.setTaskIsDone();
+	}
+
+	return newTask;
+}
+
+
+void TestSupportLibrary::compareTaskTags(vector<string> firstTaskTags,
+										vector<string> secondTaskTags) {
+	Assert::AreEqual(firstTaskTags.size(), secondTaskTags.size());
+	int i;
+	for (i=0; unsigned(i)<firstTaskTags.size(); i++) {
+		Assert::AreEqual(firstTaskTags[i], secondTaskTags[i]);
+	}
+	return;
+}
+		
+void TestSupportLibrary::compareTasks(Task firstTask, Task secondTask) {
+	Assert::AreEqual(firstTask.getTaskName(), secondTask.getTaskName());
+	Assert::AreEqual(firstTask.getTaskIsDone(), secondTask.getTaskIsDone());
+	compareTaskTags(firstTask.getTaskTags(), secondTask.getTaskTags());
+	Assert::AreEqual(to_simple_string(firstTask.getTaskStartTime()), 
+		to_simple_string(secondTask.getTaskStartTime()));
+	Assert::AreEqual(to_simple_string(firstTask.getTaskEndTime()), 
+		to_simple_string(secondTask.getTaskEndTime()));
+	Assert::AreEqual(to_simple_string(firstTask.getTaskDeadline()), 
+		to_simple_string(secondTask.getTaskDeadline()));
+	return;
+}
+
+	// End of segment: ./\CommandTests\TestSupportLibrary.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\CommandTests\TestSupportLibrary.h
+	 */
+
+//
+// This is the Test Support Library created for Command Unit Tests.
+//
+// It comprises of functions that allow the automation of Command Unit Tests
+// to be carried out more efficiently.
+//
+//****************************************************************************
+
+#pragma once
+#include "stdafx.h"
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+class TestSupportLibrary {
+public:
+	TestSupportLibrary(void);
+	~TestSupportLibrary(void);
+	
+	// This function allows for a task to be created with all its 
+	// attributes initialized according to specified parameters all at 
+	// once, as opposed to setting each attribute individually after
+	// creating the task.
+
+	static Task createTask(string taskName, string taskStart, 
+		string taskEnd, string taskDeadline, vector<string> taskTags, 
+		bool isDone);
+
+	// This function allows for two states to be compared. All data
+	// attributes for all tasks and state from the first state will be
+	// asserted to be equals to to the second state.
+
+	static void compareStates(State firstState, State secondState);
+
+	static void compareTasks(Task firstTask, Task secondTask);
+	static void compareTaskTags(vector<string> firstTaskTags, 
+		vector<string> secondTaskTags);
+	
+};
+
+
+	// End of segment: ./\CommandTests\TestSupportLibrary.h
+
+
+
+
+
+	/**
+	 * origin: ./\CommandUndo.cpp
+	 */
+
+
+#include "CommandUndo.h"
+
+CommandUndo::CommandUndo(void) {
+}
+
+void CommandUndo::execute() {
+	sprintf_s(buffer, MSG_LOGGING_EXECUTE_COMMAND_UNDO.c_str());
+	log(buffer);
+	retrieveCommandHistory();
+	retrieveCommandHistoryIndex();
+	
+	try {
+		checkIsParsedCorrectly();
+		assert(_currentCommandHistoryIndex >= 0);
+		assert(_currentCommandHistoryIndex <= _commandHistory.size());
+
+		checkIsCommandValid();
+		resetLogicDataSettings();
+		runAllRelevantCommandsAgain();
+		storeRemainingCommandsInHistory();
+	}
+	catch (string errorMsg) {
+		_userMessage = errorMsg;
+		retrieveExistingViewState();
+		_currentState->setActionMessage(STRING_EMPTY);
 		addUserMessageToCurrentState();
 		setNewViewState();
 	}
@@ -2617,6 +5049,2900 @@ int main(int argc, char *argv[])
 
 
 	/**
+	 * origin: ./\SystemTests\SystemTests_Add.cpp
+	 */
+
+//
+// All system tests for an Add user operation are performed here.
+
+#include "stdafx.h"
+#include "TestSupportLibrary.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace SystemTests_Add
+{		
+	TEST_CLASS(SystemTests_Add)
+	{
+	public:
+
+		// These tests are for the partition "Add floating tasks"
+
+		TEST_METHOD(SystemTests_Add_Floating_01_Multiple)
+		{
+			string testPartition = "SystemTests_Add_Floating_01_Multiple";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_Floating_02_LongTaskNames)
+		{
+			string testPartition = "SystemTests_Add_Floating_02_LongTaskNames";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_Floating_03_StrangeChars)
+		{
+			string testPartition = "SystemTests_Add_Floating_03_StrangeChars";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_Floating_04_NormalTags)
+		{
+			string testPartition = "SystemTests_Add_Floating_04_NormalTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_Floating_05_MultipleTags)
+		{
+			string testPartition = "SystemTests_Add_Floating_05_MultipleTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_Floating_06_MultipleTagsInterspersed)
+		{
+			string testPartition = "SystemTests_Add_Floating_06_MultipleTagsInterspersed";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Add due all day tasks"
+
+		TEST_METHOD(SystemTests_Add_DueAllDay_01_Multiple)
+		{
+			string testPartition = "SystemTests_Add_DueAllDay_01_Multiple";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_DueAllDay_02_MultipleTags)
+		{
+			string testPartition = "SystemTests_Add_DueAllDay_02_MultipleTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_DueAllDay_03_SameDay)
+		{
+			string testPartition = "SystemTests_Add_DueAllDay_03_SameDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+
+		// These tests are for the partition "Add due timed tasks"
+
+		TEST_METHOD(SystemTests_Add_DueTimed_01_Multiple)
+		{
+			string testPartition = "SystemTests_Add_DueTimed_01_Multiple";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_DueTimed_02_MultipleTags)
+		{
+			string testPartition = "SystemTests_Add_DueTimed_02_MultipleTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_DueTimed_03_SameDay)
+		{
+			string testPartition = "SystemTests_Add_DueTimed_03_SameDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_DueTimed_04_SameTime)
+		{
+			string testPartition = "SystemTests_Add_DueTimed_04_SameTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Add fixed all day tasks"
+
+		TEST_METHOD(SystemTests_Add_FixedAllDay_01_Multiple)
+		{
+			string testPartition = "SystemTests_Add_FixedAllDay_01_Multiple";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedAllDay_02_MultipleTags)
+		{
+			string testPartition = "SystemTests_Add_FixedAllDay_02_MultipleTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedAllDay_03_SameDay)
+		{
+			string testPartition = "SystemTests_Add_FixedAllDay_03_SameDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Add fixed start tasks"
+
+		TEST_METHOD(SystemTests_Add_FixedStart_01_Multiple)
+		{
+			string testPartition = "SystemTests_Add_FixedStart_01_Multiple";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedStart_02_MultipleTags)
+		{
+			string testPartition = "SystemTests_Add_FixedStart_02_MultipleTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedStart_03_SameDay)
+		{
+			string testPartition = "SystemTests_Add_FixedStart_03_SameDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedStart_04_SameTime)
+		{
+			string testPartition = "SystemTests_Add_FixedStart_04_SameTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Add fixed timed tasks"
+
+		TEST_METHOD(SystemTests_Add_FixedTime_01_TimetoTime)
+		{
+			string testPartition = "SystemTests_Add_FixedTime_01_TimetoTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedTime_02_TimetoTimeOverlap)
+		{
+			string testPartition = "SystemTests_Add_FixedTime_02_TimetoTimeOverlap";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedTime_03_TimetoDay)
+		{
+			string testPartition = "SystemTests_Add_FixedTime_03_TimetoDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedTime_04_TimetoDayOverlap)
+		{
+			string testPartition = "SystemTests_Add_FixedTime_04_TimetoDayOverlap";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedTime_05_DaytoTime)
+		{
+			string testPartition = "SystemTests_Add_FixedTime_05_DaytoTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedTime_06_DaytoTimeOverlap)
+		{
+			string testPartition = "SystemTests_Add_FixedTime_06_DaytoTimeOverlap";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedTime_07_DaytoDay)
+		{
+			string testPartition = "SystemTests_Add_FixedTime_07_DaytoDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedTime_08_DaytoDayOverlap)
+		{
+			string testPartition = "SystemTests_Add_FixedTime_08_DaytoDayOverlap";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_FixedTime_09_StartAfterEnd)
+		{
+			string testPartition = "SystemTests_Add_FixedTime_09_StartAfterEnd";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Add tasks with different time formats"
+
+		TEST_METHOD(SystemTests_Add_TimeFormats_01_HhmmFormat)
+		{
+			string testPartition = "SystemTests_Add_TimeFormats_01_HhmmFormat";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_TimeFormats_02_AmpmFormat)
+		{
+			string testPartition = "SystemTests_Add_TimeFormats_02_AmpmFormat";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_TimeFormats_03_AmpmAndHhmmFormat)
+		{
+			string testPartition = "SystemTests_Add_TimeFormats_03_AmpmAndHhmmFormat";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_TimeFormats_04_WayInThePast)
+		{
+			string testPartition = "SystemTests_Add_TimeFormats_04_WayInThePast";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_TimeFormats_05_WayInTheFuture)
+		{
+			string testPartition = "SystemTests_Add_TimeFormats_05_WayInTheFuture";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_TimeFormats_06_WayInPastToWayInFuture)
+		{
+			string testPartition = "SystemTests_Add_TimeFormats_06_WayInPastToWayInFuture";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Add tasks of different types"
+
+		TEST_METHOD(SystemTests_Add_MixedTypes_01)
+		{
+			string testPartition = "SystemTests_Add_MixedTypes_01";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_MixedTypes_02)
+		{
+			string testPartition = "SystemTests_Add_MixedTypes_02";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_MixedTypes_03)
+		{
+			string testPartition = "SystemTests_Add_MixedTypes_03";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_MixedTypes_04)
+		{
+			string testPartition = "SystemTests_Add_MixedTypes_04";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_MixedTypes_05)
+		{
+			string testPartition = "SystemTests_Add_MixedTypes_05";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_MixedTypes_06)
+		{
+			string testPartition = "SystemTests_Add_MixedTypes_06";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_MixedTypes_07)
+		{
+			string testPartition = "SystemTests_Add_MixedTypes_07";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_MixedTypes_08)
+		{
+			string testPartition = "SystemTests_Add_MixedTypes_08";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_MixedTypes_09)
+		{
+			string testPartition = "SystemTests_Add_MixedTypes_09";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Add_MixedTypes_10)
+		{
+			string testPartition = "SystemTests_Add_MixedTypes_10";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+	}; 
+}
+	// End of segment: ./\SystemTests\SystemTests_Add.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\SystemTests\SystemTests_Clear.cpp
+	 */
+
+//
+// All system tests for an Clear user operation are performed here.
+
+#include "stdafx.h"
+#include "TestSupportLibrary.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace SystemTests_Clear
+{		
+	TEST_CLASS(SystemTests_Clear)
+	{
+	public:
+		
+		// These tests are for the partition "Clear normal searches"
+
+		TEST_METHOD(SystemTests_Clear_Search_01_Names)
+		{
+			string testPartition = "SystemTests_Clear_Search_01_Names";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_02_Tags)
+		{
+			string testPartition = "SystemTests_Clear_Search_02_Tags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_03_NamesAndTags)
+		{
+			string testPartition = "SystemTests_Clear_Search_03_NamesAndTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_04_StrangeChars)
+		{
+			string testPartition = "SystemTests_Clear_Search_04_StrangeChars";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_05_MultipleTags)
+		{
+			string testPartition = "SystemTests_Clear_Search_05_MultipleTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_06_TooManyTags)
+		{
+			string testPartition = "SystemTests_Clear_Search_06_TooManyTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_07_TagsWithoutSpacing)
+		{
+			string testPartition = "SystemTests_Clear_Search_07_TagsWithoutSpacing";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_08_NamesAndTagsWithoutSpacing)
+		{
+			string testPartition = "SystemTests_Clear_Search_08_NamesAndTagsWithoutSpacing";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_09_InterspersedTags)
+		{
+			string testPartition = "SystemTests_Clear_Search_09_InterspersedTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_10_NamesWithSpace)
+		{
+			string testPartition = "SystemTests_Clear_Search_10_NamesWithSpace";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_11_IncorrectTags)
+		{
+			string testPartition = "SystemTests_Clear_Search_11_IncorrectTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Clear fuzzy searches"
+
+		TEST_METHOD(SystemTests_Clear_Search_Fuzzy_01)
+		{
+			string testPartition = "SystemTests_Clear_Search_Fuzzy_01";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_Fuzzy_02)
+		{
+			string testPartition = "SystemTests_Clear_Search_Fuzzy_02";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_Fuzzy_03)
+		{
+			string testPartition = "SystemTests_Clear_Search_Fuzzy_03";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Clear acronym searches"
+
+		TEST_METHOD(SystemTests_Clear_Search_Acronym_01)
+		{
+			string testPartition = "SystemTests_Clear_Search_Acronym_01";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_Acronym_02)
+		{
+			string testPartition = "SystemTests_Clear_Search_Acronym_02";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_Acronym_03)
+		{
+			string testPartition = "SystemTests_Clear_Search_Acronym_03";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Clear shorthand searches"
+
+		TEST_METHOD(SystemTests_Clear_Search_Shorthand_01)
+		{
+			string testPartition = "SystemTests_Clear_Search_Shorthand_01";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_Shorthand_02)
+		{
+			string testPartition = "SystemTests_Clear_Search_Shorthand_02";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Clear_Search_Shorthand_03)
+		{
+			string testPartition = "SystemTests_Clear_Search_Shorthand_03";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+	}; 
+}
+	// End of segment: ./\SystemTests\SystemTests_Clear.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\SystemTests\SystemTests_Delete.cpp
+	 */
+
+//
+// All system tests for a Delete user operation are performed here.
+
+#include "stdafx.h"
+#include "TestSupportLibrary.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace SystemTests_Delete
+{		
+	TEST_CLASS(SystemTests_Delete)
+	{
+	public:
+		
+		// These tests are for the partition "Delete one tasks"
+
+		TEST_METHOD(SystemTests_Delete_One_01_Floating)
+		{
+			string testPartition = "SystemTests_Delete_One_01_Floating";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_One_02_DueAllDay)
+		{
+			string testPartition = "SystemTests_Delete_One_02_DueAllDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_One_03_DueTimed)
+		{
+			string testPartition = "SystemTests_Delete_One_03_DueTimed";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_One_04_FixedAllDay)
+		{
+			string testPartition = "SystemTests_Delete_One_04_FixedAllDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_One_05_FixedStart)
+		{
+			string testPartition = "SystemTests_Delete_One_05_FixedStart";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_One_06_FixedTime_DayToDay)
+		{
+			string testPartition = "SystemTests_Delete_One_06_FixedTime_DayToDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_One_07_FixedTime_DayToTime)
+		{
+			string testPartition = "SystemTests_Delete_One_07_FixedTime_DayToTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_One_08_FixedTime_TimeToDay)
+		{
+			string testPartition = "SystemTests_Delete_One_08_FixedTime_TimeToDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_One_09_FixedTime_TimeToTime)
+		{
+			string testPartition = "SystemTests_Delete_One_09_FixedTime_TimeToTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Delete multiple tasks"
+
+		TEST_METHOD(SystemTests_Delete_Multiple_01_Floating)
+		{
+			string testPartition = "SystemTests_Delete_Multiple_01_Floating";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Multiple_02_DueAllDay)
+		{
+			string testPartition = "SystemTests_Delete_Multiple_02_DueAllDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Multiple_03_DueTimed)
+		{
+			string testPartition = "SystemTests_Delete_Multiple_03_DueTimed";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Multiple_04_FixedAllDay)
+		{
+			string testPartition = "SystemTests_Delete_Multiple_04_FixedAllDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Multiple_05_FixedStart)
+		{
+			string testPartition = "SystemTests_Delete_Multiple_05_FixedStart";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Multiple_06_FixedTime_DayToDay)
+		{
+			string testPartition = "SystemTests_Delete_Multiple_06_FixedTime_DayToDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Multiple_07_FixedTime_DayToTime)
+		{
+			string testPartition = "SystemTests_Delete_Multiple_07_FixedTime_DayToTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Multiple_08_FixedTime_TimeToDay)
+		{
+			string testPartition = "SystemTests_Delete_Multiple_08_FixedTime_TimeToDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Multiple_09_FixedTime_TimeToTime)
+		{
+			string testPartition = "SystemTests_Delete_Multiple_09_FixedTime_TimeToTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Strange delete commands"
+
+		TEST_METHOD(SystemTests_Delete_Strange_01_LargeIndex)
+		{
+			string testPartition = "SystemTests_Delete_Strange_01_LargeIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Strange_02_VeryLargeIndex)
+		{
+			string testPartition = "SystemTests_Delete_Strange_02_VeryLargeIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Strange_03_NegativeIndex)
+		{
+			string testPartition = "SystemTests_Delete_Strange_03_NegativeIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Strange_04_VeryNegativeIndex)
+		{
+			string testPartition = "SystemTests_Delete_Strange_04_VeryNegativeIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Strange_05_NonNumberIndex)
+		{
+			string testPartition = "SystemTests_Delete_Strange_05_NonNumberIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Strange_06_StringIndex)
+		{
+			string testPartition = "SystemTests_Delete_Strange_06_StringIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Strange_07_NoIndex)
+		{
+			string testPartition = "SystemTests_Delete_Strange_07_NoIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Strange_08_BlankIndex)
+		{
+			string testPartition = "SystemTests_Delete_Strange_08_BlankIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Strange_09_MultipleIndex)
+		{
+			string testPartition = "SystemTests_Delete_Strange_09_MultipleIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Strange_10_WrongCommand)
+		{
+			string testPartition = "SystemTests_Delete_Strange_10_WrongCommand";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Strange_11_SpacesBtwCommandAndIndex)
+		{
+			string testPartition = "SystemTests_Delete_Strange_11_SpacesBtwCommandAndIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Delete_Strange_12_NoSpaceBtwCommandAndIndex)
+		{
+			string testPartition = "SystemTests_Delete_Strange_12_NoSpaceBtwCommandAndIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+
+	}; 
+}
+	// End of segment: ./\SystemTests\SystemTests_Delete.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\SystemTests\SystemTests_Done.cpp
+	 */
+
+//
+// All system tests for a Done user operation are performed here.
+
+#include "stdafx.h"
+#include "TestSupportLibrary.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace SystemTests_Done
+{		
+	TEST_CLASS(SystemTests_Done)
+	{
+	public:
+		
+		// These tests are for the partition "Done a single task"
+
+		TEST_METHOD(SystemTests_Done_One_01_Floating)
+		{
+			string testPartition = "SystemTests_Done_One_01_Floating";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_One_02_DueAllDay)
+		{
+			string testPartition = "SystemTests_Done_One_02_DueAllDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_One_03_DueTimed)
+		{
+			string testPartition = "SystemTests_Done_One_03_DueTimed";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_One_04_FixedAllDay)
+		{
+			string testPartition = "SystemTests_Done_One_04_FixedAllDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_One_05_FixedStart)
+		{
+			string testPartition = "SystemTests_Done_One_05_FixedStart";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_One_06_FixedTime_DayToDay)
+		{
+			string testPartition = "SystemTests_Done_One_06_FixedTime_DayToDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_One_07_FixedTime_DayToTime)
+		{
+			string testPartition = "SystemTests_Done_One_07_FixedTime_DayToTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_One_08_FixedTime_TimeToDay)
+		{
+			string testPartition = "SystemTests_Done_One_08_FixedTime_TimeToDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_One_09_FixedTime_TimeToTime)
+		{
+			string testPartition = "SystemTests_Done_One_09_FixedTime_TimeToTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Done multiple tasks"
+
+		TEST_METHOD(SystemTests_Done_Multiple_01_Floating)
+		{
+			string testPartition = "SystemTests_Done_Multiple_01_Floating";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Multiple_02_DueAllDay)
+		{
+			string testPartition = "SystemTests_Done_Multiple_02_DueAllDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Multiple_03_DueTimed)
+		{
+			string testPartition = "SystemTests_Done_Multiple_03_DueTimed";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Multiple_04_FixedAllDay)
+		{
+			string testPartition = "SystemTests_Done_Multiple_04_FixedAllDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Multiple_05_FixedStart)
+		{
+			string testPartition = "SystemTests_Done_Multiple_05_FixedStart";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Multiple_06_FixedTime_DayToDay)
+		{
+			string testPartition = "SystemTests_Done_Multiple_06_FixedTime_DayToDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Multiple_07_FixedTime_DayToTime)
+		{
+			string testPartition = "SystemTests_Done_Multiple_07_FixedTime_DayToTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Multiple_08_FixedTime_TimeToDay)
+		{
+			string testPartition = "SystemTests_Done_Multiple_08_FixedTime_TimeToDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Multiple_09_FixedTime_TimeToTime)
+		{
+			string testPartition = "SystemTests_Done_Multiple_09_FixedTime_TimeToTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Strange done commands"
+
+		TEST_METHOD(SystemTests_Done_Strange_01_LargeIndex)
+		{
+			string testPartition = "SystemTests_Done_Strange_01_LargeIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Strange_02_VeryLargeIndex)
+		{
+			string testPartition = "SystemTests_Done_Strange_02_VeryLargeIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Strange_03_NegativeIndex)
+		{
+			string testPartition = "SystemTests_Done_Strange_03_NegativeIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Strange_04_VeryNegativeIndex)
+		{
+			string testPartition = "SystemTests_Done_Strange_04_VeryNegativeIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Strange_05_NonNumberIndex)
+		{
+			string testPartition = "SystemTests_Done_Strange_05_NonNumberIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Strange_06_StringIndex)
+		{
+			string testPartition = "SystemTests_Done_Strange_06_StringIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Strange_07_NoIndex)
+		{
+			string testPartition = "SystemTests_Done_Strange_07_NoIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Strange_08_BlankIndex)
+		{
+			string testPartition = "SystemTests_Done_Strange_08_BlankIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Strange_09_MultipleIndex)
+		{
+			string testPartition = "SystemTests_Done_Strange_09_MultipleIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Strange_10_WrongCommand)
+		{
+			string testPartition = "SystemTests_Done_Strange_10_WrongCommand";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Strange_11_SpacesBtwCommandAndIndex)
+		{
+			string testPartition = "SystemTests_Done_Strange_11_SpacesBtwCommandAndIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Done_Strange_12_NoSpaceBtwCommandAndIndex)
+		{
+			string testPartition = "SystemTests_Done_Strange_12_NoSpaceBtwCommandAndIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+	}; 
+}
+	// End of segment: ./\SystemTests\SystemTests_Done.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\SystemTests\SystemTests_Edit.cpp
+	 */
+
+//
+// All system tests for an Edit user operation are performed here.
+
+#include "stdafx.h"
+#include "TestSupportLibrary.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace SystemTests_Edit
+{		
+	TEST_CLASS(SystemTests_Edit)
+	{
+	public:
+		
+		// These tests are for the partition "a single edit command"
+
+		TEST_METHOD(SystemTests_Edit_One_01_Floating)
+		{
+			string testPartition = "SystemTests_Edit_One_01_Floating";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_One_02_DueAllDay)
+		{
+			string testPartition = "SystemTests_Edit_One_02_DueAllDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_One_03_DueTimed)
+		{
+			string testPartition = "SystemTests_Edit_One_03_DueTimed";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_One_04_FixedAllDay)
+		{
+			string testPartition = "SystemTests_Edit_One_04_FixedAllDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_One_05_FixedStart)
+		{
+			string testPartition = "SystemTests_Edit_One_05_FixedStart";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_One_06_FixedTime_DayToDay)
+		{
+			string testPartition = "SystemTests_Edit_One_06_FixedTime_DayToDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_One_07_FixedTime_DayToTime)
+		{
+			string testPartition = "SystemTests_Edit_One_07_FixedTime_DayToTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_One_08_FixedTime_TimeToDay)
+		{
+			string testPartition = "SystemTests_Edit_One_08_FixedTime_TimeToDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_One_09_FixedTime_TimeToTime)
+		{
+			string testPartition = "SystemTests_Edit_One_09_FixedTime_TimeToTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Multiple edit commands"
+
+		TEST_METHOD(SystemTests_Edit_Multiple_01_Floating)
+		{
+			string testPartition = "SystemTests_Edit_Multiple_01_Floating";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Multiple_02_DueAllDay)
+		{
+			string testPartition = "SystemTests_Edit_Multiple_02_DueAllDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Multiple_03_DueTimed)
+		{
+			string testPartition = "SystemTests_Edit_Multiple_03_DueTimed";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Multiple_04_FixedAllDay)
+		{
+			string testPartition = "SystemTests_Edit_Multiple_04_FixedAllDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Multiple_05_FixedStart)
+		{
+			string testPartition = "SystemTests_Edit_Multiple_05_FixedStart";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Multiple_06_FixedTime_DayToDay)
+		{
+			string testPartition = "SystemTests_Edit_Multiple_06_FixedTime_DayToDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Multiple_07_FixedTime_DayToTime)
+		{
+			string testPartition = "SystemTests_Edit_Multiple_07_FixedTime_DayToTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Multiple_08_FixedTime_TimeToDay)
+		{
+			string testPartition = "SystemTests_Edit_Multiple_08_FixedTime_TimeToDay";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Multiple_09_FixedTime_TimeToTime)
+		{
+			string testPartition = "SystemTests_Edit_Multiple_09_FixedTime_TimeToTime";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Strange edit commands"
+
+		TEST_METHOD(SystemTests_Edit_Strange_01_LargeIndex)
+		{
+			string testPartition = "SystemTests_Edit_Strange_01_LargeIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Strange_02_VeryLargeIndex)
+		{
+			string testPartition = "SystemTests_Edit_Strange_02_VeryLargeIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Strange_03_NegativeIndex)
+		{
+			string testPartition = "SystemTests_Edit_Strange_03_NegativeIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Strange_04_VeryNegativeIndex)
+		{
+			string testPartition = "SystemTests_Edit_Strange_04_VeryNegativeIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Strange_05_NonNumberIndex)
+		{
+			string testPartition = "SystemTests_Edit_Strange_05_NonNumberIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Strange_06_StringIndex)
+		{
+			string testPartition = "SystemTests_Edit_Strange_06_StringIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Strange_07_NoIndex)
+		{
+			string testPartition = "SystemTests_Edit_Strange_07_NoIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Strange_08_BlankIndex)
+		{
+			string testPartition = "SystemTests_Edit_Strange_08_BlankIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Strange_09_MultipleIndex)
+		{
+			string testPartition = "SystemTests_Edit_Strange_09_MultipleIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Strange_10_WrongCommand)
+		{
+			string testPartition = "SystemTests_Edit_Strange_10_WrongCommand";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Strange_11_SpacesBtwCommandAndIndex)
+		{
+			string testPartition = "SystemTests_Edit_Strange_11_SpacesBtwCommandAndIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Edit_Strange_12_NoSpaceBtwCommandAndIndex)
+		{
+			string testPartition = "SystemTests_Edit_Strange_12_NoSpaceBtwCommandAndIndex";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+
+	}; 
+}
+	// End of segment: ./\SystemTests\SystemTests_Edit.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\SystemTests\SystemTests_Filter.cpp
+	 */
+
+//
+// All system tests for a Filter user operation are performed here.
+
+#include "stdafx.h"
+#include "TestSupportLibrary.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace SystemTests_Filter
+{		
+	TEST_CLASS(SystemTests_Filter)
+	{
+	public:
+		
+		// These tests are for the partition "Filter by task type"
+
+		TEST_METHOD(SystemTests_Filter_Type_01_AllTypes)
+		{
+			string testPartition = "SystemTests_Filter_Type_01_AllTypes";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Type_02_Due)
+		{
+			string testPartition = "SystemTests_Filter_Type_02_Due";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Type_03_Fixed)
+		{
+			string testPartition = "SystemTests_Filter_Type_03_Fixed";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Filter by done type"
+
+		TEST_METHOD(SystemTests_Filter_Done_01_NoDone)
+		{
+			string testPartition = "SystemTests_Filter_Done_01_NoDone";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Done_02_Done)
+		{
+			string testPartition = "SystemTests_Filter_Done_02_Done";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Done_03_Undone)
+		{
+			string testPartition = "SystemTests_Filter_Done_03_Undone";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+	
+		// These tests are for the partition "Filter by date"
+
+		TEST_METHOD(SystemTests_Filter_Date_01_PastStartDate)
+		{
+			string testPartition = "SystemTests_Filter_Date_01_PastStartDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Date_02_FutureStartDate)
+		{
+			string testPartition = "SystemTests_Filter_Date_02_FutureStartDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Date_03_StartAndEnd)
+		{
+			string testPartition = "SystemTests_Filter_Date_03_StartAndEnd";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Filter multiple combinations"
+
+		TEST_METHOD(SystemTests_Filter_Strange_01_NoParam)
+		{
+			string testPartition = "SystemTests_Filter_Strange_01_NoParam";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Strange_02_WrongParams)
+		{
+			string testPartition = "SystemTests_Filter_Strange_02_WrongParams";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Strange_03_SpaceBtwParams)
+		{
+			string testPartition = "SystemTests_Filter_Strange_03_SpaceBtwParams";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Add floating tasks"
+
+		TEST_METHOD(SystemTests_Filter_Mixed_01_AllTypes_NoDone_StartDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_01_AllTypes_NoDone_StartDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_02_AllTypes_NoDone_StartAndEndDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_02_AllTypes_NoDone_StartAndEndDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_03_AllTypes_Done_StartDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_03_AllTypes_Done_StartDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_04_AllTypes_Done_StartAndEndDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_04_AllTypes_Done_StartAndEndDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_05_AllTypes_Undone_StartDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_05_AllTypes_Undone_StartDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_06_AllTypes_Undone_StartAndEndDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_06_AllTypes_Undone_StartAndEndDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_07_Fixed_NoDone_StartDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_07_Fixed_NoDone_StartDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_08_Fixed_NoDone_StartAndEndDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_08_Fixed_NoDone_StartAndEndDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_09_Fixed_Done_StartDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_09_Fixed_Done_StartDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_10_Fixed_Done_StartAndEndDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_10_Fixed_Done_StartAndEndDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_11_Fixed_Undone_StartDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_11_Fixed_Undone_StartDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_12_Fixed_Undone_StartAndEndDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_12_Fixed_Undone_StartAndEndDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_13_Due_NoDone_StartDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_13_Due_NoDone_StartDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_14_Due_NoDone_StartAndEndDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_14_Due_NoDone_StartAndEndDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_15_Due_Done_StartDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_15_Due_Done_StartDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_16_Due_Done_StartAndEndDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_16_Due_Done_StartAndEndDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_17_Due_Undone_StartDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_17_Due_Undone_StartDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Filter_Mixed_18_Due_Undone_StartAndEndDate)
+		{
+			string testPartition = "SystemTests_Filter_Mixed_18_Due_Undone_StartAndEndDate";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+
+	}; 
+}
+	// End of segment: ./\SystemTests\SystemTests_Filter.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\SystemTests\SystemTests_Load.cpp
+	 */
+
+//
+// All system tests for a Load GUI operation are performed here.
+
+#include "stdafx.h"
+#include "TestSupportLibrary.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace SystemTests_Load
+{		
+	TEST_CLASS(SystemTests_Load)
+	{
+	public:
+
+		// This test is for the partition "a normal load"
+		TEST_METHOD(SystemTests_Load_01_AllTaskTypes)
+		{
+			string testPartition = "SystemTests_Load_01_AllTaskTypes";
+			TestSupportLibrary::writeInputDatabaseToDatabase(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			State actualState = LogicExecutor::getNewState(COMMAND_PARAM_LOAD);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+	}; 
+}
+	// End of segment: ./\SystemTests\SystemTests_Load.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\SystemTests\SystemTests_Redo.cpp
+	 */
+
+//
+// All system tests for a Redo user operation are performed here.
+
+#include "stdafx.h"
+#include "TestSupportLibrary.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace SystemTests_Redo
+{		
+	TEST_CLASS(SystemTests_Redo)
+	{
+	public:
+
+		// These tests are for the partition "Redo following different
+		// task types"
+
+		TEST_METHOD(SystemTests_Redo_One_01_Add)
+		{
+			string testPartition = "SystemTests_Redo_One_01_Add";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Redo_One_02_Delete)
+		{
+			string testPartition = "SystemTests_Redo_One_02_Delete";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Redo_One_03_Edit)
+		{
+			string testPartition = "SystemTests_Redo_One_03_Edit";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Redo_One_04_Done)
+		{
+			string testPartition = "SystemTests_Redo_One_04_Done";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Redo_One_05_Search)
+		{
+			string testPartition = "SystemTests_Redo_One_05_Search";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Redo_One_06_Clear)
+		{
+			string testPartition = "SystemTests_Redo_One_06_Clear";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Redo_Two_01_Add)
+		{
+			string testPartition = "SystemTests_Redo_Two_01_Add";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Redo_Two_02_Delete)
+		{
+			string testPartition = "SystemTests_Redo_Two_02_Delete";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Redo_Two_03_Edit)
+		{
+			string testPartition = "SystemTests_Redo_Two_03_Edit";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Redo_Two_04_Done)
+		{
+			string testPartition = "SystemTests_Redo_Two_04_Done";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+	}; 
+}
+	// End of segment: ./\SystemTests\SystemTests_Redo.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\SystemTests\SystemTests_Search.cpp
+	 */
+
+//
+// All system tests for a Search user operation are performed here.
+
+#include "stdafx.h"
+#include "TestSupportLibrary.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace SystemTests_Search
+{		
+	TEST_CLASS(SystemTests_Search)
+	{
+	public:
+		
+		// These tests are for the partition "Search normal items"
+
+		TEST_METHOD(SystemTests_Search_01_Names)
+		{
+			string testPartition = "SystemTests_Search_01_Names";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_02_Tags)
+		{
+			string testPartition = "SystemTests_Search_02_Tags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_03_NamesAndTags)
+		{
+			string testPartition = "SystemTests_Search_03_NamesAndTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_04_StrangeChars)
+		{
+			string testPartition = "SystemTests_Search_04_StrangeChars";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_05_MultipleTags)
+		{
+			string testPartition = "SystemTests_Search_05_MultipleTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_06_TooManyTags)
+		{
+			string testPartition = "SystemTests_Search_06_TooManyTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_07_TagsWithoutSpacing)
+		{
+			string testPartition = "SystemTests_Search_07_TagsWithoutSpacing";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_08_NamesAndTagsWithoutSpacing)
+		{
+			string testPartition = "SystemTests_Search_08_NamesAndTagsWithoutSpacing";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_09_InterspersedTags)
+		{
+			string testPartition = "SystemTests_Search_09_InterspersedTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_10_NamesWithSpace)
+		{
+			string testPartition = "SystemTests_Search_10_NamesWithSpace";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_11_IncorrectTags)
+		{
+			string testPartition = "SystemTests_Search_11_IncorrectTags";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Search by fuzzy"
+
+		TEST_METHOD(SystemTests_Search_Fuzzy_01)
+		{
+			string testPartition = "SystemTests_Search_Fuzzy_01";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_Fuzzy_02)
+		{
+			string testPartition = "SystemTests_Search_Fuzzy_02";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_Fuzzy_03)
+		{
+			string testPartition = "SystemTests_Search_Fuzzy_03";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Search by acronym"
+
+		TEST_METHOD(SystemTests_Search_Acronym_01)
+		{
+			string testPartition = "SystemTests_Search_Acronym_01";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_Acronym_02)
+		{
+			string testPartition = "SystemTests_Search_Acronym_02";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_Acronym_03)
+		{
+			string testPartition = "SystemTests_Search_Acronym_03";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+		// These tests are for the partition "Search by shorthand"
+
+		TEST_METHOD(SystemTests_Search_Shorthand_01)
+		{
+			string testPartition = "SystemTests_Search_Shorthand_01";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_Shorthand_02)
+		{
+			string testPartition = "SystemTests_Search_Shorthand_02";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Search_Shorthand_03)
+		{
+			string testPartition = "SystemTests_Search_Shorthand_03";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		
+	}; 
+}
+	// End of segment: ./\SystemTests\SystemTests_Search.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\SystemTests\SystemTests_Undo.cpp
+	 */
+
+//
+// All system tests for an Undo user operation are performed here.
+
+#include "stdafx.h"
+#include "TestSupportLibrary.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace SystemTests_Undo
+{		
+	TEST_CLASS(SystemTests_Undo)
+	{
+	public:
+		
+		// These tests are for the partition "Undo following different
+		// task types"
+
+		TEST_METHOD(SystemTests_Undo_One_01_Add)
+		{
+			string testPartition = "SystemTests_Undo_One_01_Add";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Undo_One_02_Delete)
+		{
+			string testPartition = "SystemTests_Undo_One_02_Delete";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Undo_One_03_Edit)
+		{
+			string testPartition = "SystemTests_Undo_One_03_Edit";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Undo_One_04_Done)
+		{
+			string testPartition = "SystemTests_Undo_One_04_Done";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Undo_One_05_Search)
+		{
+			string testPartition = "SystemTests_Undo_One_05_Search";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Undo_One_06_Clear)
+		{
+			string testPartition = "SystemTests_Undo_One_06_Clear";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Undo_Two_01_Add)
+		{
+			string testPartition = "SystemTests_Undo_Two_01_Add";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Undo_Two_02_Delete)
+		{
+			string testPartition = "SystemTests_Undo_Two_02_Delete";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Undo_Two_03_Edit)
+		{
+			string testPartition = "SystemTests_Undo_Two_03_Edit";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+		TEST_METHOD(SystemTests_Undo_Two_04_Done)
+		{
+			string testPartition = "SystemTests_Undo_Two_04_Done";
+			State actualState = TestSupportLibrary::executeCommandsFromInputFile(
+				testPartition + INPUT_COMMAND_FILE_EXT);
+			
+			TestSupportLibrary::checkIsStateEqualsExpected(actualState, 
+				testPartition + EXPECTED_STATE_FILE_EXT);
+		}
+
+		
+	}; 
+}
+	// End of segment: ./\SystemTests\SystemTests_Undo.cpp
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
+
+
+
+
+
+	/**
+<<<<<<< HEAD
+	 * origin: ./\KeyPressEater.cpp
+	 */
+
+
+#include "KeyPressEater.h"
+
+
+KeyPressEater::KeyPressEater() {
+}
+
+KeyPressEater::~KeyPressEater(void) {
+}
+
+bool KeyPressEater::eventFilter(QObject *obj, QEvent *event) {
+	if (event->type() == QEvent::KeyPress) {
+		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+		if (keyEvent->key() == Qt::Key_Return) {
+			emit enterPressed(obj);
+			return true;
+		}
+		else if (keyEvent->key() == Qt::Key_Tab) {
+			emit tabPressed();
+			return true;
+		}
+		else {
+			return QObject::eventFilter(obj, event);
+		}
+	}
+	else {
+		return QObject::eventFilter(obj, event);
+	}
+}
+
+	// End of segment: ./\KeyPressEater.cpp
+
+
+
+
+
+	/**
+	 * origin: ./\KeyPressEater.h
+	 */
+
+// 
+// This is the KeyPressEater class, which is reponsible for intercepting all 
+// key events for certain QWidgets for which it is installed, and determining if
+// certain keys have been entered.
+//
+// It intercepts only the "Key_Return" and the "Key_Tab" keypress, and emits a 
+// signal when this happens. Otherwise, all other key presses are ignored.
+//
+//****************************************************************************
+
+#pragma once
+#include <QObject>
+#include <QEvent>
+#include <QKeyEvent>
+
+class KeyPressEater : public QObject {
+	
+	Q_OBJECT
+
+	public:
+		KeyPressEater();
+		~KeyPressEater(void);
+		bool eventFilter(QObject *obj, QEvent *event);
+
+	signals:
+		void enterPressed(QObject *obj);
+		void tabPressed();
+
+};
+
+	// End of segment: ./\KeyPressEater.h
+
+
+
+
+
+	/**
+	 * origin: ./\LogicExecutor.cpp
+	 */
+
+
+#include "LogicExecutor.h"
+
+
+LogicExecutor::LogicExecutor(void)
+{
+}
+
+State LogicExecutor::getNewState(string commandLineInput) {
+	LogicParser parser;
+ 	Command* currentCommand = 
+		parser.getCommandFromUserInput(commandLineInput);
+	currentCommand->execute();
+	State stateToReturn = LogicData::getViewState();
+	return stateToReturn;
+}
+	// End of segment: ./\LogicExecutor.cpp
+=======
+	 * origin: ./\SystemTests\TestSupportLibrary.cpp
+	 */
+
+
+#include "TestSupportLibrary.h"
+
+
+TestSupportLibrary::TestSupportLibrary(void) {
+}
+
+TestSupportLibrary::~TestSupportLibrary(void) {
+}
+
+
+void TestSupportLibrary::writeInputDatabaseToDatabase(string inputFileName) {
+	ifstream inputFile;
+	ofstream outputFile;
+	string inputLine;
+
+	inputFile.open(inputFileName);
+	outputFile.open(STORAGE_FILE_NAME, ios::out);
+
+	// Copy contents of input database to the database to be loaded during
+	// the system test
+
+	while (getline(inputFile, inputLine)) {
+		outputFile << inputLine << endl;
+	}
+
+	inputFile.close();
+	outputFile.close();
+	return;
+}
+
+void TestSupportLibrary::loadProgramFromEmptyFile() {
+	ofstream outputFile;
+
+	// Remove contents of the database to be loaded during
+	// the system test
+
+	outputFile.open(STORAGE_FILE_NAME, ios::out);
+	outputFile.close();
+	LogicExecutor::getNewState(COMMAND_PARAM_LOAD);
+	return;
+}
+
+State TestSupportLibrary::executeCommandsFromInputFile(string inputFileName) {
+	ifstream inputFile;
+	inputFile.open(inputFileName);
+	string testUserCommand;
+	State stateToReturn;
+
+	loadProgramFromEmptyFile();
+
+	// Execute all lines in the input file for the system test.
+
+	while (getline(inputFile, testUserCommand)) {
+		stateToReturn = LogicExecutor::getNewState(testUserCommand);
+	}
+
+	inputFile.close();
+	return stateToReturn;
+}
+
+bool TestSupportLibrary::checkIsStateEqualsExpected(
+		State stateToTest, 
+		string expectedStateFileName) {
+
+	bool isStateEqualsExpected = true;
+	Task currentTask;
+	ifstream expectedInput;
+	string emptyLine;
+	string expectedActionMessage;
+	string expectedUserMessage;
+	int expectedLastActionType;
+	int expectedLastActionTaskIndex;
+	vector<Task> listOfTasks = stateToTest.getAllTasks();
+	int i;
+	
+	expectedInput.open(expectedStateFileName);
+
+	for (i=0; unsigned(i)<listOfTasks.size(); i++) {
+		
+		// Check if each task in the stateToTest is equals to the
+		// expected output specified in the output file.
+		
+		currentTask = listOfTasks[i];
+		 checkIsTaskEqualsExpected(currentTask, expectedInput);
+		 getline(expectedInput, emptyLine);
+		 getline(expectedInput, emptyLine);
+	}
+
+	// Check if the action and user messages in the stateToTest 
+	// are equal to the expected messages in the output file.
+
+	getline(expectedInput, expectedActionMessage);
+	getline(expectedInput, expectedUserMessage);
+	Assert::AreEqual(expectedActionMessage, stateToTest.getActionMessage());
+	Assert::AreEqual(expectedUserMessage, stateToTest.getUserMessage());
+	
+	// Check if the lastActionType and the lastActionTaskIndex in the 
+	// stateToTest are equal to the expected messages in the output file.
+
+	expectedInput >> expectedLastActionType;
+	expectedInput >> expectedLastActionTaskIndex;
+	if (expectedLastActionType == State::NONE) {
+		Assert::AreEqual(expectedLastActionType, 
+			stateToTest.getLastActionType());
+	}
+	else {
+		Assert::AreEqual(expectedLastActionTaskIndex, 
+			stateToTest.getLastActionTaskIndex());
+	}
+
+	expectedInput.close();
+	return isStateEqualsExpected;
+}
+
+bool TestSupportLibrary::checkIsTaskEqualsExpected(
+	Task taskToTest, 
+	ifstream& expectedInputFile) {
+
+	bool isTaskEqualsExpected = true;
+
+	string expectedTaskName;
+	getline(expectedInputFile, expectedTaskName);
+	Assert::AreEqual(expectedTaskName, taskToTest.getTaskName());
+	
+	isTaskEqualsExpected = 
+		checkIsDateTimeEqualsExpected(taskToTest.getTaskStartTime(), expectedInputFile)
+		&& checkIsDateTimeEqualsExpected(taskToTest.getTaskEndTime(), expectedInputFile)
+		&& checkIsDateTimeEqualsExpected(taskToTest.getTaskDeadline(), expectedInputFile)
+		&& checkIsTaskTagsEqualsExpected(taskToTest.getTaskTags(), expectedInputFile)
+		&& checkIsTaskIsDoneEqualsExpected(taskToTest.getTaskIsDone(), expectedInputFile);
+
+	return isTaskEqualsExpected;
+}
+
+bool checkIsTaskNameEqualsExpected(
+	string taskNameToTest, 
+	ifstream& expectedInputFile) {
+
+	bool isTaskNameEqualsExpected = true;
+	string expectedTaskName;
+
+	getline(expectedInputFile, expectedTaskName);
+	Assert::AreEqual(expectedTaskName, taskNameToTest);
+
+	return isTaskNameEqualsExpected;
+}
+
+bool TestSupportLibrary::checkIsDateTimeEqualsExpected(
+	ptime dateTimeToTest, 
+	ifstream& expectedInputFile) {
+
+	bool isDateTimeEqualsExpected = true;
+	string expectedDateTime;
+
+	expectedInputFile >> expectedDateTime;
+	if (expectedDateTime == NOT_A_DATE_TIME) {
+		Assert::AreEqual(true, dateTimeToTest == not_a_date_time);
+	}
+	else {
+		Assert::AreEqual(expectedDateTime, to_iso_string(dateTimeToTest));
+	}
+
+	return isDateTimeEqualsExpected;
+}
+
+bool TestSupportLibrary::checkIsTaskTagsEqualsExpected(
+	vector<string> taskTagsToTest, 
+	ifstream& expectedInputFile) {
+
+	bool isTaskTagsEqualsExpected = true;
+	string expectedTag;
+	string emptyString;
+	int expectedNoOfTags;
+	int i;
+
+	expectedInputFile >> expectedNoOfTags;
+	getline(expectedInputFile, emptyString);
+
+	Assert::AreEqual(unsigned(expectedNoOfTags), taskTagsToTest.size());
+
+	for (i=0; i<expectedNoOfTags; i++) {
+		getline(expectedInputFile, expectedTag);
+		Assert::AreEqual(expectedTag, taskTagsToTest[i]);
+	}
+
+	return isTaskTagsEqualsExpected;
+}
+
+bool TestSupportLibrary::checkIsTaskIsDoneEqualsExpected(
+	bool taskIsDoneStatus, 
+	ifstream& expectedInputFile) {
+
+	bool isTaskIsDoneEqualsExpected = true;
+	bool expectedIsDoneStatus;
+	
+	expectedInputFile >> expectedIsDoneStatus;
+	Assert::AreEqual(expectedIsDoneStatus, taskIsDoneStatus);
+
+	return isTaskIsDoneEqualsExpected;
+}
+	// End of segment: ./\SystemTests\TestSupportLibrary.cpp
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
+
+
+
+
+
+	/**
+<<<<<<< HEAD
+	 * origin: ./\LogicExecutor.h
+	 */
+
+// 
+//This is the interface class to the entire Logic component. When called with 
+// the getNewState(string commandString) method, it is guaranteed to return an 
+// updated view state which may be used to update the GUI (for example).
+//
+// This class works by (i) obtaining a command object from the LogicParser with  
+// the commandString; (ii) executing the concrete command object; and (iii) 
+// retrieving the updated viewState from LogicData which is returned in its
+// function call.
+//
+// If an error has occurred during the processing of the commandString, the 
+// concrete command objects will terminate execution midway and store details 
+// of the failed execution in the returned state, which may be used for 
+// subsequent update purposes.
+//
+// If a warning (not serious but worthy of note) occurs instead, the concrete
+// command objects will continue execution as per normal but still store details
+// of the warning in the returned state, which may also be used for subsequent 
+// update purposes.
+//
+// Sample usage:
+//    State newState = LogicExecutor::getNewState("/load");
+=======
+	 * origin: ./\SystemTests\TestSupportLibrary.h
+	 */
+
+//
+// This is the Test Support Library created for WhatToDo's System Tests.
+//
+// It comprises of functions that allow the automation of WhatToDo's System 
+// Tests to be carried out more efficiently.
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
+//
+//****************************************************************************
+
+#pragma once
+<<<<<<< HEAD
+
+#include "State.h"
+#include "Task.h"
+#include "LogicParser.h"
+#include "Command.h"
+
+using namespace std;
+
+class LogicExecutor {
+	public:
+		LogicExecutor(void);
+		
+		/*
+		// This API function returns a new state when given a string
+		// variable - commandLineInput.
+		//
+		// Pre-conditions:
+		//     (i) If the user command contains a task index, it should
+		//     be the true task index instead of the GUI's display task
+		//     index.
+		//     (ii) The _isParsedCorrectly variable in the command 
+		//     should be true.
+		//
+		// Post-Conditions:
+		//     (i) The command implied by the commandLineInput will be
+		//     executed and the new updated state will be returned.
+		//     (ii) If there are any warnings or errors arising from
+		//     the command implied by the commandLine Input, there will
+		//     be an error message returned in the updated state.
+		//
+		// Sample usage:
+		//     LogicExecutor::getNewState("Do hw tmr");
+		*/
+		
+		static State getNewState(string commandLineInput);
+
+
+};
+
+
+	// End of segment: ./\LogicExecutor.h
+
+
+
+
+
+	/**
+	 * origin: ./\main.cpp
+	 */
+
+
+#include "whattodo.h"
+#include <QtWidgets/QApplication>
+#include <string>
+
+using namespace std;
+
+int main(int argc, char *argv[])
+{
+	string exeDirectory;
+	QApplication mainApplication(argc, argv);
+	exeDirectory = mainApplication.applicationDirPath().toStdString();
+	WhatToDo mainWindow(exeDirectory);
+	mainWindow.show();
+	return mainApplication.exec();
+}
+
+	// End of segment: ./\main.cpp
+=======
+#include "stdafx.h"
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+const string INPUT_COMMAND_FILE_EXT = "_in.txt";
+const string EXPECTED_STATE_FILE_EXT = "_out.txt";
+const string STORAGE_FILE_NAME = "Database.txt";
+const string COMMAND_PARAM_LOAD = "/load";
+const string NOT_A_DATE_TIME = "not-a-date-time";
+
+class TestSupportLibrary
+{
+public:
+	TestSupportLibrary(void);
+	~TestSupportLibrary(void);
+
+	// This function overwrites the database file for loading with the
+	// specified input file to simulate loading for a subsequent system
+	// test.
+
+	static void writeInputDatabaseToDatabase(string inputFileName);
+
+	// This function empties the database file for loading for a subsequent
+	// system test.
+
+	static void loadProgramFromEmptyFile();
+
+	// This function executes all commands from a specified input file.
+
+	static State executeCommandsFromInputFile(string inputFileName);
+
+	// This function checks if a specified state (stateToTest) is equals 
+	// to the expected state as specified in the expected output file 
+	// (expectedStateFileName).
+
+	static bool checkIsStateEqualsExpected(State stateToTest, 
+										   string expectedStateFileName);
+
+	// These following functions checks if a Task ad its attributes are
+	// equal to the expected attributes as specified in the output file
+	// written for the system test.
+
+	static bool checkIsTaskEqualsExpected(Task taskToTest, 
+										  ifstream& expectedInputFile);
+	static bool checkIsTaskNameEqualsExpected(string taskNameToTest, 
+											  ifstream& expectedInputFile);
+	static bool checkIsDateTimeEqualsExpected(ptime dateTimeToTest, 
+											  ifstream& expectedInputFile);
+	static bool checkIsTaskTagsEqualsExpected(vector<string> taskTagsToTest, 
+											  ifstream& expectedInputFile);
+	static bool checkIsTaskIsDoneEqualsExpected(bool taskIsDoneStatus, 
+											    ifstream& expectedInputFile);
+
+};
+
+
+	// End of segment: ./\SystemTests\TestSupportLibrary.h
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
+
+
+
+
+
+	/**
 	 * origin: ./\whattodo.cpp
 	 */
 
@@ -2628,8 +7954,13 @@ WhatToDo::WhatToDo(string exeDirectory, QWidget *parent)
 	: QMainWindow(parent) {
 	_exeDirectory = exeDirectory;
 	_ui.setupUi(this);
+<<<<<<< HEAD
 	setupOtherUIConfigs();
 	setupCalendar();
+=======
+	setupCalendar();
+	setupOtherUIConfigs();
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	setupKeyPressEater();
 	defineAllHotkeys();
 	connectAllOtherSignalAndSlots();
@@ -2789,7 +8120,11 @@ void WhatToDo::handleButtonToggleCalendar() {
 	
 	// Move the calendar to a viewable position in the GUi
 	
+<<<<<<< HEAD
 	_ui.calendarframe->move(20, 70);
+=======
+	_ui.calendarframe->move(20, 66);
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	_ui.calendarbtn_next->move(290, 10);
 	_ui.calendarbtn_prev->move(220, 10);
 
@@ -2857,6 +8192,12 @@ void WhatToDo::setupOtherUIConfigs() {
 	setupInitialGUISizeConfigs();
 	setupMessageBoxConfigs();
 	setupTextSizeConfigs();
+<<<<<<< HEAD
+=======
+	_ui.displayAgendaviewFloat->raise();
+	_ui.displayAgendaviewTimed->raise();
+	_ui.messageFeedback->raise();
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	return;
 }
 
@@ -2984,9 +8325,15 @@ void WhatToDo::setupMessageBoxConfigs() {
 	// Set the message box view as transparent to the user and 
 	// transparent to mouse events
 
+<<<<<<< HEAD
 	_ui.messageFeedback->setAttribute(Qt::WA_TranslucentBackground);
 	_ui.messageFeedback->setStyleSheet(
 		QString::fromStdString(QTSTYLESHEET_TRANSPARENT_BACKGROUND));
+=======
+	_ui.messageFeedback->setStyleSheet(
+		QString::fromStdString(QTSTYLESHEET_TRANSPARENT_BACKGROUND));
+	_ui.messageFeedback->setAttribute(Qt::WA_TranslucentBackground);
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	_ui.messageFeedback->setAttribute(Qt::WA_TransparentForMouseEvents);
 	return;
 }
@@ -4297,6 +9644,14 @@ string WhatToDo::convertTaskToEditText(Task taskToConvert) {
 
 string WhatToDo::getTaskDateAsEditText(Task taskToConvert) {
 	string taskDateEditText;
+<<<<<<< HEAD
+=======
+
+	// Converting different kinds of tasks into different date
+	// formats so they will be registered as the same kinds of 
+	// task if the user does not change anything.
+
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	if (taskToConvert.getTaskType() == Task::FLOATING) {
 		taskDateEditText = STRING_EMPTY;
 	}
@@ -4316,7 +9671,29 @@ string WhatToDo::getTaskDateAsEditText(Task taskToConvert) {
 		taskDateEditText = COMMAND_PARAM_ADD_DATE_TIMED_START + 
 			convertDateTimeToEditText(taskToConvert.getTaskStartTime());
 	}
+<<<<<<< HEAD
 	else if (taskToConvert.isTaskHasStartAndEnd()) {
+=======
+	else if (taskToConvert.getTaskType() == Task::FIXED_DAY_TO_DAY) {
+		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_START + 
+			convertDateToEditText(taskToConvert.getTaskStartTime());
+		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_END + 
+			convertDateToEditText(taskToConvert.getTaskEndTime());
+	}
+	else if (taskToConvert.getTaskType() == Task::FIXED_DAY_TO_TIME) {
+		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_START + 
+			convertDateToEditText(taskToConvert.getTaskStartTime());
+		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_END + 
+			convertDateTimeToEditText(taskToConvert.getTaskEndTime());
+	}
+	else if (taskToConvert.getTaskType() == Task::FIXED_TIME_TO_DAY) {
+		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_START + 
+			convertDateTimeToEditText(taskToConvert.getTaskStartTime());
+		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_END + 
+			convertDateToEditText(taskToConvert.getTaskEndTime());
+	}
+	else {
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_START + 
 			convertDateTimeToEditText(taskToConvert.getTaskStartTime());
 		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_END + 
@@ -4798,9 +10175,31 @@ class WhatToDo : public QMainWindow
 		string removeUnwantedChars(string stringToProcess);
 		string changeDayToDayOfWeek(int day);
 		string changeMonthToMonthOfYear(int year);
+<<<<<<< HEAD
 		string convertTaskToEditText(Task taskToConvert);
 		string getTaskDateAsEditText(Task taskToConvert);
 		string convertDateTimeToEditText(ptime timeToConvert);
+=======
+
+		// This function converts a task into text that the user can
+		// readily edit.
+
+		string convertTaskToEditText(Task taskToConvert);
+
+		// This function converts a task's date into text that the user 
+		// can readily edit.
+
+		string getTaskDateAsEditText(Task taskToConvert);
+
+		// This function converts a ptime's date into text that the
+		// user can readily edit.
+
+		string convertDateTimeToEditText(ptime timeToConvert);
+
+		// This function converts a ptime's date and time into text that 
+		// the user can readily edit.
+
+>>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		string convertDateToEditText(ptime timeToConvert);
 		bool checkIsContainStrangeChars(string stringToProcess);
 		bool checkIsCurrentStateEmpty();
