@@ -26,8 +26,8 @@
 
 using namespace std;
 
-//error messages and error locations
-const string FUNCTION_VECTOR_STRING_TO_TASK_CONVERSION = 
+//error locations
+const string STORAGE_FUNCTION_VECTOR_STRING_TO_TASK_CONVERSION = 
 	"processVectorStringToTaskConversion(vector<vector<string>>::"
 	"iterator vIterator)";
 const string STORAGE_FUNCTION_LOAD_FROM_STORAGE = 
@@ -35,6 +35,7 @@ const string STORAGE_FUNCTION_LOAD_FROM_STORAGE =
 const string STORATE_FUNCTION_LOAD_FROM_BACKUP = 
 	"raedFromBackUpDatabase();";
 
+//error message
 const string STORAGE_MSG_CONVERSION_ERROR = 
 	"Conversion was unsuccessful!\n";
 const string STORAGE_MSG_DATABASE_ERROR = 
@@ -72,12 +73,12 @@ class StorageExecutor{
 		//supporting functions
 		State processTaskAddition(vector<Task>::iterator taskIterator);
 		void readFileAndConvertString();
-		void processVectorStringToTaskConversion(vector<vector<string>>::
-												 iterator vectorStringIterator);
+		void processVectorStringToTaskConversion(vector<vector<string>>::iterator vectorStringIterator);
 		void convertAllTaskToString(vector<Task>::iterator taskIterator);
+		
+		//logging functions
 		void logErrorMessage(string errorMessage);
-		void compileErrorMessage(string errorMessageLocation, 
-								 string errorMessage);
+		void compileErrorMessage(string errorMessageLocation, string errorMessage);
 };
 
 
