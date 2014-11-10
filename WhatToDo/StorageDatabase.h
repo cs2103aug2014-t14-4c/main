@@ -8,6 +8,7 @@
 //StorageDatabase comprises of 2 main functions which are
 //1)read from database 
 //2)write to database 
+
 //StorageDatabase also writes a copy of the schedule to a backup database
 //in the event that the user accidentally deleted the database or corrupted
 //the file that deem it unreadable. The user would however, be refrained from
@@ -26,7 +27,7 @@
 using namespace std; 
 
 const string INITIAL_VALUE_FILE_NAME = "Database.txt";
-const string INITIAL_VALUE_BACK_UP_FILE_NAME ="Qt5Bluetooth.dll";
+const string INITIAL_VALUE_BACK_UP_FILE_NAME ="BackupDatabase.txt";
 const int START=0;
 const int NO_OF_ATTRIBUTES = 6;
 
@@ -48,12 +49,10 @@ class StorageDatabase{
 		//secondary supporting functions
 		void setFileName(string nameToSet); 
 		string getFileName(); 
-		vector<string> readFromDataBaseIndividualTaskString();
 		void writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, 
 										  ofstream& writeFile, 
 										  vector<vector<string>> taskStringToWrite);
 		void readIndividualFileFromDatabase(ifstream& readFile, string myText);
-		
 		
 };
 
