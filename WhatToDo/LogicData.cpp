@@ -1,6 +1,4 @@
-//****************************************************************************
 //@author A0110873L
-
 #include "LogicData.h"
 
 State LogicData::_currentState;
@@ -30,15 +28,15 @@ const string LogicData::ABBREV_MONTH_NOV = "Nov";
 const string LogicData::ABBREV_MONTH_DEC = "Dec";
 const string LogicData::STRING_SPACE_CHAR = " ";
 const string LogicData::STRING_FRONTSLASH_CHAR = "/";
-const string LogicData::STRING_FROM = " / from ";
-const string LogicData::STRING_TO = " to ";
+const string LogicData::STRING_FROM = "from";
+const string LogicData::STRING_TO = "to";
 const string LogicData::STRING_FILTERED_BY = "Filtered by";
 const string LogicData::STRING_COLON = ":";
 const string LogicData::STRING_VERTICAL_BAR_CHAR = "|";
 const string LogicData::STRING_EMPTY = "";
-const string LogicData::STRING_NO_DONE = "";
-const string LogicData::STRING_DONE = " / done";
-const string LogicData::STRING_UNDONE = " / undone";
+const string LogicData::STRING_NO_DONE = "nodone";
+const string LogicData::STRING_DONE = "done";
+const string LogicData::STRING_UNDONE = "undone";
 const string LogicData::STRING_ALL_TYPES = "all types";
 const string LogicData::STRING_ONLY_FIXED = "only fixed";
 const string LogicData::STRING_ONLY_DUE = "only due";
@@ -143,7 +141,6 @@ void LogicData::loadInitialSettings() {
 }
 
 void LogicData::fakeinitiate(State fakestate) {
-	LogicData();
 	_initialState = fakestate;
 	_currentState = _initialState;
 	_viewState = _initialState;
@@ -161,7 +158,7 @@ State LogicData::filterTasks() {
 			}
 		}
 	} catch (const invalid_argument& ia) {
-
+	    cerr << ia.what();
 	}
 	filteredViewState.setAllTasks(filteredTasks);
 	string newActionMessage = compileNewActionMessage(filteredViewState);
@@ -204,19 +201,15 @@ bool LogicData::passTypeFilter(Task task) {
 }
 
 bool LogicData::passDateFilter(Task task) {
-	if(!task.hasStartDateTime() && !task.hasDeadline()) {
+	if(task.getTaskType() == Task::FLOATING) {
 		return true;
 	} else if(task.hasDeadline()) {
-		return ((task.getTaskDeadline().date() >= _startDateFilter) && 
-			(task.getTaskDeadline().date() <= _endDateFilter));
+		return doesDeadlinePassDateFilter(task);
 	} else if(task.hasStartDateTime() && task.hasEndDateTime()) {
-		return ((task.getTaskStartTime().date() >= _startDateFilter) && 
-			(task.getTaskStartTime().date() <= _endDateFilter) && 
-			(task.getTaskEndTime().date() <= _endDateFilter) && 
-			(task.getTaskStartTime().date() >= _startDateFilter));
+		return doesStartDatePassDateFilter(task) && 
+			doesEndDatePassDateFilter(task);
 	} else if(task.hasStartDateTime() && !task.hasEndDateTime()) {
-		return ((task.getTaskStartTime().date() >= _startDateFilter) && 
-			(task.getTaskStartTime().date() <= _endDateFilter));
+		return doesStartDatePassDateFilter(task);
 	}
 	return false;
 }
@@ -228,38 +221,47 @@ string LogicData::getFilterStatus() {
 	string dateFilterStatus;
 	
 	switch(_doneFilter) {
-		case(Status::DONE_BOTH) :
+		case(Status::DONE_BOTH) : {
 			doneFilterStatus = STRING_NO_DONE;
 			break;
-		case(Status::ONLY_DONE) :
+		}
+		case(Status::ONLY_DONE) : {
 			doneFilterStatus = STRING_DONE;
 			break;
-		case(Status::ONLY_UNDONE) :
+		}
+		case(Status::ONLY_UNDONE) : {
 			doneFilterStatus = STRING_UNDONE;
 			break;
+		}
 	}
 
 	switch(_typeFilter) {
-		case(Type::ALL_TYPES) :
+		case(Type::ALL_TYPES) : {
 			typeFilterStatus = STRING_ALL_TYPES;
 			break;
-		case(Type::ONLY_FIXED) :
+		}
+		case(Type::ONLY_FIXED) : {
 			typeFilterStatus = STRING_ONLY_FIXED;
 			break;
-		case(Type::ONLY_DUE) :
+		}
+		case(Type::ONLY_DUE) : {
 			typeFilterStatus = STRING_ONLY_DUE;
 			break;
+		}
 	}
 
 	if (_startDateFilter != boost::gregorian::date(neg_infin)) {
-		dateFilterStatus += STRING_FROM + getDisplayDay(ptime(_startDateFilter));
+		dateFilterStatus = compileStartDateFilterStatus (dateFilterStatus,
+			_startDateFilter);
 	}
 	if (_endDateFilter != boost::gregorian::date(pos_infin)) {
-		dateFilterStatus += STRING_TO + getDisplayDay(ptime(_endDateFilter));
+		dateFilterStatus = compileEndDateFilterStatus(dateFilterStatus,
+			_endDateFilter);
 	}
 
-	filterStatus = STRING_FILTERED_BY + STRING_COLON + STRING_SPACE_CHAR +
-		typeFilterStatus + doneFilterStatus + dateFilterStatus;
+	filterStatus = compileFilterStatus(doneFilterStatus,
+		typeFilterStatus, dateFilterStatus);
+
 	return filterStatus;
 }
 
@@ -299,6 +301,47 @@ string LogicData::changeMonthToMonthOfYear(int month) {
 	}
 
 	return STRING_EMPTY;
+}
+
+bool LogicData::doesDeadlinePassDateFilter(Task task) {
+	return task.getTaskDeadline().date() >= _startDateFilter && 
+			task.getTaskDeadline().date() <= _endDateFilter;
+}
+
+bool LogicData::doesStartDatePassDateFilter(Task task) {
+    return task.getTaskStartTime().date() >= _startDateFilter && 
+			task.getTaskStartTime().date() <= _endDateFilter;
+}
+
+bool LogicData::doesEndDatePassDateFilter(Task task) {
+	return (task.getTaskEndTime().date() <= _endDateFilter) && 
+			(task.getTaskEndTime().date() >= _startDateFilter);
+}
+
+string LogicData::compileStartDateFilterStatus(string dateFilterStatus, 
+												date startDateFilter) {
+	dateFilterStatus += STRING_SPACE_CHAR + STRING_FRONTSLASH_CHAR + 
+		STRING_SPACE_CHAR + STRING_FROM + STRING_SPACE_CHAR + 
+		getDisplayDay(ptime(_startDateFilter));
+	return dateFilterStatus;
+}
+
+string LogicData::compileEndDateFilterStatus(string dateFilterStatus, 
+											 date endDateFilter) {
+	dateFilterStatus += STRING_SPACE_CHAR + STRING_TO + 
+		STRING_SPACE_CHAR + getDisplayDay(ptime(_endDateFilter));
+	return dateFilterStatus;
+}
+
+string LogicData::compileFilterStatus(string doneFilterStatus,
+			string typeFilterStatus, string dateFilterStatus) {
+	string filterStatusToReturn;
+				
+	filterStatusToReturn = STRING_FILTERED_BY + STRING_SPACE_CHAR + 
+		doneFilterStatus + STRING_SPACE_CHAR + STRING_FRONTSLASH_CHAR + 
+		STRING_SPACE_CHAR + typeFilterStatus + dateFilterStatus;
+
+	return filterStatusToReturn;
 }
 
 string LogicData::compileNewActionMessage(State filteredViewState){

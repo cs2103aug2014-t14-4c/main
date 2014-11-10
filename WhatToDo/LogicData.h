@@ -1,6 +1,5 @@
-//****************************************************************************
 //@author A0110873L
-//
+//****************************************************************************
 //LogicData is responsible for holding the current State, view State and
 //initial State. It also keeps track of the commands that are executed from 
 //the time that WhatToDo is executed. This allows for easy redoing and undoing
@@ -16,9 +15,6 @@
 //		c) Deadline
 //	3) Date
 //
-//Furthermore, LogicData support the logging of functions executed and errors 
-//should they occur. Logging mode can be turned on or off in the constructor
-//based on the developer's requirements
 //****************************************************************************
 
 #ifndef LOGICDATA_H
@@ -59,9 +55,6 @@ class LogicData {
 		static date _startDateFilter;
 		static date _endDateFilter;
 
-		//Attributes for Logging
-		//static string _logFileName;
-		//static bool _loggingModeOn;
 		static char buffer[255];
 
 	public:
@@ -100,6 +93,16 @@ class LogicData {
 		static string changeMonthToMonthOfYear(int month);
 		static string getDisplayDay(ptime myTime);
 		static string compileNewActionMessage(State filteredViewState);
+		static string compileStartDateFilterStatus(string dateFilterStatus, 
+			date startDateFilter);
+		static string compileEndDateFilterStatus(string dateFilterStatus, 
+			date endDateFilter);
+		static string compileFilterStatus(string doneFilterStatus,
+			string typeFilterStatus, string dateFilterStatus);
+		static string compileNewActionMessage(State filteredViewState);
+		static bool doesDeadlinePassDateFilter(Task task);
+		static bool doesStartDatePassDateFilter(Task task);
+		static bool doesEndDatePassDateFilter(Task task);
 
 		//Constants
 		static const int INITIAL_COMMAND_HISTORY_INDEX;
