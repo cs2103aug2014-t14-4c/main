@@ -34,26 +34,6 @@ void StorageExecutor::saveToStorage(State stateToSave){
 	return;
 }
 
-//conversion from vector<string> to Task
-//exception handling when conversion isn't successful
-void StorageExecutor::processVectorStringToTaskConversion(vector<vector<string>>::
-	iterator vIterator){
-	//convert string to task
-	try{
-		while(vIterator!=_storageToConvert.end()){
-			_individualTask = _storageConverterObj.convertStringToTask(*vIterator);
-			_convertedTaskVector.push_back(_individualTask);
-			vIterator++;
-		}
-		return;
-	} catch(exception&){
-		compileErrorMessage(FUNCTION_VECTOR_STRING_TO_TASK_CONVERSION,
-					        STORAGE_MSG_CONVERSION_ERROR);
-		logErrorMessage(_logErrorMessage); 
-		throw;
-	}
-}
-
 //adds converted Tasks into a State 
 //returns the State after all Tasks are added
 State StorageExecutor::processTaskAddition(vector<Task>::iterator taskIterator){
@@ -63,20 +43,6 @@ State StorageExecutor::processTaskAddition(vector<Task>::iterator taskIterator){
 		taskIterator++; 
 	}
 	return _stateToLoad;
-}
-
-//converts Tasks to strings
-//store the converted string into a vector of strings
-void StorageExecutor::convertAllTaskToString(vector<Task>::iterator taskIterator){
-
-	_convertedStringStorage.clear();
-	while(taskIterator!=_taskToStore.end()){
-		_individualConvertedTask = _storageConverterObj.
-			convertTaskToString(*taskIterator);	
-		_convertedStringStorage.push_back(_individualConvertedTask);
-		taskIterator++;
-	}
-	return;
 }
 
 //read from database
@@ -94,11 +60,46 @@ void StorageExecutor::readFileAndConvertString(){
 		compileErrorMessage(STORAGE_FUNCTION_LOAD_FROM_STORAGE,STORAGE_MSG_DATABASE_ERROR);
 		logErrorMessage(_logErrorMessage);
 		_storageToConvert.clear();
+
 		logErrorMessage(STORAGE_MSG_LOAD_FROM_BACKUP); 
 		_storageToConvert = _storageDatabaseObj.readFromBackUpDatabase();
 		vector<vector<string>>::iterator myStorageIterator = _storageToConvert.begin();
 		processVectorStringToTaskConversion(myStorageIterator);
 	}
+}
+
+//conversion from vector<string> to Task
+//exception handling when conversion isn't successful
+void StorageExecutor::processVectorStringToTaskConversion(vector<vector<string>>::
+	iterator vIterator){
+	//convert string to task
+	try{
+		while(vIterator!=_storageToConvert.end()){
+			_individualTask = _storageConverterObj.convertStringToTask(*vIterator);
+			_convertedTaskVector.push_back(_individualTask);
+			vIterator++;
+		}
+		return;
+	} catch(exception&){
+		compileErrorMessage(STORAGE_FUNCTION_VECTOR_STRING_TO_TASK_CONVERSION, 
+							STORAGE_MSG_CONVERSION_ERROR);
+		logErrorMessage(_logErrorMessage); 
+		throw;
+	}
+}
+
+//converts Tasks to strings
+//store the converted string into a vector of strings
+void StorageExecutor::convertAllTaskToString(vector<Task>::iterator taskIterator){
+
+	_convertedStringStorage.clear();
+	while(taskIterator!=_taskToStore.end()){
+		_individualConvertedTask = _storageConverterObj.
+			convertTaskToString(*taskIterator);	
+		_convertedStringStorage.push_back(_individualConvertedTask);
+		taskIterator++;
+	}
+	return;
 }
 
 //error messages will be compiled to a standard template before 
@@ -111,8 +112,6 @@ void StorageExecutor::compileErrorMessage(string errorMessageLocation,
 
 	return;
 }
-
-
 
 //logging function to write error message to file
 void StorageExecutor::logErrorMessage(string errorMessage){

@@ -5,7 +5,7 @@
 //valid command inputs as listed below. 
 //
 //In the process of validating the command, CommandCreator checks the presence
-//of the accomapanying parameters. In particular, it ensures that
+//of the accompanying parameters. In particular, it ensures that
 //	1) No parameter is given for {CommandClear, CommandRedo, CommandUndo}.
 //	2) Parameter(s) are given for {CommandAdd, CommandDelete, CommandDone,
 //								   CommandEdit, CommandFilter, CommandSearch}.

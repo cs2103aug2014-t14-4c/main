@@ -9,13 +9,13 @@ StorageConverter::StorageConverter(void){
 	_logFileName = LOG_FILE_NAME; 
 }
 
+//will convert individual task attributes to strings
+//note: order of conversion important for the developer, not for the user
+//clear initial content
 vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 
-	//will convert individual task attributes to strings
-	//note: order of conversion important for the developer, not for the user
-	//clear initial content
 	_taskStringAttributes.clear(); 
-	
+
 	//string parameters after conversion
 	string taskStartDatetime = convertTaskPtimeToString(taskToConvert.getTaskStartTime());
 	string taskEndDatetime = convertTaskPtimeToString(taskToConvert.getTaskEndTime());
@@ -36,19 +36,18 @@ vector<string> StorageConverter::convertTaskToString(Task taskToConvert){
 	return _taskStringAttributes; 
 }
 
+//handles the conversion from string to task attributes, function
+//is futhered slapped into smaller subfunctions for each string conversion
+//extraction of string -> conversion of string ->set Task parameters->
+//return Task
 Task StorageConverter::convertStringToTask(vector<string> stringToConvert) {
 	Task convertedTask; 
 	assert(&stringToConvert != NULL);
 	vector<string>::iterator taskAttributeIterator = stringToConvert.begin(); 
-	
-	//get the substring which is input for conversion
-	//convert individual substrings into task attributes
-	//use task setter methods to "Create" the task
 
 	try{
 		//1. convert startime
 		_taskDatetimeString = (*taskAttributeIterator).substr(TITLE_TASKSTARTDATETIME.size());
-		//assert(_taskDatetimeString.size()==15);
 		convertStringStartDatetimeToTask(convertedTask);
 		taskAttributeIterator++; 
 
@@ -84,6 +83,17 @@ Task StorageConverter::convertStringToTask(vector<string> stringToConvert) {
 	}
 }
 
+//convert ptime to string
+string StorageConverter::convertTaskPtimeToString(ptime myDatetime){
+	string convertedPtimeString = to_iso_string(myDatetime); 
+	return convertedPtimeString;
+}
+
+string StorageConverter::convertTaskPtimeDurationToString(time_duration myDuration){
+	string convertedPtimeDuration = to_iso_string(myDuration);
+	return convertedPtimeDuration;
+}
+
 //convert boolean to string 
 string StorageConverter::convertTaskBoolToString(bool boolToConvert){
 	stringstream converter; 
@@ -92,24 +102,12 @@ string StorageConverter::convertTaskBoolToString(bool boolToConvert){
 	return converter.str();
 }
 
-//convert ptime to string
-string StorageConverter::convertTaskPtimeToString(ptime myDatetime){
-	string convertedPtimeString = to_iso_string(myDatetime); 
-	return convertedPtimeString;
-}
-
-//convert duration to string, note: not in use at the moment
-string StorageConverter::convertTaskPtimeDurationToString(time_duration myDuration){
-	string convertedPtimeDuration = to_iso_string(myDuration);
-	return convertedPtimeDuration;
-}
-
 //convert vector<string> of task tags to string
+//read through all the vector of strings for task tags 
+//concatenate the individual string
+//return the whole string
 string StorageConverter::convertTaskTagVectorToString(vector<string> taskTags){
 	string tagString = "";
-	//read through all the vector of strings for task tags 
-	//concatenate the individual string
-	//return the whole string
 	vector<string>::iterator taskTagIterator = taskTags.begin();
 	while(taskTagIterator!=taskTags.end()){
 		tagString = tagString + *taskTagIterator + " ";
@@ -119,55 +117,13 @@ string StorageConverter::convertTaskTagVectorToString(vector<string> taskTags){
 	return tagString;
 }
 
+//_taskName already in the form of string, function created for
+//consistency sake
 string StorageConverter::convertTaskNameToString(Task taskToConvert){
 	_taskName = taskToConvert.getTaskName();
 	return _taskName; 
 }
 
-//convert taskTagstring to vector<string>
-vector<string> StorageConverter::convertTaskTagStringToVector(string tagString){
-	//pass in the string to a iss object
-	//read individual substr delimited by whitespace
-	//push into the tagVector
-	assert(&tagString!=NULL);
-	istringstream tagStringStream(tagString); 
-	string individualTag; 
-	vector<string> tagVector;
-	
-	while(tagStringStream>>individualTag){
-		if(individualTag[0] != '#'){
-			individualTag = '#' + individualTag;
-			tagVector.push_back(individualTag);
-		} else{
-			tagVector.push_back(individualTag);
-		}
-	}
-
-	return tagVector;
-}
-
-//convert string to bool 
-void StorageConverter::convertStringIsdoneToTask(Task& convertedTask){
-	//converting string to boolean
-	try{
-		if(_taskIsDone==STRING_TRUE){
-			convertedTask.setTaskIsDone();
-		}else if(_taskIsDone==STRING_FALSE){
-			convertedTask.setTaskIsNotDone();
-		}else{
-			compileErrorMessage(STORAGE_FUNCTION_CONVERT_ISDONE,STORAGE_MSG_ISDONE_ERROR);
-			logErrorMessage(_logErrorMessage);
-			throw; 
-		} 
-		return;
-	}
-	catch(exception&){
-		compileErrorMessage(STORAGE_FUNCTION_CONVERT_ISDONE,STORAGE_MSG_ISDONE_ERROR);
-		logErrorMessage(_logErrorMessage);
-		throw; 
-		//log error
-	}
-}
 
 //converts a Datetime string into a ptime object
 //function throws exception if conversion is not successful
@@ -203,7 +159,6 @@ void StorageConverter::convertStringEndDatetimeToTask(Task& convertedTask){
 		compileErrorMessage(STORAGE_FUNCTION_CONVERT_PTIME_END,STORAGE_MSG_PTIME_END_ERROR);
 		logErrorMessage(_logErrorMessage);
 		throw;
-		//throw outofrange error message
 	}
 	
 }
@@ -222,7 +177,6 @@ void StorageConverter::convertStringDeadlineToTask(Task& convertedTask){
 		compileErrorMessage(STORAGE_FUNCTION_CONVERT_PTIME_DEADLINE,STORAGE_MSG_PTIME_DEADLINE_ERROR);
 		logErrorMessage(_logErrorMessage);
 		throw;
-		//log error message
 	}
 	
 }
@@ -236,13 +190,49 @@ void StorageConverter::convertStringTasktagToTask(Task& convertedTask){
 	return; 
 }
 
-//error messages will be compiled to a standard template before 
-//it is to be written to file
-void StorageConverter::compileErrorMessage(string errorMessageLocation, string errorMessage){
-	
-	sprintf_s(_logErrorMessage, STORAGE_LOGGING_TEMPLATE.c_str(), errorMessageLocation.c_str(), errorMessage.c_str());
+//convert string to bool 
+void StorageConverter::convertStringIsdoneToTask(Task& convertedTask){
 
-	return;
+	try{
+		if(_taskIsDone==STRING_TRUE){
+			convertedTask.setTaskIsDone();
+		}else if(_taskIsDone==STRING_FALSE){
+			convertedTask.setTaskIsNotDone();
+		}else{
+			compileErrorMessage(STORAGE_FUNCTION_CONVERT_ISDONE,STORAGE_MSG_ISDONE_ERROR);
+			logErrorMessage(_logErrorMessage);
+			throw; 
+		} 
+		return;
+	}
+	catch(exception&){
+		compileErrorMessage(STORAGE_FUNCTION_CONVERT_ISDONE,STORAGE_MSG_ISDONE_ERROR);
+		logErrorMessage(_logErrorMessage);
+		throw; 
+	}
+}
+
+//convert taskTagstring to vector<string>
+//pass in the string to a iss object
+//read individual substr delimited by whitespace
+//push into the tagVector
+vector<string> StorageConverter::convertTaskTagStringToVector(string tagString){
+
+	assert(&tagString!=NULL);
+	istringstream tagStringStream(tagString); 
+	string individualTag; 
+	vector<string> tagVector;
+	
+	while(tagStringStream>>individualTag){
+		if(individualTag[0] != '#'){
+			individualTag = '#' + individualTag;
+			tagVector.push_back(individualTag);
+		} else{
+			tagVector.push_back(individualTag);
+		}
+	}
+
+	return tagVector;
 }
 
 //logging function to write error message to file
@@ -257,4 +247,15 @@ void StorageConverter::logErrorMessage(string errorMessage){
 	} 
 	return;
 }
+
+//error messages will be compiled to a standard template before 
+//it is to be written to file
+void StorageConverter::compileErrorMessage(string errorMessageLocation, string errorMessage){
+	
+	sprintf_s(_logErrorMessage, STORAGE_LOGGING_TEMPLATE.c_str(), 
+		errorMessageLocation.c_str(), errorMessage.c_str());
+
+	return;
+}
+
 
