@@ -1,6 +1,5 @@
-//****************************************************************************
 //@author A0110873L
-//
+//****************************************************************************
 //State is responsible for storing a list of Tasks. State primarily deals with
 //the adding, deleting of Tasks. Also, when a Task is completed,
 //State is able to set the Task as done. Other than this, State can return
@@ -35,11 +34,11 @@ const int TO_THE_RIGHT_BY_ONE = 1;
 const bool UNSPECIFIED_USER_COMMAND = false;
 
 const string LOG_STATE_FILE_NAME = "StateLog.txt";
-const string LOG_MSG_TASK_ADDED = "Function called: addTask()\n";
-const string LOG_MSG_TASK_DELETED = "Function called: deleteTask()\n";
-const string LOG_MSG_TASK_DONE = "Function called: doneTask()\n";
-const string LOG_MSG_TASKS_CLEARED = "Function called: clearAllTasks()\n";
-const string LOG_MSG_TASKS_SORTED = "Function called: sortAllTasks()\n";
+const string LOG_MSG_ADD_TASK = "Function called: addTask()\n";
+const string LOG_MSG_DELETE_TASK = "Function called: deleteTask()\n";
+const string LOG_MSG_DONE_TASK = "Function called: doneTask()\n";
+const string LOG_MSG_CLEAR_TASKS = "Function called: clearAllTasks()\n";
+const string LOG_MSG_SORT_TASKS = "Function called: sortAllTasks()\n";
 
 class State {
 	private:
