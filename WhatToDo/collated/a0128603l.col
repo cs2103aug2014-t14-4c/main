@@ -3,60 +3,7 @@
 
 
 	/**
-<<<<<<< HEAD
-	 * origin: ./\button.h
-	 */
-
-
-//Class: button
-//Its to provide buttons in calendar view
-
-#pragma once
-#include <SFML\Graphics.hpp>
-#include <string>
-
-class button{
-public:
-	button();
-	~button();
-
-	// Initialize font, text and the rectangluar box for button
-	void init(float, float, std::string);
-
-	// Render the graphics elements on window
-	void draw(sf::RenderWindow*);
-
-	// Set button position
-	void setPosition(sf::Vector2f);
-
-	// Check if user is clicking on the button
-	bool isClickingOn(sf::Vector2f mouse);
-
-	// Set the opacity of the button
-	void setAlpha(int);
-
-private:
-	//////////////
-	//Member Data
-	//////////////
-	sf::Font font;
-	sf::Text showingText;			//Button showing name
-	sf::RectangleShape rectangle;	//The rectangular box
-	int alpha_value;				//Opacity
-};
-
-
-	// End of segment: ./\button.h
-
-
-
-
-
-	/**
-	 * origin: ./\calendar\button.cpp
-=======
 	 * origin: ./\button.cpp
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	 */
 
 //
@@ -71,11 +18,7 @@ button::~button(){
 }
 
 void button::init(float x, float y, std::string name){
-<<<<<<< HEAD
-	font.loadFromFile("UI_Files/NotoSansHant-Black.otf");
-=======
 	font.loadFromFile("UI files/NotoSansHant-Black.otf");
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	showingText.setFont(font);
 	showingText.setString(name);
 	showingText.setCharacterSize(20);
@@ -111,20 +54,13 @@ void button::setAlpha(int alpha){
 	showingText.setColor(sf::Color(255, 255, 255, alpha));
 	rectangle.setFillColor(sf::Color(0, 0, 0, alpha));
 }
-<<<<<<< HEAD
-	// End of segment: ./\calendar\button.cpp
-=======
 	// End of segment: ./\button.cpp
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 
 
 
 
 
 	/**
-<<<<<<< HEAD
-	 * origin: ./\calendar\calendarcanvas.cpp
-=======
 	 * origin: ./\button.h
 	 */
 
@@ -175,7 +111,6 @@ private:
 
 	/**
 	 * origin: ./\calendarcanvas.cpp
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	 */
 
 //
@@ -190,15 +125,9 @@ void CalendarCanvas::Init(){
 	ptime now = second_clock::local_time();
 	changeStartingDate(now.date());
 
-<<<<<<< HEAD
-	font.loadFromFile("UI_Files/NotoSansHant-Black.otf");
-	font_time.loadFromFile("UI_Files/NotoSansHant-Light.otf");
-	bg_texture.loadFromFile("UI_Files/image.jpg");
-=======
 	font.loadFromFile("UI files/NotoSansHant-Black.otf");
 	font_time.loadFromFile("UI files/NotoSansHant-Light.otf");
 	bg_texture.loadFromFile("UI files/image.jpg");
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	bg_sprite.setTexture(bg_texture);
 
 	createEmptyTable();
@@ -229,14 +158,11 @@ void CalendarCanvas::Update(){
 		setView(this->getDefaultView());
 		draw(bg_sprite);
 
-<<<<<<< HEAD
-=======
 		
 		setView(viewTasksCalendarTimeLine);
 		for (unsigned i = 0; i < calendarTableVertical_vtr.size(); i++)
 			draw(calendarTableVertical_vtr[i]);
 
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		//draw tasks
 		setView(viewTasksCalendar);
 		drawTasks();
@@ -264,10 +190,6 @@ void CalendarCanvas::readFromState(State state){
 		//cout << "[Task: " << i << "] " << all_calendar_task_vtr[i].task.getTaskName() << endl;
 		if (all_task_vtr[i].getTaskType() == Task::DEADLINE_TIME ||
 			all_task_vtr[i].getTaskType() == Task::FIXED_TIME_WITHIN_DAY ||
-<<<<<<< HEAD
-			all_task_vtr[i].getTaskType() == Task::FIXED_TIME_ACROSS_DAY ||
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 			all_task_vtr[i].getTaskType() == Task::FIXED_START){
 			Calendar_task suitable_task;
 			suitable_task.task = all_task_vtr[i];
@@ -312,11 +234,7 @@ void CalendarCanvas::resizedUpdate(int window_width, int window_height){
 }
 
 void CalendarCanvas::prevPage(){
-<<<<<<< HEAD
-	changeStartingDate(calendar_starting_date - days(21));
-=======
 	jumpToTask(0);
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	createEmptyTable();
 	createTaskOnTable();
 }
@@ -390,10 +308,6 @@ void CalendarCanvas::drawTasks(){
 
 	for (unsigned i = 0; i < all_calendar_task_vtr.size(); i++){
 		draw(all_calendar_task_vtr[i].calendarTasksBlk[0]);//draw tasks blocks
-<<<<<<< HEAD
-		draw(all_calendar_task_vtr[i].calendarTasksBlk[1]);//draw tasks blocks
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	}
 	for (unsigned i = 0; i < calendarTasksName_vtr.size(); i++)
 		draw(calendarTasksName_vtr[i]);//draw tasks names
@@ -401,12 +315,7 @@ void CalendarCanvas::drawTasks(){
 
 void CalendarCanvas::drawVerticalFloating(){
 	draw(calendarBackground[1]);	//draw the black bar
-<<<<<<< HEAD
-	for (unsigned i = 0; i < calendarTableVertical_vtr.size(); i++)
-		draw(calendarTableVertical_vtr[i]);
-=======
 
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	for (unsigned i = 0; i < calendarTableTime_vtr.size(); i++)
 		draw(calendarTableTime_vtr[i]);
 }
@@ -518,11 +427,7 @@ sf::RectangleShape CalendarCanvas::createTaskBlockRectangle(sf::Vector2f size, s
 void CalendarCanvas::createTaskBlock(int block_index, Task task){
 	sf::Text name;
 	name.setFont(font);
-<<<<<<< HEAD
-	name.setColor(sf::Color::White);
-=======
 	name.setColor(sf::Color::Black);
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	name.setCharacterSize(14);
 	float block_width = VERTICAL_LINE_INTERVAL * (task.getTaskDuration().hours()) + VERTICAL_LINE_INTERVAL * (task.getTaskDuration().minutes()) / 60;
 
@@ -547,47 +452,23 @@ void CalendarCanvas::createTaskBlock(int block_index, Task task){
 			createTaskBlockRectangle(sf::Vector2f(15.f, BLOCK_HEIGHT), BLOCK_DEADLINE_POS, BLOCK_DEADLINE_BG_COLOUR);
 
 		name.setPosition(all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().x + 3,
-<<<<<<< HEAD
-			all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().y + 3);
-=======
 			all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().y + BLOCK_NAME_VERTICAL_SPACE);
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	}
 	else if (task.getTaskType() == Task::FIXED_TIME_WITHIN_DAY){
 		all_calendar_task_vtr[block_index].calendarTasksBlk[0] = createTaskBlockRectangle(
 			sf::Vector2f(block_width, BLOCK_HEIGHT), BLOCK_FIXED_POS, BLOCK_BG_COLOUR);
 
 		name.setPosition(all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().x + 3,
-<<<<<<< HEAD
-			all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().y + 3);
-=======
 			all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().y + BLOCK_NAME_VERTICAL_SPACE);
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	}
 	else if (task.getTaskType() == Task::FIXED_START){
 		all_calendar_task_vtr[block_index].calendarTasksBlk[0] = createTaskBlockRectangle(
 			sf::Vector2f(15.f, BLOCK_HEIGHT), BLOCK_FIXED_POS, BLOCK_BG_COLOUR);
 
 		name.setPosition(all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().x + 3,
-<<<<<<< HEAD
-			all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().y + 3);
-	}
-	else if (task.getTaskType() == Task::FIXED_TIME_ACROSS_DAY){
-		all_calendar_task_vtr[block_index].calendarTasksBlk[0] = createTaskBlockRectangle(
-			sf::Vector2f(block_width, BLOCK_HEIGHT), BLOCK_FIXED_POS, BLOCK_BG_COLOUR);
-		all_calendar_task_vtr[block_index].calendarTasksBlk[1] = createTaskBlockRectangle(
-			sf::Vector2f(block_width, BLOCK_HEIGHT),
-			sf::Vector2f(task.getTaskStartTime().time_of_day().hours() * VERTICAL_LINE_INTERVAL + VERTICAL_LINE_INTERVAL * task.getTaskStartTime().time_of_day().minutes() / 60 + 2, (task.getTaskStartTime().date() - today - days(1)).days() * BLOCK_HEIGHT + 2)
-			, BLOCK_BG_COLOUR);
-
-		name.setPosition(all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().x + 3,
-			all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().y + 3);
-	}
-=======
 			all_calendar_task_vtr[block_index].calendarTasksBlk[0].getPosition().y + BLOCK_NAME_VERTICAL_SPACE);
 	}
 
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	//done task
 	if (all_calendar_task_vtr[block_index].task.getTaskIsDone()){
 		all_calendar_task_vtr[block_index].calendarTasksBlk[0].setFillColor(sf::Color(0, 255, 0, 180));
@@ -611,22 +492,13 @@ int CalendarCanvas::clickingOn(sf::Vector2i mouse, sf::View currentView){
 	//cout << mapPixelToCoords(mouse, viewTasksCalendar).x << " " << mapPixelToCoords(mouse, viewTasksCalendar).y << endl;
 	for (unsigned i = 0; i < all_calendar_task_vtr.size(); i++){
 		all_calendar_task_vtr[i].calendarTasksBlk[0].setOutlineColor(BLOCK_OUTLINE_COLOUR);
-<<<<<<< HEAD
-		all_calendar_task_vtr[i].calendarTasksBlk[1].setOutlineColor(BLOCK_OUTLINE_COLOUR);
-		if (all_calendar_task_vtr[i].calendarTasksBlk[0].getGlobalBounds().contains(mapPixelToCoords(mouse, viewTasksCalendar)) || all_calendar_task_vtr[i].calendarTasksBlk[1].getGlobalBounds().contains(mapPixelToCoords(mouse, viewTasksCalendar))){
-=======
 		if (all_calendar_task_vtr[i].calendarTasksBlk[0].getGlobalBounds().contains(mapPixelToCoords(mouse, viewTasksCalendar))){
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 			cout << "calendarTasksBlk_vtr: " << all_calendar_task_vtr[i].task.getTaskName() << endl;
 			result = i;
 		}
 	}
 	if (result != -1){
 		all_calendar_task_vtr[result].calendarTasksBlk[0].setOutlineColor(BLOCK_HIGHLIGHT_OUTLINE_COLOUR);
-<<<<<<< HEAD
-		all_calendar_task_vtr[result].calendarTasksBlk[1].setOutlineColor(BLOCK_HIGHLIGHT_OUTLINE_COLOUR);
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	}
 	return result;
 }
@@ -701,20 +573,7 @@ void CalendarCanvas::eventHandler(){
 						);
 					popup->setActive(true);
 				}
-<<<<<<< HEAD
-				else if (all_calendar_task_vtr[task_no].task.getTaskType() == Task::FIXED_TIME_ACROSS_DAY){ //is clicking on a task, show popup
-					popup->updateInfo(all_calendar_task_vtr[task_no].task.getTaskIndex(),
-						all_calendar_task_vtr[task_no].task.getTaskIsDone(),
-						(sf::Vector2f)sf::Mouse::getPosition(*this),
-						all_calendar_task_vtr[task_no].task.getTaskName(),
-						all_calendar_task_vtr[task_no].task.getTaskStartTime(),
-						all_calendar_task_vtr[task_no].task.getTaskEndTime()
-						);
-					popup->setActive(true);
-				}
-=======
 		
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 			}
 			break;
 
@@ -853,20 +712,13 @@ string CalendarCanvas::month_to_string(int month) {
 	return "";
 }
 
-<<<<<<< HEAD
-	// End of segment: ./\calendar\calendarcanvas.cpp
-=======
 	// End of segment: ./\calendarcanvas.cpp
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 
 
 
 
 
 	/**
-<<<<<<< HEAD
-	 * origin: ./\calendar\qsfmlcanvas.cpp
-=======
 	 * origin: ./\calendarcanvas.h
 	 */
 
@@ -1027,7 +879,6 @@ class CalendarCanvas : public QSFMLCanvas{
 
 	/**
 	 * origin: ./\qsfmlcanvas.cpp
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	 */
 
 
@@ -1104,20 +955,13 @@ void QSFMLCanvas::paintEvent(QPaintEvent*)
     display();
 }
 
-<<<<<<< HEAD
-	// End of segment: ./\calendar\qsfmlcanvas.cpp
-=======
 	// End of segment: ./\qsfmlcanvas.cpp
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 
 
 
 
 
 	/**
-<<<<<<< HEAD
-	 * origin: ./\calendar\taskpopup.cpp
-=======
 	 * origin: ./\qsfmlcanvas.h
 	 */
 
@@ -1155,7 +999,6 @@ private:
 
 	/**
 	 * origin: ./\taskpopup.cpp
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	 */
 
 //
@@ -1167,11 +1010,7 @@ private:
 
 taskpopup::taskpopup(CalendarCanvas* canvas_ptr_){
 	canvas_ptr = canvas_ptr_;
-<<<<<<< HEAD
-	font.loadFromFile("UI_Files/NotoSansHant-Black.otf");
-=======
 	font.loadFromFile("UI files/NotoSansHant-Black.otf");
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	taskpopup_display.text_info.setCharacterSize(18);
 	taskpopup_display.text_info.setFont(font);
 	taskpopup_display.text_info.setColor(sf::Color(255, 255, 255, taskpopup_display.alpha_value));
@@ -1326,206 +1165,7 @@ sf::Vector2f taskpopup::blockPositionLimit(sf::Vector2f input, sf::Vector2f exte
 	return input;
 }
 
-<<<<<<< HEAD
-	// End of segment: ./\calendar\taskpopup.cpp
-
-
-
-
-
-	/**
-	 * origin: ./\calendarcanvas.h
-	 */
-
-//
-// Class CalendarCanvas
-// This is a derived class of QSFMLCanvas, to provide the features of calendar.
-
-#pragma once
-
-#include <boost\date_time.hpp>
-#include <qevent.h>
-
-#include "qsfmlcanvas.h"
-#include "LogicExecutor.h"
-
-#define TOOLBAR_HEIGHT 0.f
-#define BOUNDARY_FACTOR 8
-#define BLOCK_HEIGHT 50.f
-#define VERTICAL_LINE_INTERVAL 60.f
-
-#define BLOCK_BG_COLOUR sf::Color(10, 10, 10, 255)
-#define BLOCK_OUTLINE_COLOUR sf::Color(0, 0, 0, 255)
-#define BLOCK_HIGHLIGHT_OUTLINE_COLOUR sf::Color(100, 100, 100, 55)
-#define BLOCK_DEADLINE_BG_COLOUR sf::Color(50, 0, 0, 255)
-#define BLOCK_DEADLINE_POS sf::Vector2f(task.getTaskDeadline().time_of_day().hours() * VERTICAL_LINE_INTERVAL+ VERTICAL_LINE_INTERVAL * task.getTaskDeadline().time_of_day().minutes() / 60 + 2,(task.getTaskDeadline().date() - today).days() * BLOCK_HEIGHT + 2)
-#define BLOCK_FIXED_POS sf::Vector2f(task.getTaskStartTime().time_of_day().hours() * VERTICAL_LINE_INTERVAL + VERTICAL_LINE_INTERVAL * task.getTaskStartTime().time_of_day().minutes() / 60 + 2,(task.getTaskStartTime().date() - today).days() * BLOCK_HEIGHT + 2)
-
-#define FRAME_WIDTH 921	//To determinate the scale of the view
-#define FRAME_HEIGHT 501
-
-#define TOP_BOUNDARY 211
-#define BOT_BOUNDARY 1042
-#define LEFT_BOUNDARY 460
-#define RIGHT_BOUNDARY 1140
-
-// forward declaration is need in circular dependency
-class WhatToDo;
-class taskpopup;
-
-using namespace boost::posix_time;
-using namespace boost::gregorian;
-
-class CalendarCanvas : public QSFMLCanvas{
-
-	enum ENUM_DIR {RIGHT = 0, LEFT, DOWN, UP };		//view moving directions
-
-	//This struct is to link the task information and
-	//the rectangular shape together, to make retrieving info easier
-	struct Calendar_task{
-		Task task;
-		sf::RectangleShape calendarTasksBlk;
-	};
-
-	public:
-		// Constructor
-		CalendarCanvas(WhatToDo* _main_program_ptr, QWidget* Parent, const QPoint& Position, const QSize& Size) :QSFMLCanvas(Parent, Position, Size, 0){
-			main_program_ptr = _main_program_ptr;
-			Init();
-		}
-
-		// Get State. Update all_calendar_task_vtr, for any changes in task please call this
-		void readFromState(State state);
-
-		// Determinate view size with updated window size
-		void resizedUpdate(int, int);
-
-		// Methods for QT buttons to call
-		void prevPage();
-		void nextPage();
-
-		// Jump to a particular task in the view
-		// e.g. jumpToTask(0) to closest task, jumpToTask[all_calendar_task_vtr.size() - 1] to latest task
-		void jumpToTask(int);
-
-		//////////////
-		//Member Data
-		//////////////
-		bool b_active;					// Is calendar view active?
-		WhatToDo* main_program_ptr;		// Pointer to WhatToDo(QT) class
-		taskpopup*		popup;					// Popup window when task is clicked
-
-	private:
-		// Called when object is created, do initialization (see qsfmlcanvas.cpp)
-		void Init();
-
-		// Called in update loop (see qsfmlcanvas.cpp)
-		void Update();
-
-		// Event handler, only run when b_active is true
-		void eventHandler();			
-		void createEmptyTable();
-		void createTaskBlock(int, Task);
-		void createTaskOnTable();
-
-		// QT Event Handler override (some sfml event handle is blocked by QT seems to be, so need to use QT's)
-		void wheelEvent(QWheelEvent *);
-		void keyPressEvent(QKeyEvent *);
-		void keyReleaseEvent(QKeyEvent *){} //not used for now
-
-		// Rendering
-		void drawTasks();				 // display tasks
-		void drawVerticalFloating();	 // display time and vertical lines
-		void drawHorizontalFloating();	 // display date and Day name
-
-		// Check which task the user is clicking, to show detail popup
-		int clickingOn(sf::Vector2i mouse, sf::View currentView);
-		
-		// Check whether the current view can move further with a specified direction and distance
-		bool ableToMove(ENUM_DIR dir, int extra_dist);
-
-		// Move the view, will check whether it is able to move inside the method before moving
-		void viewMove(ENUM_DIR dir, int distance);
-
-		// Create a rectangular shape for task, with tasks specification
-		sf::RectangleShape createTaskBlockRectangle(sf::Vector2f size, sf::Vector2f position, sf::Color colour);
-
-		// Change the first showing date in the calendar
-		void changeStartingDate(date Date);
-
-		// Convert integer day/month to their names
-		string CalendarCanvas::day_of_week_to_string(int day);
-		string CalendarCanvas::month_to_string(int month);
-
-		//////////////
-		//Member Data
-		//////////////
-		//State			state;
-		date			calendar_starting_date;	// The first showing date in the calendar	
-		bool			b_dragging;				// Is mouse pressed to drag move the view?
-		sf::Vector2i	dragging_start;			// The starting position when user drag since last window update
-		sf::Font		font_time;				// Font for time
-		sf::Font		font;					// Font for anything else
-		sf::Text		text_date;
-		int				lastActionType;			// Last action of state (delete or undo/redo or none)
-		int				lastActionTaskIndex;	// Last modified state
-
-		// view to seperate different axies, so that they can move seperately
-		sf::View		viewTasksCalendarTimeLine, viewTasksCalendarDateLine, viewTasksCalendar;	
-
-		//for grid table graphics
-		std::vector<sf::RectangleShape> calendarBackground, calendarTableHorizontal_vtr, calendarTableVertical_vtr;
-		std::vector<sf::Text>			calendarTableDate_vtr, calendarTableTime_vtr;
-		sf::RectangleShape				seperate_line;
-
-		//for tasks blocks graphics
-		vector<Calendar_task>		all_calendar_task_vtr;
-		std::vector<sf::Text>		calendarTasksName_vtr;	//to be integrated into all_calendar_task_vtr
-
-		//For background graphics
-		sf::Texture		bg_texture;
-		sf::Sprite		bg_sprite;
-};
-	// End of segment: ./\calendarcanvas.h
-
-
-
-
-
-	/**
-	 * origin: ./\qsfmlcanvas.h
-	 */
-
-
-// Class QSFMLCanvas
-// Is a derived class to combine Qt(Widget) and SFML(RenderWindow)
-// Code reference: http://sfml-dev.org/tutorials/1.6/graphics-qt.php
-
-#include <SFML/Graphics.hpp>
-#include <QtWidgets/Qwidget.h>
-#include <QtCore/Qtimer.h>
-
-class QSFMLCanvas : public QWidget, public sf::RenderWindow{
-public:
-
-    QSFMLCanvas(QWidget* Parent, const QPoint& Position, const QSize& Size, unsigned int FrameTime = 0);
-    virtual ~QSFMLCanvas();
-
-private:
-
-    virtual void Init() { return; }
-    virtual void Update() { return; }
-    virtual QPaintEngine* paintEngine() const;
-	virtual void showEvent(QShowEvent*);
-    virtual void paintEvent(QPaintEvent*);
-
-    QTimer myTimer;
-    bool   myInitialized;
-};
-	// End of segment: ./\qsfmlcanvas.h
-=======
 	// End of segment: ./\taskpopup.cpp
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 
 
 

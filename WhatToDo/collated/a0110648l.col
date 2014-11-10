@@ -24,13 +24,10 @@ Command::Command(void) {
 	_loggingModeOn = INITIAL_VALUE_LOGGING_MODE_ON;
 	_doneFilter = Status::STATUS_NOT_SET;
 	_typeFilter = Type::TYPE_NOT_SET;
-<<<<<<< HEAD
-=======
 
 	ofstream writeToLog;
 	writeToLog.open(_logFileName, ios::out);
 	writeToLog.close();
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 }
 
 void Command::execute() {
@@ -426,10 +423,7 @@ void CommandAdd::execute() {
 		_userMessage = errorMsg;
 		retrieveExistingViewState();
 		addUserMessageToCurrentState();
-<<<<<<< HEAD
-=======
 		_currentState->setActionMessage(STRING_EMPTY);
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		setNewViewState();
 	}
 
@@ -1397,10 +1391,7 @@ void CommandRedo::execute() {
 	catch (string errorMsg) {
 		_userMessage = errorMsg;
 		retrieveExistingViewState();
-<<<<<<< HEAD
-=======
 		_currentState->setActionMessage(STRING_EMPTY);
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		addUserMessageToCurrentState();
 		setNewViewState();
 	}
@@ -2217,111 +2208,6 @@ class CommandSearchPowerSearch {
 
 
 	/**
-<<<<<<< HEAD
-	 * origin: ./\CommandUndo.cpp
-	 */
-
-
-#include "CommandUndo.h"
-
-CommandUndo::CommandUndo(void) {
-}
-
-void CommandUndo::execute() {
-	sprintf_s(buffer, MSG_LOGGING_EXECUTE_COMMAND_UNDO.c_str());
-	log(buffer);
-	retrieveCommandHistory();
-	retrieveCommandHistoryIndex();
-	
-	try {
-		checkIsParsedCorrectly();
-		assert(_currentCommandHistoryIndex >= 0);
-		assert(_currentCommandHistoryIndex <= _commandHistory.size());
-
-		checkIsCommandValid();
-		resetLogicDataSettings();
-		runAllRelevantCommandsAgain();
-		storeRemainingCommandsInHistory();
-	}
-	catch (string errorMsg) {
-		_userMessage = errorMsg;
-		retrieveExistingViewState();
-		addUserMessageToCurrentState();
-		setNewViewState();
-	}
-
-	return;
-}
-
-void CommandUndo::runAllRelevantCommandsAgain() {
-	int i;
-	for (i=0; i<_currentCommandHistoryIndex; i++) {
-		_commandHistory[i]->execute();
-	}
-
-	sprintf_s(buffer, 
-		MSG_LOGGING_RUN_RELEVANT_COMMANDS_AGAIN.c_str(), 
-		to_string(_currentCommandHistoryIndex).c_str());
-	log(buffer);
-	return;
-}
-
-void CommandUndo::storeRemainingCommandsInHistory() {
-	int i;
-	for (i=_currentCommandHistoryIndex; 
-			unsigned(i)<_commandHistory.size(); i++) {
-		LogicData::addCommandToHistory(_commandHistory[i]);
-	}
-	LogicData::setCommandHistoryIndex(_currentCommandHistoryIndex);
-
-	sprintf_s(buffer, MSG_LOGGING_STORE_REMAINING_COMMANDS.c_str(), 
-		to_string(_commandHistory.size()).c_str(), 
-		to_string(_currentCommandHistoryIndex).c_str());
-	log(buffer);
-	return;
-}
-
-bool CommandUndo::checkIsCommandValid() {
-	bool isUndoPossible;
-	if ((_currentCommandHistoryIndex <= 0) 
-			|| (_currentCommandHistoryIndex > _commandHistory.size())) {
-		throw MSG_ERROR_CANNOT_UNDO_ANYMORE;
-		isUndoPossible = false;
-	}
-	else {
-		isUndoPossible = true;
-		_currentCommandHistoryIndex--;
-	}
-
-	sprintf_s(buffer, MSG_LOGGING_CHECK_IS_COMMAND_VALID.c_str(), 
-		to_string(_currentCommandHistoryIndex).c_str(), 
-		to_string(isUndoPossible).c_str());
-	log(buffer);
-	return isUndoPossible;
-}
-
-void CommandUndo::retrieveCommandHistory() {
-	_commandHistory = LogicData::getCommandHistory();
-
-	sprintf_s(buffer, MSG_LOGGING_RETRIEVE_COMMAND_HISTORY.c_str(), 
-		to_string(_commandHistory.size()).c_str());
-	log(buffer);
-	return;
-}
-
-void CommandUndo::retrieveCommandHistoryIndex() {
-	_currentCommandHistoryIndex = 
-		LogicData::getCurrentCommandHistoryIndex();
-
-	sprintf_s(buffer, 
-		MSG_LOGGING_RETRIEVE_COMMAND_HISTORY_INDEX.c_str(), 
-		to_string(_currentCommandHistoryIndex).c_str());
-	log(buffer);
-	return;
-}
-
-	// End of segment: ./\CommandUndo.cpp
-=======
 	 * origin: ./\CommandTests\CommandAddTests.cpp
 	 */
 
@@ -2876,106 +2762,12 @@ namespace CommandClearTests
 	};
 }
 	// End of segment: ./\CommandTests\CommandClearTests.cpp
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 
 
 
 
 
 	/**
-<<<<<<< HEAD
-	 * origin: ./\CommandUndo.h
-	 */
-
-// 
-// This is the concrete CommandUndo class, which is reponsible for executing 
-// a "undo" command specified by the user.
-//
-// It works by (i) checking for the validity of the command; (ii) resetting
-// all LogicData's state settings; and (iii) running all the commands from the
-// beginning all over again till the correct existing command to simulate an
-// undo operation.
-//
-// If the command is invalid either due to (i) a false parsed status indicating
-// it has been parsed incorrectly; or (ii) lack of past commands to undo, an error 
-// message will be added to the current state to be shown to the user eventually.
-//
-//****************************************************************************
-
-#pragma once
-
-#include "Command.h"
-
-using namespace std;
-
-const string MSG_LOGGING_EXECUTE_COMMAND_UNDO = 
-	"\nCommand Add Initiated:\n";
-const string MSG_LOGGING_RUN_RELEVANT_COMMANDS_AGAIN = 
-	"Function called: runAllRelevantCommandsAgain(): _currentCommand"
-	"HistoryIndex: %s\n";
-const string MSG_LOGGING_STORE_REMAINING_COMMANDS = 
-	"Function called: storeRemainingCommandsInHistory(): size of _co"
-	"mmandHistory: %s\nFunction called: storeRemainingCommandsInHist"
-	"ory(): _currentCommandHistoryIndex: %s\n";
-const string MSG_LOGGING_CHECK_IS_COMMAND_VALID = 
-	"Function called: checkIsCommandValid(): updated _currentCommand"
-	"HistoryIndex: %s\nFunction called: checkIsCommandValid(): isUnd"
-	"o/RedoPossible: %s\n";
-const string MSG_LOGGING_RETRIEVE_COMMAND_HISTORY = 
-	"Function called: retrieveCommandHistory(): size of CommandHisto"
-	"ry: %s\n";
-const string MSG_LOGGING_RETRIEVE_COMMAND_HISTORY_INDEX = 
-	"Function called: retrieveCommandHistoryIndex(): _currentCommand"
-	"HistoryIndex: %s\n";
-
-const string MSG_ERROR_CANNOT_UNDO_ANYMORE = 
-	"Cannot undo anymore!";
-
-class CommandUndo: public Command {
-	public:
-		CommandUndo(void);
-		
-		/*
-		// This API function executes the Undo Command when called.
-		//
-		// Pre-conditions: 
-		//     (i) LogicData's command history index must be between
-		//     one and the size of the command history vector (LogicData
-		//     must store a valid command history index.
-		//     (ii) The _isParsedCorrectly variable in the command 
-		//     should be true.
-		//
-		// Post-Conditions:
-		//     (i) The latest done action in LogicData's command history 
-		//     will be undone. If there is no such action, undo will 
-		//     not be performed.
-		//
-		// Sample usage:
-		//     CommandUndo* aUndoCommand = new CommandUndo;
-		//     aUndoCommand->execute();
-		*/
-		
-		void execute();
-
-	protected:
-
-		// Attributes For Execution
-
-		int _currentCommandHistoryIndex;
-		vector<Command*> _commandHistory;
-		
-		// Functions For Execution
-
-		bool checkIsCommandValid();
-		void runAllRelevantCommandsAgain();
-		void storeRemainingCommandsInHistory();
-		void retrieveCommandHistory();
-		void retrieveCommandHistoryIndex();
-};
-
-
-	// End of segment: ./\CommandUndo.h
-=======
 	 * origin: ./\CommandTests\CommandDeleteTests.cpp
 	 */
 
@@ -7449,115 +7241,12 @@ namespace SystemTests_Undo
 	}; 
 }
 	// End of segment: ./\SystemTests\SystemTests_Undo.cpp
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 
 
 
 
 
 	/**
-<<<<<<< HEAD
-	 * origin: ./\KeyPressEater.cpp
-	 */
-
-
-#include "KeyPressEater.h"
-
-
-KeyPressEater::KeyPressEater() {
-}
-
-KeyPressEater::~KeyPressEater(void) {
-}
-
-bool KeyPressEater::eventFilter(QObject *obj, QEvent *event) {
-	if (event->type() == QEvent::KeyPress) {
-		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-		if (keyEvent->key() == Qt::Key_Return) {
-			emit enterPressed(obj);
-			return true;
-		}
-		else if (keyEvent->key() == Qt::Key_Tab) {
-			emit tabPressed();
-			return true;
-		}
-		else {
-			return QObject::eventFilter(obj, event);
-		}
-	}
-	else {
-		return QObject::eventFilter(obj, event);
-	}
-}
-
-	// End of segment: ./\KeyPressEater.cpp
-
-
-
-
-
-	/**
-	 * origin: ./\KeyPressEater.h
-	 */
-
-// 
-// This is the KeyPressEater class, which is reponsible for intercepting all 
-// key events for certain QWidgets for which it is installed, and determining if
-// certain keys have been entered.
-//
-// It intercepts only the "Key_Return" and the "Key_Tab" keypress, and emits a 
-// signal when this happens. Otherwise, all other key presses are ignored.
-//
-//****************************************************************************
-
-#pragma once
-#include <QObject>
-#include <QEvent>
-#include <QKeyEvent>
-
-class KeyPressEater : public QObject {
-	
-	Q_OBJECT
-
-	public:
-		KeyPressEater();
-		~KeyPressEater(void);
-		bool eventFilter(QObject *obj, QEvent *event);
-
-	signals:
-		void enterPressed(QObject *obj);
-		void tabPressed();
-
-};
-
-	// End of segment: ./\KeyPressEater.h
-
-
-
-
-
-	/**
-	 * origin: ./\LogicExecutor.cpp
-	 */
-
-
-#include "LogicExecutor.h"
-
-
-LogicExecutor::LogicExecutor(void)
-{
-}
-
-State LogicExecutor::getNewState(string commandLineInput) {
-	LogicParser parser;
- 	Command* currentCommand = 
-		parser.getCommandFromUserInput(commandLineInput);
-	currentCommand->execute();
-	State stateToReturn = LogicData::getViewState();
-	return stateToReturn;
-}
-	// End of segment: ./\LogicExecutor.cpp
-=======
 	 * origin: ./\SystemTests\TestSupportLibrary.cpp
 	 */
 
@@ -7763,40 +7452,12 @@ bool TestSupportLibrary::checkIsTaskIsDoneEqualsExpected(
 	return isTaskIsDoneEqualsExpected;
 }
 	// End of segment: ./\SystemTests\TestSupportLibrary.cpp
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 
 
 
 
 
 	/**
-<<<<<<< HEAD
-	 * origin: ./\LogicExecutor.h
-	 */
-
-// 
-//This is the interface class to the entire Logic component. When called with 
-// the getNewState(string commandString) method, it is guaranteed to return an 
-// updated view state which may be used to update the GUI (for example).
-//
-// This class works by (i) obtaining a command object from the LogicParser with  
-// the commandString; (ii) executing the concrete command object; and (iii) 
-// retrieving the updated viewState from LogicData which is returned in its
-// function call.
-//
-// If an error has occurred during the processing of the commandString, the 
-// concrete command objects will terminate execution midway and store details 
-// of the failed execution in the returned state, which may be used for 
-// subsequent update purposes.
-//
-// If a warning (not serious but worthy of note) occurs instead, the concrete
-// command objects will continue execution as per normal but still store details
-// of the warning in the returned state, which may also be used for subsequent 
-// update purposes.
-//
-// Sample usage:
-//    State newState = LogicExecutor::getNewState("/load");
-=======
 	 * origin: ./\SystemTests\TestSupportLibrary.h
 	 */
 
@@ -7805,81 +7466,10 @@ bool TestSupportLibrary::checkIsTaskIsDoneEqualsExpected(
 //
 // It comprises of functions that allow the automation of WhatToDo's System 
 // Tests to be carried out more efficiently.
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 //
 //****************************************************************************
 
 #pragma once
-<<<<<<< HEAD
-
-#include "State.h"
-#include "Task.h"
-#include "LogicParser.h"
-#include "Command.h"
-
-using namespace std;
-
-class LogicExecutor {
-	public:
-		LogicExecutor(void);
-		
-		/*
-		// This API function returns a new state when given a string
-		// variable - commandLineInput.
-		//
-		// Pre-conditions:
-		//     (i) If the user command contains a task index, it should
-		//     be the true task index instead of the GUI's display task
-		//     index.
-		//     (ii) The _isParsedCorrectly variable in the command 
-		//     should be true.
-		//
-		// Post-Conditions:
-		//     (i) The command implied by the commandLineInput will be
-		//     executed and the new updated state will be returned.
-		//     (ii) If there are any warnings or errors arising from
-		//     the command implied by the commandLine Input, there will
-		//     be an error message returned in the updated state.
-		//
-		// Sample usage:
-		//     LogicExecutor::getNewState("Do hw tmr");
-		*/
-		
-		static State getNewState(string commandLineInput);
-
-
-};
-
-
-	// End of segment: ./\LogicExecutor.h
-
-
-
-
-
-	/**
-	 * origin: ./\main.cpp
-	 */
-
-
-#include "whattodo.h"
-#include <QtWidgets/QApplication>
-#include <string>
-
-using namespace std;
-
-int main(int argc, char *argv[])
-{
-	string exeDirectory;
-	QApplication mainApplication(argc, argv);
-	exeDirectory = mainApplication.applicationDirPath().toStdString();
-	WhatToDo mainWindow(exeDirectory);
-	mainWindow.show();
-	return mainApplication.exec();
-}
-
-	// End of segment: ./\main.cpp
-=======
 #include "stdafx.h"
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -7936,7 +7526,6 @@ public:
 
 
 	// End of segment: ./\SystemTests\TestSupportLibrary.h
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 
 
 
@@ -7954,13 +7543,8 @@ WhatToDo::WhatToDo(string exeDirectory, QWidget *parent)
 	: QMainWindow(parent) {
 	_exeDirectory = exeDirectory;
 	_ui.setupUi(this);
-<<<<<<< HEAD
-	setupOtherUIConfigs();
-	setupCalendar();
-=======
 	setupCalendar();
 	setupOtherUIConfigs();
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	setupKeyPressEater();
 	defineAllHotkeys();
 	connectAllOtherSignalAndSlots();
@@ -8120,11 +7704,7 @@ void WhatToDo::handleButtonToggleCalendar() {
 	
 	// Move the calendar to a viewable position in the GUi
 	
-<<<<<<< HEAD
-	_ui.calendarframe->move(20, 70);
-=======
 	_ui.calendarframe->move(20, 66);
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	_ui.calendarbtn_next->move(290, 10);
 	_ui.calendarbtn_prev->move(220, 10);
 
@@ -8192,12 +7772,9 @@ void WhatToDo::setupOtherUIConfigs() {
 	setupInitialGUISizeConfigs();
 	setupMessageBoxConfigs();
 	setupTextSizeConfigs();
-<<<<<<< HEAD
-=======
 	_ui.displayAgendaviewFloat->raise();
 	_ui.displayAgendaviewTimed->raise();
 	_ui.messageFeedback->raise();
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	return;
 }
 
@@ -8325,15 +7902,9 @@ void WhatToDo::setupMessageBoxConfigs() {
 	// Set the message box view as transparent to the user and 
 	// transparent to mouse events
 
-<<<<<<< HEAD
-	_ui.messageFeedback->setAttribute(Qt::WA_TranslucentBackground);
-	_ui.messageFeedback->setStyleSheet(
-		QString::fromStdString(QTSTYLESHEET_TRANSPARENT_BACKGROUND));
-=======
 	_ui.messageFeedback->setStyleSheet(
 		QString::fromStdString(QTSTYLESHEET_TRANSPARENT_BACKGROUND));
 	_ui.messageFeedback->setAttribute(Qt::WA_TranslucentBackground);
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	_ui.messageFeedback->setAttribute(Qt::WA_TransparentForMouseEvents);
 	return;
 }
@@ -9644,14 +9215,11 @@ string WhatToDo::convertTaskToEditText(Task taskToConvert) {
 
 string WhatToDo::getTaskDateAsEditText(Task taskToConvert) {
 	string taskDateEditText;
-<<<<<<< HEAD
-=======
 
 	// Converting different kinds of tasks into different date
 	// formats so they will be registered as the same kinds of 
 	// task if the user does not change anything.
 
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	if (taskToConvert.getTaskType() == Task::FLOATING) {
 		taskDateEditText = STRING_EMPTY;
 	}
@@ -9671,9 +9239,6 @@ string WhatToDo::getTaskDateAsEditText(Task taskToConvert) {
 		taskDateEditText = COMMAND_PARAM_ADD_DATE_TIMED_START + 
 			convertDateTimeToEditText(taskToConvert.getTaskStartTime());
 	}
-<<<<<<< HEAD
-	else if (taskToConvert.isTaskHasStartAndEnd()) {
-=======
 	else if (taskToConvert.getTaskType() == Task::FIXED_DAY_TO_DAY) {
 		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_START + 
 			convertDateToEditText(taskToConvert.getTaskStartTime());
@@ -9693,7 +9258,6 @@ string WhatToDo::getTaskDateAsEditText(Task taskToConvert) {
 			convertDateToEditText(taskToConvert.getTaskEndTime());
 	}
 	else {
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_START + 
 			convertDateTimeToEditText(taskToConvert.getTaskStartTime());
 		taskDateEditText += COMMAND_PARAM_ADD_DATE_TIMED_END + 
@@ -10175,11 +9739,6 @@ class WhatToDo : public QMainWindow
 		string removeUnwantedChars(string stringToProcess);
 		string changeDayToDayOfWeek(int day);
 		string changeMonthToMonthOfYear(int year);
-<<<<<<< HEAD
-		string convertTaskToEditText(Task taskToConvert);
-		string getTaskDateAsEditText(Task taskToConvert);
-		string convertDateTimeToEditText(ptime timeToConvert);
-=======
 
 		// This function converts a task into text that the user can
 		// readily edit.
@@ -10199,7 +9758,6 @@ class WhatToDo : public QMainWindow
 		// This function converts a ptime's date and time into text that 
 		// the user can readily edit.
 
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		string convertDateToEditText(ptime timeToConvert);
 		bool checkIsContainStrangeChars(string stringToProcess);
 		bool checkIsCurrentStateEmpty();

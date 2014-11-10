@@ -3,7 +3,6 @@
 
 
 	/**
-<<<<<<< HEAD
 	 * origin: ./\StorageConverter.cpp
 	 */
 
@@ -275,8 +274,6 @@ void StorageConverter::compileErrorMessage(string errorMessageLocation, string e
 
 
 	/**
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	 * origin: ./\StorageConverter.h
 	 */
 
@@ -311,17 +308,12 @@ void StorageConverter::compileErrorMessage(string errorMessageLocation, string e
 
 using namespace std;
 const int MAX_SIZE = 255;
-<<<<<<< HEAD
 const string LOG_FILE_NAME = "storageLogs.txt";
-=======
-const string LOG_FILE_NAME = "storageLog.txt";
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 const string STRING_TRUE = "1";
 const string STRING_FALSE = "0";
 const bool LOGGING_MODE_ON = true;
 
 //functions that thrown the messages
-<<<<<<< HEAD
 const string STORAGE_LOGGING_TEMPLATE = 
 	"Function called: %s\nError Message: %s";
 const string STORAGE_FUNCTION_CONVERT_PTIME_START = 
@@ -342,19 +334,6 @@ const string STORAGE_MSG_PTIME_DEADLINE_ERROR =
 	"Deadline false format.\n";
 const string STORAGE_MSG_ISDONE_ERROR = 
 	"Task IsDone false format. \n";
-=======
-const string STORAGE_LOGGING_TEMPLATE = "Function called: %s\nError Message: %s";
-const string STORAGE_FUNCTION_CONVERT_PTIME_START = "convertStringStartTimeToTask();";
-const string STORAGE_FUNCTION_CONVERT_PTIME_END = "convertStringEndTimeToTask();";
-const string STORAGE_FUNCTION_CONVERT_PTIME_DEADLINE = "convertStringDeadLineToTask();";
-const string STORAGE_FUNCTION_CONVERT_ISDONE = "ConvertStringIsDoneToTask(Task &convertedTask);";
-
-//error messages
-const string STORAGE_MSG_PTIME_START_ERROR = "Start Datetime false format.\n";
-const string STORAGE_MSG_PTIME_END_ERROR = "End Datetime false format.\n";
-const string STORAGE_MSG_PTIME_DEADLINE_ERROR = "Deadline false format.\n";
-const string STORAGE_MSG_ISDONE_ERROR = "Task IsDone false format. \n";
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 
 //for documentation and readability
 const string TITLE_TASKSTARTDATETIME = "Start Datetime: ";
@@ -392,28 +371,18 @@ class StorageConverter{
 		string convertTaskNameToString(Task taskToConvert);
 		
 		//subfunctions for conversion from string to task
-<<<<<<< HEAD
-=======
-		void convertStringIsdoneToTask(Task& convertedTask);
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		void convertStringStartDatetimeToTask(Task& convertedTask);
 		void convertStringEndDatetimeToTask(Task& convertedTask);
 		void convertStringDeadlineToTask(Task& convertedTask);
 		void convertStringTasktagToTask(Task& convertedTask);
-<<<<<<< HEAD
 		void convertStringIsdoneToTask(Task& convertedTask);
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		vector<string> convertTaskTagStringToVector(string tagString);
 
 		//logging function
 		void logErrorMessage(string logString);
 		void compileErrorMessage(string errorMessageLocation, 
 								 string errorMessage);
-<<<<<<< HEAD
 
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 }; 
 
 
@@ -424,7 +393,6 @@ class StorageConverter{
 
 
 	/**
-<<<<<<< HEAD
 	 * origin: ./\StorageDatabase.cpp
 	 */
 
@@ -542,8 +510,6 @@ void StorageDatabase::readIndividualFileFromDatabase(ifstream &readFile, string 
 
 
 	/**
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	 * origin: ./\StorageDatabase.h
 	 */
 
@@ -556,10 +522,7 @@ void StorageDatabase::readIndividualFileFromDatabase(ifstream &readFile, string 
 //StorageDatabase comprises of 2 main functions which are
 //1)read from database 
 //2)write to database 
-<<<<<<< HEAD
 
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 //StorageDatabase also writes a copy of the schedule to a backup database
 //in the event that the user accidentally deleted the database or corrupted
 //the file that deem it unreadable. The user would however, be refrained from
@@ -570,26 +533,16 @@ void StorageDatabase::readIndividualFileFromDatabase(ifstream &readFile, string 
 //vector<vector<string>> databaseString = StorageDatabaseObj.readFromDatabase();
 //****************************************************************************
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 #include <vector>
 #include <string>
 #include <assert.h>
 
 #pragma once
-<<<<<<< HEAD
 using namespace std; 
 
 const string INITIAL_VALUE_FILE_NAME = "Database.txt";
 const string INITIAL_VALUE_BACK_UP_FILE_NAME ="BackupDatabase.bak";
-=======
-using namespace std;
-
-const string INITIAL_VALUE_FILE_NAME = "Database.txt";
-const string INITIAL_VALUE_BACK_UP_FILE_NAME ="Qt5Test.dll";
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 const int START=0;
 const int NO_OF_ATTRIBUTES = 6;
 
@@ -611,19 +564,11 @@ class StorageDatabase{
 		//secondary supporting functions
 		void setFileName(string nameToSet); 
 		string getFileName(); 
-<<<<<<< HEAD
-=======
-		vector<string> readFromDataBaseIndividualTaskString();
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		void writeIndivdualFileToDatabase(vector<vector<string>>::iterator fileIterator, 
 										  ofstream& writeFile, 
 										  vector<vector<string>> taskStringToWrite);
 		void readIndividualFileFromDatabase(ifstream& readFile, string myText);
 		
-<<<<<<< HEAD
-=======
-		
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 };
 
 
@@ -674,29 +619,6 @@ void StorageExecutor::saveToStorage(State stateToSave){
 	return;
 }
 
-<<<<<<< HEAD
-=======
-//conversion from vector<string> to Task
-//exception handling when conversion isn't successful
-void StorageExecutor::processVectorStringToTaskConversion(vector<vector<string>>::
-	iterator vIterator){
-	//convert string to task
-	try{
-		while(vIterator!=_storageToConvert.end()){
-			_individualTask = _storageConverterObj.convertStringToTask(*vIterator);
-			_convertedTaskVector.push_back(_individualTask);
-			vIterator++;
-		}
-		return;
-	} catch(exception&){
-		compileErrorMessage(FUNCTION_VECTOR_STRING_TO_TASK_CONVERSION,
-					        STORAGE_MSG_CONVERSION_ERROR);
-		logErrorMessage(_logErrorMessage); 
-		throw;
-	}
-}
-
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 //adds converted Tasks into a State 
 //returns the State after all Tasks are added
 State StorageExecutor::processTaskAddition(vector<Task>::iterator taskIterator){
@@ -708,23 +630,6 @@ State StorageExecutor::processTaskAddition(vector<Task>::iterator taskIterator){
 	return _stateToLoad;
 }
 
-<<<<<<< HEAD
-=======
-//converts Tasks to strings
-//store the converted string into a vector of strings
-void StorageExecutor::convertAllTaskToString(vector<Task>::iterator taskIterator){
-
-	_convertedStringStorage.clear();
-	while(taskIterator!=_taskToStore.end()){
-		_individualConvertedTask = _storageConverterObj.
-			convertTaskToString(*taskIterator);	
-		_convertedStringStorage.push_back(_individualConvertedTask);
-		taskIterator++;
-	}
-	return;
-}
-
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 //read from database
 //convert each string into task using storageConverter
 //if any exceptions were caught during the conversion process
@@ -740,10 +645,7 @@ void StorageExecutor::readFileAndConvertString(){
 		compileErrorMessage(STORAGE_FUNCTION_LOAD_FROM_STORAGE,STORAGE_MSG_DATABASE_ERROR);
 		logErrorMessage(_logErrorMessage);
 		_storageToConvert.clear();
-<<<<<<< HEAD
 
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 		logErrorMessage(STORAGE_MSG_LOAD_FROM_BACKUP); 
 		_storageToConvert = _storageDatabaseObj.readFromBackUpDatabase();
 		vector<vector<string>>::iterator myStorageIterator = _storageToConvert.begin();
@@ -751,7 +653,6 @@ void StorageExecutor::readFileAndConvertString(){
 	}
 }
 
-<<<<<<< HEAD
 //conversion from vector<string> to Task
 //exception handling when conversion isn't successful
 void StorageExecutor::processVectorStringToTaskConversion(vector<vector<string>>::
@@ -786,8 +687,6 @@ void StorageExecutor::convertAllTaskToString(vector<Task>::iterator taskIterator
 	return;
 }
 
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 //error messages will be compiled to a standard template before 
 //it is to be written to file
 void StorageExecutor::compileErrorMessage(string errorMessageLocation, 
@@ -799,11 +698,6 @@ void StorageExecutor::compileErrorMessage(string errorMessageLocation,
 	return;
 }
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 //logging function to write error message to file
 void StorageExecutor::logErrorMessage(string errorMessage){
 	if(LOGGING_MODE_ON == true){
@@ -855,13 +749,8 @@ void StorageExecutor::logErrorMessage(string errorMessage){
 
 using namespace std;
 
-<<<<<<< HEAD
 //error locations
 const string STORAGE_FUNCTION_VECTOR_STRING_TO_TASK_CONVERSION = 
-=======
-//error messages and error locations
-const string FUNCTION_VECTOR_STRING_TO_TASK_CONVERSION = 
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 	"processVectorStringToTaskConversion(vector<vector<string>>::"
 	"iterator vIterator)";
 const string STORAGE_FUNCTION_LOAD_FROM_STORAGE = 
@@ -869,10 +758,7 @@ const string STORAGE_FUNCTION_LOAD_FROM_STORAGE =
 const string STORATE_FUNCTION_LOAD_FROM_BACKUP = 
 	"raedFromBackUpDatabase();";
 
-<<<<<<< HEAD
 //error message
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 const string STORAGE_MSG_CONVERSION_ERROR = 
 	"Conversion was unsuccessful!\n";
 const string STORAGE_MSG_DATABASE_ERROR = 
@@ -910,21 +796,12 @@ class StorageExecutor{
 		//supporting functions
 		State processTaskAddition(vector<Task>::iterator taskIterator);
 		void readFileAndConvertString();
-<<<<<<< HEAD
 		void processVectorStringToTaskConversion(vector<vector<string>>::iterator vectorStringIterator);
 		void convertAllTaskToString(vector<Task>::iterator taskIterator);
 		
 		//logging functions
 		void logErrorMessage(string errorMessage);
 		void compileErrorMessage(string errorMessageLocation, string errorMessage);
-=======
-		void processVectorStringToTaskConversion(vector<vector<string>>::
-												 iterator vectorStringIterator);
-		void convertAllTaskToString(vector<Task>::iterator taskIterator);
-		void logErrorMessage(string errorMessage);
-		void compileErrorMessage(string errorMessageLocation, 
-								 string errorMessage);
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db
 };
 
 
@@ -935,7 +812,6 @@ class StorageExecutor{
 
 
 
-<<<<<<< HEAD
 	/**
 	 * origin: ./\StorageUnitTest.cpp
 	 */
@@ -1188,5 +1064,3 @@ namespace TestLibrary
 
 
 
-=======
->>>>>>> 9a5aef7f09c1fcf33aec1a1885f8d02bcabd82db

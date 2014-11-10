@@ -3,7 +3,7 @@
 
 
 	/**
-	 * origin: main\WhatToDo\LogicParser.cpp
+	 * origin: ./\LogicParser.cpp
 	 */
 
 #include "LogicParser.h"
@@ -34,14 +34,14 @@ bool LogicParser::isEmptyInput(string userInput) {
 	return (userInput.empty() 
 		 || userInput.find_first_not_of(WHITESPACE_CHAR) == string::npos);
 }
-	// End of segment: main\WhatToDo\LogicParser.cpp
+	// End of segment: ./\LogicParser.cpp
 
 
 
 
 
 	/**
-	 * origin: main\WhatToDo\LogicParser.h
+	 * origin: ./\LogicParser.h
 	 */
 
 //****************************************************************************
@@ -76,14 +76,14 @@ public:
 private:
 	bool isEmptyInput(string userInput);
 };
-	// End of segment: main\WhatToDo\LogicParser.h
+	// End of segment: ./\LogicParser.h
 
 
 
 
 
 	/**
-	 * origin: main\WhatToDo\LogicParserCommandCreator.cpp
+	 * origin: ./\LogicParserCommandCreator.cpp
 	 */
 
 #include "LogicParserCommandCreator.h"
@@ -396,14 +396,14 @@ Command* CommandCreator::createUndoneCommand(void) {
 	}
 	return undoneCommand;
 }
-	// End of segment: main\WhatToDo\LogicParserCommandCreator.cpp
+	// End of segment: ./\LogicParserCommandCreator.cpp
 
 
 
 
 
 	/**
-	 * origin: main\WhatToDo\LogicParserCommandCreator.h
+	 * origin: ./\LogicParserCommandCreator.h
 	 */
 
 //****************************************************************************
@@ -549,14 +549,14 @@ private:
 	string _userInput;
 	string _userCommand;
 };
-	// End of segment: main\WhatToDo\LogicParserCommandCreator.h
+	// End of segment: ./\LogicParserCommandCreator.h
 
 
 
 
 
 	/**
-	 * origin: main\WhatToDo\LogicParserDateTimeParser.cpp
+	 * origin: ./\LogicParserDateTimeParser.cpp
 	 */
 
 #include "LogicParserDatetimeParser.h"
@@ -1385,14 +1385,14 @@ void DatetimeParser::removeDateDelimiters(string& word) {
 		word.erase(remove(word.begin(), word.end(), *iter), word.end());
 	}
 }
-	// End of segment: main\WhatToDo\LogicParserDateTimeParser.cpp
+	// End of segment: ./\LogicParserDateTimeParser.cpp
 
 
 
 
 
 	/**
-	 * origin: main\WhatToDo\LogicParserDateTimeParser.h
+	 * origin: ./\LogicParserDateTimeParser.h
 	 */
 
 //****************************************************************************
@@ -1684,14 +1684,14 @@ private:
 
 	void removeDateDelimiters(string& word);
 };
-	// End of segment: main\WhatToDo\LogicParserDateTimeParser.h
+	// End of segment: ./\LogicParserDateTimeParser.h
 
 
 
 
 
 	/**
-	 * origin: main\WhatToDo\LogicParserDetailsParser.cpp
+	 * origin: ./\LogicParserDetailsParser.cpp
 	 */
 
 #include "LogicParserDetailsParser.h"
@@ -2018,14 +2018,14 @@ void DetailsParser::formatForSearch() {
 
 	_parameters = trimWhiteSpace(searchWords) + searchTags;
 }
-	// End of segment: main\WhatToDo\LogicParserDetailsParser.cpp
+	// End of segment: ./\LogicParserDetailsParser.cpp
 
 
 
 
 
 	/**
-	 * origin: main\WhatToDo\LogicParserDetailsParser.h
+	 * origin: ./\LogicParserDetailsParser.h
 	 */
 
 //****************************************************************************
@@ -2144,14 +2144,14 @@ private:
 	string _parameters;
 	vector<string> _tokens;
 };
-	// End of segment: main\WhatToDo\LogicParserDetailsParser.h
+	// End of segment: ./\LogicParserDetailsParser.h
 
 
 
 
 
 	/**
-	 * origin: main\WhatToDo\LogicParserStringModifier.cpp
+	 * origin: ./\LogicParserStringModifier.cpp
 	 */
 
 #include "LogicParserStringModifier.h"
@@ -2262,14 +2262,14 @@ string StringModifier::trimRight(string text) {
 	assert(!text.empty());
 	return text.substr(ZERO, text.find_last_not_of(WHITESPACE_CHAR) + ONE);
 }
-	// End of segment: main\WhatToDo\LogicParserStringModifier.cpp
+	// End of segment: ./\LogicParserStringModifier.cpp
 
 
 
 
 
 	/**
-	 * origin: main\WhatToDo\LogicParserStringModifier.h
+	 * origin: ./\LogicParserStringModifier.h
 	 */
 
 //****************************************************************************
@@ -2348,14 +2348,14 @@ private:
 };
 
 
-	// End of segment: main\WhatToDo\LogicParserStringModifier.h
+	// End of segment: ./\LogicParserStringModifier.h
 
 
 
 
 
 	/**
-	 * origin: main\WhatToDo\ParserUnitTests\ParserTest.cpp
+	 * origin: ./\ParserUnitTests\ParserTest.cpp
 	 */
 
 #include "stdafx.h"
@@ -3364,7 +3364,7 @@ namespace ParserTest {
 		}
 	};
 }
-	// End of segment: main\WhatToDo\ParserUnitTests\ParserTest.cpp
+	// End of segment: ./\ParserUnitTests\ParserTest.cpp
 
 
 
