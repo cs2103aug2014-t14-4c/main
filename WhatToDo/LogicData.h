@@ -1,20 +1,32 @@
 //@author A0110873L
 //****************************************************************************
-//LogicData is responsible for holding the current State, view State and
-//initial State. It also keeps track of the commands that are executed from 
-//the time that WhatToDo is executed. This allows for easy redoing and undoing
-//from caller methods such as Command::Undo and Command::Redo. Also, LogicData
-//supports Command::Filter as well, it is able to support filters such as:
-//	1) Status
-//		a) Done & Undone
-//		b) Done only
-//		c) Undone Only
-//	2) Task type
-//		a) All types
-//		b) Fixed Timed
-//		c) Deadline
-//	3) Date
+//LogicData is where the internal States, as well as other execution 
+//information such as Command history, are stored. It is also the interface 
+//between Logic and Storage, as it calls StorageExecutor to read from and 
+//write to external save files. 
 //
+//LogicData holds nearly the entirety of information stored in WhatToDo at 
+//any one time. To achieve this, it contains three State objects, namely the 
+//currentState, the viewState, and the initialState. At program start-up, the 
+//initialState is set and kept unchanged thereafter as undo and redo operations 
+//necessitate resetting the currentState to the initialState, and then performing 
+//all the Commands contained within the commandHistory up to the index required. 
+//
+//LogicData is also responsible for the filtering of Tasks by: 
+//    1) Status
+//        a) Done & Undone
+//        b) Done only
+//        c) Undone Only
+//    2) Task type
+//        a) All types
+//        b) Fixed Timed
+//        c) Deadline
+//    3) Date
+//
+//Before returning a viewState, LogicData first filters through the Tasks in 
+//accordance with the filters currently active. By default, only undone Tasks 
+//are shown. Users are able to set their own filters with CommandFilter, which 
+//modifies the filter attributes in LogicData. 
 //****************************************************************************
 
 #ifndef LOGICDATA_H
@@ -54,8 +66,6 @@ class LogicData {
 		static int _typeFilter;
 		static date _startDateFilter;
 		static date _endDateFilter;
-
-		static char buffer[255];
 
 	public:
 		//Constructor

@@ -165,7 +165,11 @@ bool Task::isTaskTypeFixedTime(Task myTask) {
 }
 
 bool Task::isTaskHasStartAndEnd() {
-	return ((this->getTaskType() == FIXED_DAY_TO_DAY) || (this->getTaskType() == FIXED_TIME_WITHIN_DAY) || (this->getTaskType() == FIXED_TIME_ACROSS_DAY) || (this->getTaskType() == FIXED_DAY_TO_TIME) || (this->getTaskType() == FIXED_TIME_TO_DAY));
+	return ((this->getTaskType() == FIXED_DAY_TO_DAY) || 
+		(this->getTaskType() == FIXED_TIME_WITHIN_DAY) || 
+		(this->getTaskType() == FIXED_TIME_ACROSS_DAY) || 
+		(this->getTaskType() == FIXED_DAY_TO_TIME) || 
+		(this->getTaskType() == FIXED_TIME_TO_DAY));
 }
 
 bool Task::isTaskOverlapWith(Task myTask) {
