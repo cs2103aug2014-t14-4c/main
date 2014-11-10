@@ -1,6 +1,5 @@
-//****************************************************************************
 //@author A0110873L
-//
+//****************************************************************************
 //State is responsible for storing a list of Tasks. State primarily deals with
 //the adding, deleting of Tasks. Also, when a Task is completed,
 //State is able to set the Task as done. Other than this, State can return
@@ -25,21 +24,36 @@
 #define STATE_H
 
 #include "Task.h"
+#include <fstream>
 using namespace std;
 
+//Constants
 const int UNSPECIFIED_INDEX = -1;
 const int INITIAL_INDEX = 0;
 const int TO_THE_RIGHT_BY_ONE = 1;
 const bool UNSPECIFIED_USER_COMMAND = false;
 
+const string LOG_STATE_FILE_NAME = "StateLog.txt";
+const string LOG_MSG_ADD_TASK = "Function called: addTask()\n";
+const string LOG_MSG_DELETE_TASK = "Function called: deleteTask()\n";
+const string LOG_MSG_DONE_TASK = "Function called: doneTask()\n";
+const string LOG_MSG_CLEAR_TASKS = "Function called: clearAllTasks()\n";
+const string LOG_MSG_SORT_TASKS = "Function called: sortAllTasks()\n";
+
 class State {
 	private:
+		//Attributes for State
 		vector<Task> _entireListOfTasks;
 		string _userMessage;
 		string _actionMessage;
 		int maxIndex;
 		int _lastActionType;
 		int _lastActionTaskIndex;
+
+		//Attributes for Logging
+		string _logFileName;
+		bool _loggingModeOn;
+		char buffer[255];
 
 	public:
 		//Constructor
@@ -71,9 +85,18 @@ class State {
 		vector<Task> getTimedTasks();
 		vector<Task> getDeadlineTasks();
 		vector<Task> getFloatingTasks();
+		bool isTimedTask(Task taskToCheck);
+		bool isDeadlineTask(Task taskToCheck);
+		bool isFloatingTask(Task taskToCheck);
+
+		//Logging
+		void log(string stringToLog);
+		bool isLoggingModeOn();
+		void setLoggingModeOff();
+		void setLoggingModeOn();
 
 		//Enumeration
-		enum actionType { NONE = 0, CHANGED, DELETED };
+		enum actionType { NONE = 1, CHANGED, DELETED };
 };
 
 #endif
