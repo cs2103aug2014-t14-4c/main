@@ -1,4 +1,4 @@
-﻿//@auher A0116278B
+﻿//@author A0116278B
 #include "StorageConverter.h"
 
 StorageConverter::StorageConverter(void){

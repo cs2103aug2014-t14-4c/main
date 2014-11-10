@@ -19,6 +19,7 @@
 //vector<vector<string>> databaseString = StorageDatabaseObj.readFromDatabase();
 //****************************************************************************
 
+
 #include <vector>
 #include <string>
 #include <assert.h>
@@ -27,7 +28,7 @@
 using namespace std; 
 
 const string INITIAL_VALUE_FILE_NAME = "Database.txt";
-const string INITIAL_VALUE_BACK_UP_FILE_NAME ="BackupDatabase.txt";
+const string INITIAL_VALUE_BACK_UP_FILE_NAME ="BackupDatabase.bak";
 const int START=0;
 const int NO_OF_ATTRIBUTES = 6;
 

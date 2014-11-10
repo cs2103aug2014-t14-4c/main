@@ -30,7 +30,7 @@
 
 using namespace std;
 const int MAX_SIZE = 255;
-const string LOG_FILE_NAME = "filelogs.txt";
+const string LOG_FILE_NAME = "storageLogs.txt";
 const string STRING_TRUE = "1";
 const string STRING_FALSE = "0";
 const bool LOGGING_MODE_ON = true;
@@ -104,5 +104,6 @@ class StorageConverter{
 		void logErrorMessage(string logString);
 		void compileErrorMessage(string errorMessageLocation, 
 								 string errorMessage);
+
 }; 
 
