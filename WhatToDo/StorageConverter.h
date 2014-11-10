@@ -36,17 +36,26 @@ const string STRING_FALSE = "0";
 const bool LOGGING_MODE_ON = true;
 
 //functions that thrown the messages
-const string STORAGE_LOGGING_TEMPLATE = "Function called: %s\nError Message: %s";
-const string STORAGE_FUNCTION_CONVERT_PTIME_START = "convertStringStartTimeToTask();";
-const string STORAGE_FUNCTION_CONVERT_PTIME_END = "convertStringEndTimeToTask();";
-const string STORAGE_FUNCTION_CONVERT_PTIME_DEADLINE = "convertStringDeadLineToTask();";
-const string STORAGE_FUNCTION_CONVERT_ISDONE = "ConvertStringIsDoneToTask(Task &convertedTask);";
+const string STORAGE_LOGGING_TEMPLATE = 
+	"Function called: %s\nError Message: %s";
+const string STORAGE_FUNCTION_CONVERT_PTIME_START = 
+	"convertStringStartTimeToTask();";
+const string STORAGE_FUNCTION_CONVERT_PTIME_END = 
+	"convertStringEndTimeToTask();";
+const string STORAGE_FUNCTION_CONVERT_PTIME_DEADLINE = 
+	"convertStringDeadLineToTask();";
+const string STORAGE_FUNCTION_CONVERT_ISDONE = 
+	"ConvertStringIsDoneToTask(Task &convertedTask);";
 
 //error messages
-const string STORAGE_MSG_PTIME_START_ERROR = "Start Datetime false format.\n";
-const string STORAGE_MSG_PTIME_END_ERROR = "End Datetime false format.\n";
-const string STORAGE_MSG_PTIME_DEADLINE_ERROR = "Deadline false format.\n";
-const string STORAGE_MSG_ISDONE_ERROR = "Task IsDone false format. \n";
+const string STORAGE_MSG_PTIME_START_ERROR = 
+	"Start Datetime false format.\n";
+const string STORAGE_MSG_PTIME_END_ERROR = 
+	"End Datetime false format.\n";
+const string STORAGE_MSG_PTIME_DEADLINE_ERROR = 
+	"Deadline false format.\n";
+const string STORAGE_MSG_ISDONE_ERROR = 
+	"Task IsDone false format. \n";
 
 //for documentation and readability
 const string TITLE_TASKSTARTDATETIME = "Start Datetime: ";
@@ -84,11 +93,11 @@ class StorageConverter{
 		string convertTaskNameToString(Task taskToConvert);
 		
 		//subfunctions for conversion from string to task
-		void convertStringIsdoneToTask(Task& convertedTask);
 		void convertStringStartDatetimeToTask(Task& convertedTask);
 		void convertStringEndDatetimeToTask(Task& convertedTask);
 		void convertStringDeadlineToTask(Task& convertedTask);
 		void convertStringTasktagToTask(Task& convertedTask);
+		void convertStringIsdoneToTask(Task& convertedTask);
 		vector<string> convertTaskTagStringToVector(string tagString);
 
 		//logging function
