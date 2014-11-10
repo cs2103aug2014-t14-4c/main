@@ -41,17 +41,6 @@ const string LogicData::STRING_ALL_TYPES = "all types";
 const string LogicData::STRING_ONLY_FIXED = "only fixed";
 const string LogicData::STRING_ONLY_DUE = "only due";
 
-const string LogicData::LOG_LOGIC_DATA_FILE_NAME = "LogicDataLog.txt";
-const string LogicData::LOG_MSG_CURRENT_STATE_SET = "Function called: setCurrentState()\n";
-const string LogicData::LOG_MSG_VIEW_STATE_SET = "Function called: setViewState()\n";
-const string LogicData::LOG_MSG_DONE_FILTER_SET = "Function called: setDoneFilter()\n";
-const string LogicData::LOG_MSG_TYPE_FILTER_SET = "Function called: setTypeFilter()\n";
-const string LogicData::LOG_MSG_DATE_FILTER_SET = "Function called: setDateFilter()\n";
-const string LogicData::LOG_MSG_COMMAND_HISTORY_RESET = "Function called: resetCommandHistory()\n";
-const string LogicData::LOG_MSG_COMMAND_HISTORY_ADDED = "Function called: addCommandHistory()\n";
-const string LogicData::LOG_MSG_RESET = "Function called: resetToInitialSettings()\n";
-const string LogicData::LOG_MSG_LOAD = "Function called: loadInitialSettings()\n";
-
 const string LogicData::ERR_MSG_INVALID_TASK_TYPE = "INVALID_ARGUMENT: Task Type not known\n";
 const string LogicData::ERR_MSG_INVALID_STATUS_TYPE = "INVALID_ARGUMENT: Status Type not known\n";
 
@@ -62,8 +51,6 @@ LogicData::LogicData() {
 	_typeFilter = Type::ALL_TYPES;
 	_startDateFilter = boost::gregorian::date(neg_infin);
 	_endDateFilter = boost::gregorian::date(pos_infin);
-	/*_logFileName = LOG_LOGIC_DATA_FILE_NAME;
-	_loggingModeOn = false;*/
 }
 
 //Setters
@@ -71,28 +58,23 @@ void LogicData::setCurrentState(State stateToSet) {
 	_currentState = stateToSet;
 	StorageExecutor myStorageExecutor;
 	myStorageExecutor.saveToStorage(_currentState);
-	/*log(LOG_MSG_CURRENT_STATE_SET);*/
 }
 
 void LogicData::setViewState(State stateToSet) {
 	_viewState = stateToSet;
-	/*log(LOG_MSG_VIEW_STATE_SET);*/
 }
 
 void LogicData::setDoneFilter(int doneFilter) {
 	_doneFilter = doneFilter;
-	/*log(LOG_MSG_DONE_FILTER_SET);*/
 }
 
 void LogicData::setTypeFilter(int typeFilter) {
 	_typeFilter = typeFilter;
-	//log(LOG_MSG_TYPE_FILTER_SET);
 }
 
 void LogicData::setDateFilter(date startDateFilter, date endDateFilter) {
 	_startDateFilter = startDateFilter;
 	_endDateFilter = endDateFilter;
-	//log(LOG_MSG_DATE_FILTER_SET);
 }
 
 void LogicData::setCommandHistoryIndex(int indexToSet) {
@@ -135,21 +117,18 @@ date LogicData::getEndDateFilter() {
 //Operations
 void LogicData::resetCommandHistory() {
 	_commandHistory.clear();
-	//log(LOG_MSG_COMMAND_HISTORY_RESET);
 	return;
 }
 
 void LogicData::addCommandToHistory(Command* commandToAdd) {
 	_commandHistory.push_back(commandToAdd);
 	_currentCommandHistoryIndex++;
-	//log(LOG_MSG_COMMAND_HISTORY_ADDED);
 }
 
 void LogicData::resetToInitialSettings() {
 	_currentState = _initialState;
 	_viewState = _initialState;
 	_commandHistory.clear();
-	//log(LOG_MSG_RESET);
 }
 
 void LogicData::loadInitialSettings() {
@@ -159,7 +138,6 @@ void LogicData::loadInitialSettings() {
 	_initialState = initialState;
 	_currentState = initialState;
 	_viewState = initialState;
-	//log(LOG_MSG_LOAD);
 }
 
 void LogicData::fakeinitiate(State fakestate) {
@@ -180,8 +158,6 @@ State LogicData::filterTasks() {
 			}
 		}
 	} catch (const invalid_argument& ia) {
-		//if(!isLoggingModeOn())
-		//	setLoggingModeOn();
 	    cerr << ia.what();
 	}
 	filteredViewState.setAllTasks(filteredTasks);
@@ -341,32 +317,6 @@ bool LogicData::doesEndDatePassDateFilter(Task task) {
 	return (task.getTaskEndTime().date() <= _endDateFilter) && 
 			(task.getTaskEndTime().date() >= _startDateFilter);
 }
-
-//Logging
-//void LogicData::log(string stringToLog) {
-//	if (!isLoggingModeOn()) {
-//		return;
-//	}
-//
-//	ofstream writeToLog;
-//	writeToLog.open(_logFileName, ios::app);
-//	writeToLog << stringToLog;
-//	writeToLog.close();
-//
-//	return;
-//}
-//
-//bool LogicData::isLoggingModeOn() {
-//	return _loggingModeOn;
-//}
-//
-//void LogicData::setLoggingModeOff() {
-//	_loggingModeOn = false;
-//}
-//
-//void LogicData::setLoggingModeOn() {
-//	_loggingModeOn = true;
-//}
 
 string LogicData::compileStartDateFilterStatus(string dateFilterStatus, 
 												date startDateFilter) {

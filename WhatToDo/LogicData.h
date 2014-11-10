@@ -15,9 +15,6 @@
 //		c) Deadline
 //	3) Date
 //
-//Furthermore, LogicData support the logging of functions executed and errors 
-//should they occur. Logging mode can be turned on or off in the constructor
-//based on the developer's requirements
 //****************************************************************************
 
 #ifndef LOGICDATA_H
