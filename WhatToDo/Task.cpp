@@ -1,4 +1,4 @@
-@author A0110873L
+//@author A0110873L
 #include "Task.h"
 
 //Constructor
@@ -7,7 +7,7 @@ Task::Task() {
 	_taskEndDateTime = not_a_date_time;
 	_taskDeadline = not_a_date_time;
 	_isDone = false;
-	_loggingModeOn = false;
+	_loggingModeOn = true;
 	log(LOG_MSG_INITIATE);
 }
 
@@ -47,36 +47,42 @@ void Task::setTaskIsNotDone() {
 
 //Getters
 int Task::getTaskType() {
-	if ((!hasStartDateTime()) && (!hasDeadline())) {
-		return FLOATING;
-	} else if (hasDeadline()) {
-		if (isFullDay(_taskDeadline)) {
-			return DEADLINE_ALLDAY;
-		} else {
-			return DEADLINE_TIME;
-		}
-	} else if (hasStartDateTime()) {
-		if (hasEndDateTime()) {
-			if(isStartDateEqualEndDate()) {
-				return FIXED_TIME_WITHIN_DAY;
-			} else if (isFullDay(_taskStartDateTime)) {
-				if(isFullDay(_taskEndDateTime)) {
-					return FIXED_DAY_TO_DAY;
-				} else {
-					return FIXED_DAY_TO_TIME;
-				}
-			} else if(isFullDay(_taskEndDateTime)) {
-				return FIXED_TIME_TO_DAY;
+	try {
+		if ((!hasStartDateTime()) && (!hasDeadline())) {
+			return FLOATING;
+		} else if (hasDeadline()) {
+			if (isFullDay(_taskDeadline)) {
+				return DEADLINE_ALLDAY;
 			} else {
-				return FIXED_TIME_ACROSS_DAY;
+				return DEADLINE_TIME;
 			}
-		} else if (isFullDay(_taskStartDateTime)) {
-			return FIXED_ALLDAY;
+		} else if (hasStartDateTime()) {
+			if (hasEndDateTime()) {
+				if(isStartDateEqualEndDate()) {
+					return FIXED_TIME_WITHIN_DAY;
+				} else if (isFullDay(_taskStartDateTime)) {
+					if(isFullDay(_taskEndDateTime)) {
+						return FIXED_DAY_TO_DAY;
+					} else {
+						return FIXED_DAY_TO_TIME;
+					}
+				} else if(isFullDay(_taskEndDateTime)) {
+					return FIXED_TIME_TO_DAY;
+				} else {
+					return FIXED_TIME_ACROSS_DAY;
+				}
+			} else if (isFullDay(_taskStartDateTime)) {
+				return FIXED_ALLDAY;
+			} else {
+				return FIXED_START;
+			}
 		} else {
-			return FIXED_START;
+			throw invalid_argument(ERR_MSG_INVALID_TASK_TYPE);
 		}
+	} catch (const invalid_argument& ia) {
+		log(ia.what());
+		return NOT_A_TASK_TYPE;
 	}
-	return NOT_A_TASK_TYPE;
 }
 
 int Task::getTaskIndex() {
@@ -456,7 +462,7 @@ void Task::log(string stringToLog) {
 
 	ofstream writeToLog;
 	writeToLog.open(_logFileName, ios::app);
-	writeToLog << stringToLog;
+	writeToLog << stringToLog << endl;
 	writeToLog.close();
 
 	return;
